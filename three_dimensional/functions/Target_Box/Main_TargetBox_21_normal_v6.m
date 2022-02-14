@@ -7,6 +7,8 @@ clc
 clear all
 close all 
 
+addpath(genpath('../spacedyn_ver_Tanano'));
+
 global Ez
 global d_time
 global Gravity
@@ -65,7 +67,7 @@ SV_ts = TargetBall_TrackingContact_SV( LP_ts );
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % フォルダ作成
 timepath = datestr( now, 'yyyy-mmdd-HHMMSS' );
-datepath = [ 'C:\MATLAB\Dual-Arm\3_dimention\Target_Box\Box_output\' datestr( now, 'yyyy-mmdd' ) '\' timepath ];
+datepath = [ '../dat/' datestr( now, 'yyyy-mmdd' ) '\' timepath ];
 path = strcat( datepath, '_Box_', zetaname );
 datfile = [ path, '\dat'];
 figfile = [ path, '\fig'];
