@@ -2,9 +2,6 @@
 %%%%%%%%%% 結果表示(グラフ描画，動画作成)あり
 %%%%%%%%%% DualArm_TargetShikaku_Tracking_Contact  2018年8月6日 長谷作成
 %%%%%%%%%% 変数名 : ～1 → leftarm, ～2 → rightarm
-%%%%%%%%%% DesiredHandMotion_v05.m 編集 2021年11月1日 阿部光輝
-%%%%%%%%%% 時間によるif文でPhaseを定義していたが, switch文に変更
-%%%%%%%%%% Phase4:接触後キープPhase, Phase5:目標手先位置の計算, Phase6:手先制御, Phase7,8:キープ
 clc
 clear all
 close all
@@ -25,14 +22,16 @@ for ts_Y_i =    0;
 for ts_Vx_i =   0;
 for ts_Vy_i =   0;
 for ts_Deg_i =  0;
-for ts_W_i =   2;%:2:3;
+for ts_W_i =   1;%:2:3;
 for Theta_h_i = 0;
 for Kh_i = 0;
 for Vh_ini_i = 0;
+%for ts_Error_Length_i = 0.25;
 for ts_Error_Length_i = 0;%:0.25:0.5%;   % 3      % 正方形幾何中心から，正方形対角線の半分の何割の距離に重心があるか0～1
-for ts_Error_Theta_i = 45%:45:360;%220:20:360;%20:20:180%360%;   % 5
+%for ts_Error_Theta_i = 45;%:45:360;%220:20:360;%20:20:180%360%;   % 5
+for ts_Error_Theta_i = 0;
 
-zeta = [ d_time, 10, Theta_h_i, ts_X_i, ts_Y_i, ts_W_i, Vh_ini_i, Kh_i, ts_Deg_i, ts_Error_Length_i, ts_Error_Theta_i, ts_Vx_i, ts_Vy_i ]';
+zeta = [ d_time, 2, Theta_h_i, ts_X_i, ts_Y_i, ts_W_i, Vh_ini_i, Kh_i, ts_Deg_i, ts_Error_Length_i, ts_Error_Theta_i, ts_Vx_i, ts_Vy_i ]';
 
     qqq = 0;%-pi/7;
 % 分解加速度制御ゲイン
@@ -42,8 +41,6 @@ zeta = [ d_time, 10, Theta_h_i, ts_X_i, ts_Y_i, ts_W_i, Vh_ini_i, Kh_i, ts_Deg_i
 %     Kd_2 = 0.3;   % 0.3
 
 minus_time = 2;10*d_time;
-minus_time_2 = 0;
-minus_time_3 = 0;
 catchlimit = 20;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -113,8 +110,8 @@ movpath = [ path, '/', timepath, '-', 'mov' ];
 %%%%%%%%%%%%%%%%%%%% 係数設定 %%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 剛性係数，粘性係数設定
-kw_1 = 1000;900; % 980.0;       % 剛性係数.誰が決めたんやこれ
-cw_1 = 20; % 8.7;              % 粘性係数.これも誰が決めた?
+kw_1 = 9000;900; % 980.0;       % 剛性係数.誰が決めたんやこれ
+cw_1 = 8.0; % 8.7;              % 粘性係数.これも誰が決めた?
 % cw = 100.7;
 kw_2 =  0.0;                    % 剛性係数が0とは?
 cw_2 =  0.0;                    % 粘性係数が0とは?
@@ -138,7 +135,6 @@ myu_p = polyfit( theta_contact, myu, 3 );
 
 theta_h = deg2rad( zeta(3,1) );   % 追従角度Theta_h_i　degをradに変換
 
-w_dtots = zeros(3,1);
 J_3_G_tmp = zeros(12,8);
 d_ten1 = zeros(3,1);
 d_ten2 = zeros(3,1);
@@ -153,9 +149,9 @@ x_R = zeros(2,1);
 d_QL_3 = pi/2;
 d_QR_7 = pi/2;
 delta_t = 0;
+delta_T = 0;
 stepn = 5;
 t0 = d_time * stepn;
-t1 = 0;
 % q_joints_kotei = SV_d.q;
 flag_kotei = 0;
 Phase = 1;
@@ -165,7 +161,6 @@ flagphase5 = 0;
 %%%%%%%%%%%%%%%%%%%% 長さパラメータ設定 %%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 r_tip = 0.01; %チェイサ先端球半径 1cm
-DHD = 0.113;%ターゲット対角の長さの半分 10cm
 side_target = 0.16;  %ターゲット1辺 16cm 
 half_side = side_target / 2;    % 1辺の半分
 base_yoko = 0.16;   % ベース四角形横 16cm
@@ -205,14 +200,14 @@ SV_d = calc_pos( LP_d, SV_d );  % 各リンク重心位置の計算
 % ->変更しました
 
 % % ロボットの初期関節角度を設定
-q_L = [ pi/3+qqq  -pi*4/9-qqq  -pi*7/18  0 ]';    % qqq = 0
+q_L = [ pi/3+qqq  -pi/2-qqq  -pi/3  0 ]';    % qqq = 0
 q_R = -q_L;   % 右側
 SV_d.q = [ q_L' q_R' ]';    % なんでこんなに転置ばっかすんの?
 q_joints_kotei = zeros(8,1);    % 関節角度を一時的に格納しておく行列...かな?
-%kotei1 = pi/16;                 % これなんですの?
-%kotei2 = pi/6;                  % これもなんですの?
-%q_joints_kotei(1:3,1) = [ pi/3-kotei1  -pi*4/9+kotei1-kotei2  -pi*7/18+kotei2 ]';  %[ pi/3+(-pi/7*1.2) -pi/2-(-pi/7*1.2) -pi/3 ]';わっかんね
-%q_joints_kotei(5:7,1) = -q_joints_kotei(1:3,1); % q_joint_koteiの4行目と8行目がゼロのまんまじゃね?こいつらは受動関節やからか
+kotei1 = pi/16;                 % これなんですの?
+kotei2 = pi/6;                  % これもなんですの?
+q_joints_kotei(1:3,1) = [ pi/3-kotei1  -pi/2+kotei1-kotei2  -pi/3+kotei2 ]';  %[ pi/3+(-pi/7*1.2) -pi/2-(-pi/7*1.2) -pi/3 ]';わっかんね
+q_joints_kotei(5:7,1) = -q_joints_kotei(1:3,1); % q_joint_koteiの4行目と8行目がゼロのまんまじゃね?こいつらは受動関節やからか
 
 %%%%%%%%%% 初期手先位置・姿勢の計算 %%%%%%%%%%
 % 順動力学計算
@@ -264,7 +259,6 @@ SV_ts.A0 = rpy2dc( SV_ts.Q0 )'; % そのときの方向余弦行列
 
 % ターゲットの初期位置   ts_dammy_R0を正方形中心とする．
 ts_geo_0 = [ zeta(4,1) ( POS_eL1(2,1) + POS_eL2(2,1) ) / 2 + zeta(5,1) 0 ]';
-%ts_geo_0 = [ zeta(4,1) POS_eL2(2,1) 0 ]';
 %error_tsR0 = half_side * sqrt(2) * zeta(10,1);   % 円の中心がSV_ts.R0から error_R0[m] の位置にある
 %theta_tsR0 = deg2rad( zeta(11,1) );   % 円の中心がSV_ts.R0から theta_R0[deg] の位置にある
 %SV_ts_R0_0(1,1) = ts_geo_0(1,1) - error_tsR0 * cos( theta_tsR0 + SV_ts_Q0_0(3,1) );   % time=0のときの重心位置
@@ -552,16 +546,7 @@ for time = 0 : d_time : ( endtime + minus_time )
 
 display_time = ( time - minus_time );
 [ time display_time, Phase, catchtime ]'   % 現在どのステップを計算しているかをコマンドウィンドウに出力
-delta_t_2 = 0.7; %Phase6における手先速度制御時間
-delta_t_3 = 0.7;
 
-     t1 = t0 + minus_time + delta_t; %固定値
-     minus_time_2 = t1 + 0.5; %固定値
-%{
-if ((time - minus_time_2) > delta_t_2)
-     minus_time_3 = minus_time_2 + delta_t_2;
-end
-%}
 % 円のダミー中心位置をターゲット重心位置から計算
 %ts_geo(1,1) = SV_ts.R0(1,1) + error_tsR0 * cos( theta_tsR0 + SV_ts.Q0(3,1) );
 ts_geo(1,1) = SV_ts.R0(1,1);
@@ -716,11 +701,11 @@ hokakutime = 0.01;
 %%%%%%%%%%%%%%%%%%%% 目標手先速度の計算 %%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [ xe_des, ve_des, ae_des, d_ten1, d_ten2, d_ten3, d_ten4, POS_j4_tmp, POS_j8_tmp, d_POS_j4, d_POS_j8, VEL_j4, VEL_j8, ...
-  d_QL_3, d_QR_7, aL, aR, q_joints, q_wrist, qd_joints, qd_wrist, delta_t, t0, Phase, catchtime ] ...
-= DesiredHandMotion_v05( d_time, time, minus_time, minus_time_2, minus_time_3, SV_d, SV_ts, Obs1, Obs2, est_P, est_V, est_Q, est_q, est_W, est_geo, ...
+  d_QL_3, d_QR_7, aL, aR, q_joints, q_wrist, qd_joints, qd_wrist, delta_t, delta_T, t0, Phase, catchtime ] ...
+= DesiredHandMotion_v05( d_time, time, minus_time, SV_d, Obs1, Obs2, est_P, est_V, est_Q, est_q, est_W, est_geo, ...
                          POS_j2, POS_j6, POS_j3, POS_j7, POS_j4, POS_j8, POS_j4_tmp, POS_j8_tmp, d_POS_j4, d_POS_j8,...
-                         D, D_0, d_QL_3, d_QR_7, aL, aR, d_ten1, d_ten2, d_ten3, d_ten4, delta_t, delta_t_2, delta_t_3, t0, ...
-                         contactflag_L1, contactflag_L2, contactflag_R1, contactflag_R2, catchtime, POS_eL1, POS_eL2, POS_eR1, POS_eR2, hokakutime, DHD, Phase, t1 );
+                         D, D_0, d_QL_3, d_QR_7, aL, aR, d_ten1, d_ten2, d_ten3, d_ten4, delta_t, delta_T, t0, ...
+                         contactflag_L1, contactflag_L2, contactflag_R1, contactflag_R2, catchtime, POS_eL1, POS_eL2, POS_eR1, POS_eR2, hokakutime );
 
 Kd_ichi = Kd/2;
 Kd_kaku = Kd/12;
@@ -731,13 +716,25 @@ Kp_kaku = Kp/30;
 Kp_wrist = 0.001;
 Kd_wrist = 0.03;
 
-
 % if time == round( (t0+delta_t)/d_time )*d_time
 % flag_kotei = 1;
 % q_joints_kotei = q_joints;
 % end
 
 %%% 手先位置制御のためのφddの設定 %%%
+%qdd = Je_3_G * ...
+%      ( ae_des ...
+%      + Kd_ichi * ( [ ve_des1(1:3,1)', zeros(1,3), ve_des1(7:9,1)', zeros(1,3) ]' - [ VEL_j4', zeros(1,4), VEL_j8', zeros(1,4) ]' ) ...
+%      + Kp_ichi * ( [ xe_des1(1:3,1)', zeros(1,3), xe_des1(7:9,1)', zeros(1,3) ]' - [ POS_j4', zeros(1,4), POS_j8', zeros(1,4) ]' ) ...
+%      + Kd_kaku * ( [ zeros(1,5), ve_des1(6,1)', zeros(1,5), ve_des1(12,1)' ]' - [ zeros(1,5), qd_joints(3,1), zeros(1,5), qd_joints(7,1) ]' ) ...
+%      + Kp_kaku * ( [ zeros(1,5), xe_des1(6,1)', zeros(1,5), xe_des1(12,1)' ]' - [ zeros(1,5),  q_joints(3,1), zeros(1,5),  q_joints(7,1) ]' ) ...
+%      + Jd_3_G * qd_joints );
+%qdd_2 = Je_3_G * ...
+%      ( ae_des ...
+%      + Kd_kaku * ( [ zeros(1,5), ve_des1(6,1)', zeros(1,5), ve_des1(12,1)' ]' - [ zeros(1,5), qd_joints(3,1), zeros(1,5), qd_joints(7,1) ]' ) ...
+%      + Kp_kaku * ( [ zeros(1,5), xe_des1(6,1)', zeros(1,5), xe_des1(12,1)' ]' - [ zeros(1,5),  q_joints(3,1), zeros(1,5),  q_joints(7,1) ]' ) ...
+%      + Jd_3_G * qd_joints );
+
 qdd = Je_3_G * ...
       ( ae_des ...
       + Kd_ichi * ( [ ve_des(1:3,1)', zeros(1,3), ve_des(7:9,1)', zeros(1,3) ]' - [ VEL_j4', zeros(1,4), VEL_j8', zeros(1,4) ]' ) ...
@@ -750,83 +747,49 @@ qdd_2 = Je_3_G * ...
       + Kd_kaku * ( [ zeros(1,5), ve_des(6,1)', zeros(1,5), ve_des(12,1)' ]' - [ zeros(1,5), qd_joints(3,1), zeros(1,5), qd_joints(7,1) ]' ) ...
       + Kp_kaku * ( [ zeros(1,5), xe_des(6,1)', zeros(1,5), xe_des(12,1)' ]' - [ zeros(1,5),  q_joints(3,1), zeros(1,5),  q_joints(7,1) ]' ) ...
       + Jd_3_G * qd_joints );
+
   
-  qdd_3 = Je_3_G * ([ VEL_j4', zeros(1,4), VEL_j8', zeros(1,4) ]' );
-  
+%qdd_dash = Je_3_G * ...
+%      ( ae_des ...
+%      + Kd_ichi * ( [ ve_des(1:3,1)', zeros(1,3), ve_des(7:9,1)', zeros(1,3) ]' - [ VEL_j4', zeros(1,4), VEL_j8', zeros(1,4) ]' ) ...
+%    + Kd_kaku * ( [ zeros(1,5), ve_des(6,1)', zeros(1,5), ve_des(12,1)' ]' - [ zeros(1,5), qd_joints(3,1), zeros(1,5), qd_joints(7,1) ]' ) ...
+%      + Kp_kaku * ( [ zeros(1,5), xe_des(6,1)', zeros(1,5), xe_des(12,1)' ]' - [ zeros(1,5),  q_joints(3,1), zeros(1,5),  q_joints(7,1) ]' ) ...
+%      + Jd_3_G * qd_joints );
+%qdd_2_dash = Je_3_G * ...
+%      ( ae_des ...
+%      + Kd_kaku * ( [ zeros(1,5), ve_des(6,1)', zeros(1,5), ve_des(12,1)' ]' - [ zeros(1,5), qd_joints(3,1), zeros(1,5), qd_joints(7,1) ]' ) ...
+%      + Kp_kaku * ( [ zeros(1,5), xe_des(6,1)', zeros(1,5), xe_des(12,1)' ]' - [ zeros(1,5),  q_joints(3,1), zeros(1,5),  q_joints(7,1) ]' ) ...
+%      + Jd_3_G * qd_joints );
 
 % 関数calc_asuta呼び出し
     [ H_asuta, C_asuta ] = calc_asuta( LP_d, SV_d );
 
 % 目標トルク
- if     Phase == 4 % && flagphase5 ~= 1    % time >= round( (t0+delta_t)/d_time )*d_time   % flag_kotei == 1
-    q_joints_kotei = q_joints;
-
- KL = kakudo( [ POS_j3' 0 ]', [ ( 2 * POS_j3 - POS_j2 )' 0 ]', SV_ts.R0 );
- KR = kakudo( [ POS_j7' 0 ]', [ ( 2 * POS_j7 - POS_j6 )' 0 ]', SV_ts.R0 );
-     SV_d.tau =  - JL' * Fh_L - JR' * Fh_R ... H_asuta * qdd_2 + C_asuta - JL' * Fh_L - JR' * Fh_R ... 
- ...             + 1 * ( zeros(8,1) - [ qd_joints(1:3)', 0, qd_joints(5:7)', 0 ]' ) ...
- ...             + 3 * ( [ q_joints_kotei(1:3)', 0, q_joints_kotei(5:7)', 0 ]' - [ q_joints(1:3)', 0, q_joints(5:7)', 0 ]' ) ...
-              + 1 * ( zeros(8,1) - [ qd_joints(1:3)', 0, qd_joints(5:7)', 0 ]' ) ...
-              + 3 * ( [ q_joints_kotei(1:2)', KL, 0, q_joints_kotei(5:6)', KR, 0 ]' ...
-                    - [ q_joints(1:3)', 0, q_joints(5:7)', 0 ]' ) ...
-              + Kd_wrist * ( zeros(8,1) - qd_wrist ) + Kp_wrist * ( zeros(8,1) - q_wrist );
-        
-% 目標トルク
-elseif     Phase == 5 % && flagphase5 ~= 1    % time >= round( (t0+delta_t)/d_time )*d_time   % flag_kotei == 1
- 
-     q_joints_kotei = q_joints;
-
- KL = kakudo( [ POS_j3' 0 ]', [ ( 2 * POS_j3 - POS_j2 )' 0 ]', SV_ts.R0 );
- KR = kakudo( [ POS_j7' 0 ]', [ ( 2 * POS_j7 - POS_j6 )' 0 ]', SV_ts.R0 );
-     SV_d.tau =  - JL' * Fh_L - JR' * Fh_R ... H_asuta * qdd_2 + C_asuta - JL' * Fh_L - JR' * Fh_R ... 
- ...             + 1 * ( zeros(8,1) - [ qd_joints(1:3)', 0, qd_joints(5:7)', 0 ]' ) ...
- ...             + 3 * ( [ q_joints_kotei(1:3)', 0, q_joints_kotei(5:7)', 0 ]' - [ q_joints(1:3)', 0, q_joints(5:7)', 0 ]' ) ...
-              + 1 * ( zeros(8,1) - [ qd_joints(1:3)', 0, qd_joints(5:7)', 0 ]' ) ...
-              + 3 * ( [ q_joints_kotei(1:2)', KL, 0, q_joints_kotei(5:6)', KR, 0 ]' ...
-                    - [ q_joints(1:3)', 0, q_joints(5:7)', 0 ]' ) ...
-              + Kd_wrist * ( zeros(8,1) - qd_wrist ) + Kp_wrist * ( zeros(8,1) - q_wrist );
-    %{
+if     Phase == 4 && flagphase5 ~= 1    % time >= round( (t0+delta_t)/d_time )*d_time   % flag_kotei == 1
     SV_d.tau = H_asuta * qdd_2 + C_asuta - JL' * Fh_L - JR' * Fh_R ... - JL' * Fh_L - JR' * Fh_R ... 
 ...             + 1 * ( zeros(8,1) - [ qd_joints(1:2)', zeros(1,2), qd_joints(5:6)', zeros(1,2) ]' ) ...
 ...             + 2 * ( [ q_joints_kotei(1:2)', zeros(1,2), q_joints_kotei(5:6)', zeros(1,2) ]' - [ q_joints(1:2)', zeros(1,2), q_joints(5:6)', zeros(1,2) ]' ) ...
 ...             + 1 * ( zeros(8,1) - [ qd_joints(1:3)', 0, qd_joints(5:7)', 0 ]' ) ...
 ...             + 2 * ( [ q_joints_kotei(1:3)', 0, q_joints_kotei(5:7)', 0 ]' - [ q_joints(1:3)', 0, q_joints(5:7)', 0 ]' ) ...
              + Kd_wrist * ( zeros(8,1) - qd_wrist ) + Kp_wrist * ( zeros(8,1) - q_wrist );
-      %}
-         % 目標トルク
-elseif     Phase == 6 % && flagphase5 ~= 1    % time >= round( (t0+delta_t)/d_time )*d_time   % flag_kotei == 1
-    q_joints_kotei = q_joints;
-    
-        
-    SV_d.tau = H_asuta * qdd_3 + C_asuta - JL' * Fh_L - JR' * Fh_R ... 
-...             + 1 * ( zeros(8,1) - [ qd_joints(1:2)', zeros(1,2), qd_joints(5:6)', zeros(1,2) ]' ) ...
-...             + 2 * ( [ q_joints_kotei(1:2)', zeros(1,2), q_joints_kotei(5:6)', zeros(1,2) ]' - [ q_joints(1:2)', zeros(1,2), q_joints(5:6)', zeros(1,2) ]' ) ...
-...             + 1 * ( zeros(8,1) - [ qd_joints(1:3)', 0, qd_joints(5:7)', 0 ]' ) ...
-...             + 2 * ( [ q_joints_kotei(1:3)', 0, q_joints_kotei(5:7)', 0 ]' - [ q_joints(1:3)', 0, q_joints(5:7)', 0 ]' ) ...
-             + Kd_wrist * ( zeros(8,1) - qd_wrist ) + Kp_wrist * ( zeros(8,1) - q_wrist );
- 
-% 目標トルク
-elseif     Phase == 7 && flagphase5 ~= 1    % time >= round( (t0+delta_t)/d_time )*d_time   % flag_kotei == 1
-    q_joints_kotei = q_joints;
-       
- 
- KL = kakudo( [ POS_j3' 0 ]', [ ( 2 * POS_j3 - POS_j2 )' 0 ]', [ POS_j7' 0 ]' );
- KR = kakudo( [ POS_j7' 0 ]', [ ( 2 * POS_j7 - POS_j6 )' 0 ]', [ POS_j3' 0 ]' );
-     SV_d.tau = - JL' * Fh_L - JR' * Fh_R ... H_asuta * qdd_2 + C_asuta - JL' * Fh_L - JR' * Fh_R ... 
- ...             + 1 * ( zeros(8,1) - [ qd_joints(1:3)', 0, qd_joints(5:7)', 0 ]' ) ...
- ...             + 3 * ( [ q_joints_kotei(1:3)', 0, q_joints_kotei(5:7)', 0 ]' - [ q_joints(1:3)', 0, q_joints(5:7)', 0 ]' ) ...
-              + 1 * ( zeros(8,1) - [ qd_joints(1:3)', 0, qd_joints(5:7)', 0 ]' ) ...
-              + 3 * ( [ q_joints_kotei(1:2)', KL, 0, q_joints_kotei(5:6)', KR, 0 ]' ...
-                    - [ q_joints(1:3)', 0, q_joints(5:7)', 0 ]' ) ...
-              + Kd_wrist * ( zeros(8,1) - qd_wrist ) + Kp_wrist * ( zeros(8,1) - q_wrist );
-    
-elseif Phase == 8 || flagphase5 == 1
+
+% KL = kakudo( [ POS_j3' 0 ]', [ ( 2 * POS_j3 - POS_j2 )' 0 ]', [ POS_j7' 0 ]' );
+% KR = kakudo( [ POS_j7' 0 ]', [ ( 2 * POS_j7 - POS_j6 )' 0 ]', [ POS_j3' 0 ]' );
+%     SV_d.tau = - JL' * Fh_L - JR' * Fh_R ... H_asuta * qdd_2 + C_asuta - JL' * Fh_L - JR' * Fh_R ... 
+% ...             + 1 * ( zeros(8,1) - [ qd_joints(1:3)', 0, qd_joints(5:7)', 0 ]' ) ...
+% ...             + 3 * ( [ q_joints_kotei(1:3)', 0, q_joints_kotei(5:7)', 0 ]' - [ q_joints(1:3)', 0, q_joints(5:7)', 0 ]' ) ...
+%              + 1 * ( zeros(8,1) - [ qd_joints(1:3)', 0, qd_joints(5:7)', 0 ]' ) ...
+%              + 3 * ( [ q_joints_kotei(1:2)', KL, 0, q_joints_kotei(5:6)', KR, 0 ]' ...
+%                    - [ q_joints(1:3)', 0, q_joints(5:7)', 0 ]' ) ...
+%              + Kd_wrist * ( zeros(8,1) - qd_wrist ) + Kp_wrist * ( zeros(8,1) - q_wrist );
+
+
+elseif Phase == 5 || flagphase5 == 1
 %   if catchtime >= hokakutime
      if catchtime > ( hokakutime - d_time )  &&  catchtime < ( hokakutime + d_time )
         flagphase5 = 1;
         q_joints_kotei = q_joints;
      end
-
 KL = kakudo( [ POS_j3' 0 ]', [ ( 2 * POS_j3 - POS_j2 )' 0 ]', [ POS_j7' 0 ]' );
 KR = kakudo( [ POS_j7' 0 ]', [ ( 2 * POS_j7 - POS_j6 )' 0 ]', [ POS_j3' 0 ]' );
     SV_d.tau = - JL' * Fh_L - JR' * Fh_R ... H_asuta * qdd_2 + C_asuta - JL' * Fh_L - JR' * Fh_R ... 
@@ -837,11 +800,53 @@ KR = kakudo( [ POS_j7' 0 ]', [ ( 2 * POS_j7 - POS_j6 )' 0 ]', [ POS_j3' 0 ]' );
                    - [ q_joints(1:3)', 0, q_joints(5:7)', 0 ]' ) ...
              + Kd_wrist * ( zeros(8,1) - qd_wrist ) + Kp_wrist * ( zeros(8,1) - q_wrist );
 
-else   % Phase = 1,2,3
- 
+%    else   % Phase = 1,2,3
+%    SV_d.tau = H_asuta * qdd + C_asuta - JL' * Fh_L - JR' * Fh_R ...
+%             + Kd_wrist * ( zeros(8,1) - qd_wrist ) + Kp_wrist * ( zeros(8,1) - q_wrist );
+
+%end
+
+
+elseif   Phase == 9 && flagphase5 ~= 1    % time >= round( (t0+delta_t)/d_time )*d_time   % flag_kotei == 1
+    SV_d.tau = H_asuta * qdd_2 + C_asuta - JL' * Fh_L - JR' * Fh_R ... - JL' * Fh_L - JR' * Fh_R ... 
+...             + 1 * ( zeros(8,1) - [ qd_joints(1:2)', zeros(1,2), qd_joints(5:6)', zeros(1,2) ]' ) ...
+...             + 2 * ( [ q_joints_kotei(1:2)', zeros(1,2), q_joints_kotei(5:6)', zeros(1,2) ]' - [ q_joints(1:2)', zeros(1,2), q_joints(5:6)', zeros(1,2) ]' ) ...
+...             + 1 * ( zeros(8,1) - [ qd_joints(1:3)', 0, qd_joints(5:7)', 0 ]' ) ...
+...             + 2 * ( [ q_joints_kotei(1:3)', 0, q_joints_kotei(5:7)', 0 ]' - [ q_joints(1:3)', 0, q_joints(5:7)', 0 ]' ) ...
+             + Kd_wrist * ( zeros(8,1) - qd_wrist ) + Kp_wrist * ( zeros(8,1) - q_wrist );
+
+% KL = kakudo( [ POS_j3' 0 ]', [ ( 2 * POS_j3 - POS_j2 )' 0 ]', [ POS_j7' 0 ]' );
+% KR = kakudo( [ POS_j7' 0 ]', [ ( 2 * POS_j7 - POS_j6 )' 0 ]', [ POS_j3' 0 ]' );
+%     SV_d.tau = - JL' * Fh_L - JR' * Fh_R ... H_asuta * qdd_2 + C_asuta - JL' * Fh_L - JR' * Fh_R ... 
+% ...             + 1 * ( zeros(8,1) - [ qd_joints(1:3)', 0, qd_joints(5:7)', 0 ]' ) ...
+% ...             + 3 * ( [ q_joints_kotei(1:3)', 0, q_joints_kotei(5:7)', 0 ]' - [ q_joints(1:3)', 0, q_joints(5:7)', 0 ]' ) ...
+%              + 1 * ( zeros(8,1) - [ qd_joints(1:3)', 0, qd_joints(5:7)', 0 ]' ) ...
+%              + 3 * ( [ q_joints_kotei(1:2)', KL, 0, q_joints_kotei(5:6)', KR, 0 ]' ...
+%                    - [ q_joints(1:3)', 0, q_joints(5:7)', 0 ]' ) ...
+%              + Kd_wrist * ( zeros(8,1) - qd_wrist ) + Kp_wrist * ( zeros(8,1) - q_wrist );
+
+
+elseif Phase == 10 || flagphase5 == 1
+%   if catchtime >= hokakutime
+     if catchtime > ( hokakutime - d_time )  &&  catchtime < ( hokakutime + d_time )
+        flagphase5 = 1;
+        q_joints_kotei = q_joints;
+     end
+KL = kakudo( [ POS_j3' 0 ]', [ ( 2 * POS_j3 - POS_j2 )' 0 ]', [ POS_j7' 0 ]' );
+KR = kakudo( [ POS_j7' 0 ]', [ ( 2 * POS_j7 - POS_j6 )' 0 ]', [ POS_j3' 0 ]' );
+    SV_d.tau = - JL' * Fh_L - JR' * Fh_R ... H_asuta * qdd_2 + C_asuta - JL' * Fh_L - JR' * Fh_R ... 
+...             + 1 * ( zeros(8,1) - [ qd_joints(1:3)', 0, qd_joints(5:7)', 0 ]' ) ...
+...             + 3 * ( [ q_joints_kotei(1:3)', 0, q_joints_kotei(5:7)', 0 ]' - [ q_joints(1:3)', 0, q_joints(5:7)', 0 ]' ) ...
+             + 1 * ( zeros(8,1) - [ qd_joints(1:3)', 0, qd_joints(5:7)', 0 ]' ) ...
+             + 3 * ( [ q_joints_kotei(1:2)', KL, 0, q_joints_kotei(5:6)', KR, 0 ]' ...
+                   - [ q_joints(1:3)', 0, q_joints(5:7)', 0 ]' ) ...
+             + Kd_wrist * ( zeros(8,1) - qd_wrist ) + Kp_wrist * ( zeros(8,1) - q_wrist );
+%   end
+
+else   % Phase = 1,2,3,6,7,8
     SV_d.tau = H_asuta * qdd + C_asuta - JL' * Fh_L - JR' * Fh_R ...
              + Kd_wrist * ( zeros(8,1) - qd_wrist ) + Kp_wrist * ( zeros(8,1) - q_wrist );
-      
+
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -892,9 +897,6 @@ q_deg = rad2deg( SV_d.q );   % 関節の姿勢[deg]
 % ターゲット姿勢計算
 SV_ts.Q0 = dc2rpy( SV_ts.A0' );   % ターゲットの方向余弦行列を角度に変換
 Q0_deg_t = rad2deg( SV_ts.Q0 );
-
-%ベースから見たターゲットの角速度
-w_dtots = SV_ts.w0 - SV_d.w0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%% 全運動量の計算 %%%%%%%%%%%%%%%%%%%%
@@ -981,8 +983,8 @@ fprintf( fo_04_RobotLink_Motion, [ repmat( g, 1, 36 ), ge ], ...   % =37
          display_time, POS_j1, POS_j2, POS_j3, POS_j4, POS_j5, POS_j6, POS_j7, POS_j8, ...   % 17
          SV_d.q, veL_des, veR_des );   % 20
 % ターゲット重心 運動   % ターゲットの運動に関する変数　位置，速度，加速度，姿勢，角速度，各加速度
-fprintf( fo_05_STargetCoM_Motion, [ repmat( g, 1, 21 ), ge ], ...   % =19
-         display_time, SV_ts.R0, SV_ts.v0, SV_ts.vd0, SV_ts.Q0, SV_ts.w0, SV_ts.wd0, w_dtots );   % 19
+fprintf( fo_05_STargetCoM_Motion, [ repmat( g, 1, 18 ), ge ], ...   % =19
+         display_time, SV_ts.R0, SV_ts.v0, SV_ts.vd0, SV_ts.Q0, SV_ts.w0, SV_ts.wd0 );   % 19
 % ターゲット手先 運動   % ターゲット手先の運動に関する変数　四角頂点位置，接触位置(ターゲット重心座標系)，接触位置速度
 fprintf( fo_06_STargetEE_Motion, [ repmat( g, 1, 36 ), ge ], ...   % =37
          display_time, shikaku1, shikaku2, shikaku3, shikaku4, ...   % 13
@@ -1042,7 +1044,7 @@ fprintf( fo_17_memo, [ repmat( g, 1, 31 ), ge ], ...   % =32
          display_time, d_POS_j4, d_POS_j8, xe_des(1:2), xe_des(7:8), d_ten1, d_ten2, d_ten3, d_ten4, QL_3(3,1), QR_7(3,1), QL_2(3,1), QR_6(3,1), d_QL_3, d_QR_7, Phase, catchtime, flagphase5 );   % 32
 
 
-   if catchtime > catchlimit;
+   if catchtime > catchlimit
       ntime = cputime - startCPUT;
       nhour = floor( ntime / 3600 );   % 単位:時間 各要素以下の最も近い整数に丸める
       nmin = floor( ( ntime - nhour * 3600 ) / 60 );   % 単位:分 残りの分，整数に丸める
@@ -1310,7 +1312,7 @@ end
     set( [ rb_j1, rb_j2, rb_j3, rb_j4, rb_j5, rb_j6, rb_j7, rb_j8 ], 'EraseMode', 'normal' );
     set( tg_basesen, 'EraseMode', 'normal' );
     set( [ rb_cross_1, rb_cross_2, tg_cross_1, tg_cross_2 ], 'EraseMode', 'normal' );
-if simplemode == 0;
+if simplemode == 0
     set( [ obs1, obs2 ], 'EraseMode', 'normal' );
     set( tg_estcom, 'EraseMode', 'normal' );
     set( [ N_L1, N_L2, N_R1, N_R2, F_L1, F_L2, F_R1, F_R2 ], 'EraseMode', 'normal' );
@@ -1395,7 +1397,7 @@ end
     end 
 
 % {
-    if rem( mvtime(i), movie_d_time * 5 ) == 0 && mvtime(i) >= 0 && mvtime(i) <= 10    % mvtime(i)をmovie_d_timeで除算した後の剰余が0のとき(割り切れるとき)
+    if rem( mvtime(i), movie_d_time * 10 ) == 0 && mvtime(i) >= 0 && mvtime(i) <= 1.4    % mvtime(i)をmovie_d_timeで除算した後の剰余が0のとき(割り切れるとき)
         % 図を保存
         figure(n_figure)
         title( sprintf( 'Time = %0.3f [s]', mvtime(i) ), 'FontName', 'Times New Roman', 'FontSize', FST );
@@ -1458,7 +1460,7 @@ sen4 = 4;
 n_figure = n_figure + 1;
 
 
-
+%{
 
 %%%%%%%%%% 値読み込み %%%%%%%%%%
 % ロボット重心 運動
@@ -1489,6 +1491,7 @@ mat_13 = dlmread( [ datpath, '/', timepath, '_', '13_Momentum_ForMovie.dat' ], '
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% 図の作成 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
 % まとめる
 mat = [ mat_02(:,1), ...
         mat_02(:,2:1+9-1), rad2deg( mat_02(:,10:end) ), ...
@@ -1510,7 +1513,7 @@ var_size = [ 1;   % time
              3;3;3; 3;3;3;   % 02 -- 18コ
              3;3;3;3; 3;3;3;3; 3;3;3;3;   % 03 -- 36コ
              2;2;2;2; 2;2;2;2; 8;%3;3;3;3;   % 04 -- 36
-             3;3;3; 3;3;3;3;   % 05 -- 21
+             3;3;3; 3;3;3;   % 05 -- 18
              3;3;3;3; 3;3;3;3; 3;3;3;3;   % 06 -- 36
              3;3;3;3; 3;3;3;3; 3;3;3;3; 3;3;3;3; 8;   % 07 -- 56
              3; 3;   % 08 -- 6
@@ -1524,7 +1527,7 @@ var_name = { 'time';
              'SV\_d.R0';'SV\_d.v0';'SV\_d.vd0';  'SV\_d.Q0';'SV\_d.w0';'SV\_d.wd0'; % 02
              'POS\_eL1';'POS\_eL2';'POS\_eR1';'POS\_eR2';  'Qe\_degL1';'Qe\_degL2';'Qe\_degR1';'Qe\_degR2';  'curPosBP3\_L1';'curPosBP3\_L2';'curPosBP3\_R1';'curPosBP3\_R2'; % 03
              'POS\_j1';'POS\_j2';'POS\_j3';'POS\_j4';'POS\_j5';'POS\_j6';'POS\_j7';'POS\_j8';  'SV\_d.q';%'ve1\_des';'we1\_des';'ve2\_des';'we2\_des'; % 04
-             'SV\_ts.R0';'SV\_ts.v0';'SV\_ts.vd0';  'SV\_ts.Q0';'SV\_ts.w0';'SV\_ts.wd0';'w_dtots'; % 05
+             'SV\_ts.R0';'SV\_ts.v0';'SV\_ts.vd0';  'SV\_ts.Q0';'SV\_ts.w0';'SV\_ts.wd0'; % 05
              'shikaku1';'shikaku2';'shikaku3';'shikaku4';  'curPosAP3\_L1';'curPosAP3\_L2';'curPosAP3\_R1';'curPosAP3\_R2';  'curPosAP3\_vel\_L1';'curPosAP3\_vel\_L2';'curPosAP3\_vel\_R1';'curPosAP3\_vel\_R2'; % 06
              'FR\_N\_L1';'FR\_N\_L2';'FR\_N\_R1';'FR\_N\_R2';  'FR\_T\_L1';'FR\_T\_L2';'FR\_T\_R1';'FR\_T\_R2';  'FR\_L1';'FR\_L2';'FR\_R1';'FR\_R2';  'T\_d3\_L1';'T\_d3\_L2';'T\_d3\_R1';'T\_d3\_R2';  'SV\_d.tau'; % 07
              'SV\_ts.F0';  'SV\_ts.T0'; % 08
@@ -1541,7 +1544,7 @@ var_label = { 'Time [s]';
                   'Contact Point L1 Position(Robot) [m]';'Contact Point L2 Position(Robot) [m]';'Contact Point R1 Position(Robot) [m]';'Contact Point R2 Position(Robot) [m]';
               'Joint1 Position [m]';'Joint2 Position [m]';'Joint3 Position [m]';'Joint4 Position [m]';'Joint5 Position [m]';'Joint6 Position [m]';'Joint7 Position [m]';'Joint8 Position [m]';
                   'Joints Angles [deg]';%'Desired Velocity1 [m/s]';'Desired Angular Velocity1 [deg/s]';'Desired Velocity2 [m/s]';'Desired Angular Velocity2 [deg/s]';
-              'Target Position [m]';'Target Velocity [m/s]';'Target Acceleration [m/s\^2]';  'Target Orientation [deg]';'Target Angular Velocity [deg/s]';'Target Angular Acceleration [deg/s\^2]';'Relative Angular Velocity [deg/s]';
+              'Target Position [m]';'Target Velocity [m/s]';'Target Acceleration [m/s\^2]';  'Target Orientation [deg]';'Target Angular Velocity [deg/s]';'Target Angular Acceleration [deg/s\^2]';
               'Vertex1 Position [m]';'Vertex2 Position [m]';'Vertex3 Position [m]';'Vertex4 Position [m]';
                   'Contact Point L1 Position(Target) [m]';'Contact Point L2 Position(Target) [m]';'Contact Point R1 Position(Target) [m]';'Contact Point R2 Position(Target) [m]';
                   'Contact PointL1 Velocity(Target) [m]';'Contact Point L2 Velocity(Target) [m]';'Contact Point R1 Velocity(Target) [m]';'Contact Point R2 Velocity(Target) [m]';
@@ -1560,7 +1563,7 @@ file_name = { '';
               'ベース重心位置';'ベース重心速度';'ベース重心加速度';  'ベース姿勢';'ベース角速度';'ベース角加速度'; % 02
               '手先L1位置';'手先L2位置';'手先R1位置';'手先R2位置';  '手先L1姿勢';'手先L2姿勢';'手先R1姿勢';'手先R2姿勢';  '接触位置L1(ロボット座標系)';'接触位置L2(ロボット座標系)';'接触位置R1(ロボット座標系)';'接触位置R2(ロボット座標系)'; % 03
               '関節1位置';'関節2位置';'関節3位置';'関節4位置';'関節5位置';'関節6位置';'関節7位置';'関節8位置';  '関節角度';%'目標手先1並進速度';'目標手先1角速度';'目標手先2並進速度';'目標手先2角速度'; % 04
-              'ターゲット重心位置';'ターゲット重心速度';'ターゲット重心加速度';  'ターゲット姿勢';'ターゲット角速度';'ターゲット角加速度';'ベースから見たターゲット角速度'; % 05
+              'ターゲット重心位置';'ターゲット重心速度';'ターゲット重心加速度';  'ターゲット姿勢';'ターゲット角速度';'ターゲット角加速度'; % 05
               'ターゲット頂点1';'ターゲット頂点2';'ターゲット頂点3';'ターゲット頂点4';  '接触位置L1(ターゲット座標系)';'接触位置L2(ターゲット座標系)';'接触位置R1(ターゲット座標系)';'接触位置R2(ターゲット座標系)';  '接触位置L1速度(ターゲット座標系)';'接触位置L2速度(ターゲット座標系)';'接触位置R1速度(ターゲット座標系)';'接触位置R2速度(ターゲット座標系)'; % 06
               '法線力L1(ロボット)';'法線力L2(ロボット)';'法線力R1(ロボット)';'法線力R2(ロボット)';  '接線力L1(ロボット)';'接線力L2(ロボット)';'接線力R1(ロボット)';'接線力R2(ロボット)';  '接触力L1(ロボット)';'接触力L2(ロボット)';'接触力R1(ロボット)';'接触力R2(ロボット)';  '接触トルクL1(ロボット)';'接触トルクL2(ロボット)';'接触トルクR1(ロボット)';'接触トルクR2(ロボット)';  '軸トルク'; % 07
               '外力(ターゲット)';  '外トルク(ターゲット)'; % 08
@@ -1578,7 +1581,7 @@ j = 2;
 for i = 2 : length( var_size )
 i
 %%% 見たい図を制限するにはココを
-if i < 99
+if i < 92
 
 %%% 図設定
  figure( i )
@@ -1667,8 +1670,9 @@ end
 %}   % グラフ作成終了
 
 
+
 close all
-   % 結果表示終了
+%}   % 結果表示終了
 
 
 end 

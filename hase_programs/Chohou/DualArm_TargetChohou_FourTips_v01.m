@@ -93,7 +93,7 @@ SV_tc = TargetChohou_FourTips_SV( LP_tc );
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % フォルダ作成
 timepath = datestr( now, 'yyyy-mmdd-HHMMSS' );
-datepath = [ 'C:/Users/tomoy/Desktop/' datestr( now, 'yyyy-mmdd' ) '/' timepath, '_' ];
+datepath = [ 'C:/Users/baske/OneDrive/デスクトップ/' datestr( now, 'yyyy-mmdd' ) '/' timepath, '_' ];
 % path = [ datepath, '-Shikaku_', zetaname ];
 path = [ datepath, zetaname ];
 datfile = [ path, '/', timepath, '-', 'dat' ];
