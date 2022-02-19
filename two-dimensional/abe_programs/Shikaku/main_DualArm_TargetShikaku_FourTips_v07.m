@@ -13,35 +13,38 @@ close all
 %%%%%%%%%%%%%%%%%%%% global 変数の定義 %%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 全ての関数及びメインルーチン内で共通で使用される変数
+% Variables that are commonly used in all functions and main routines
 global d_time
 global Gravity
 global Ez
 Ez = [ 0 0 1 ]';
-d_time = 0.001; % シミュレーション1step当たりの時間
+d_time = 0.001; % シミュレーション1step当たりの時間 % Time per simulation step
 Gravity = [ 0 0 0 ]'; % 重力（地球重力は Gravity = [0 0 -9.8]）
 
-for ts_X_i =    0;      % tsはターゲットを意味する
-for ts_Y_i =    0;
-for ts_Vx_i =   0;
-for ts_Vy_i =   0;
-for ts_Deg_i =  0;
-for ts_W_i =   2;%:2:3;
+% tsはターゲットを意味する
+% ts means target
+for ts_X_i =    0; % 慣性座標系におけるターゲットのx座標位置 % x-coordinate position of the target in the inertial coordinate system
+for ts_Y_i =    0; % 慣性座標系におけるターゲットのy座標位置 % y-coordinate position of the target in the inertial coordinate system
+for ts_Vx_i =   0; % 慣性座標系におけるターゲットのx方向速度 % Velocity of the target in the x direction in the inertial coordinate system
+for ts_Vy_i =   0; % 慣性座標系におけるターゲットのy方向速度 % Velocity of the target in the y direction in the inertial coordinate system
+for ts_Deg_i =  0; % 慣性座標系におけるターゲットの回転角 %Rotation angle of the target in the inertial coordinate system
+for ts_W_i =   2; %慣性座標系におけるターゲットの角速度 % Angular velocity of the target in inertial coordinate system
 for Theta_h_i = 0;
 for Kh_i = 0;
 for Vh_ini_i = 0;
-for ts_Error_Length_i = 0;%:0.25:0.5%;   % 3      % 正方形幾何中心から，正方形対角線の半分の何割の距離に重心があるか0～1
+for ts_Error_Length_i = 0;%:0.25:0.5%;   % 3      % 正方形幾何中心から，正方形対角線の半分の何割の距離に重心があるか0～1で決める % Determine from 0 to 1 what fraction of the square diagonal the center of gravity is from the square geometric center
 for ts_Error_Theta_i = 45%:45:360;%220:20:360;%20:20:180%360%;   % 5
 
 zeta = [ d_time, 10, Theta_h_i, ts_X_i, ts_Y_i, ts_W_i, Vh_ini_i, Kh_i, ts_Deg_i, ts_Error_Length_i, ts_Error_Theta_i, ts_Vx_i, ts_Vy_i ]';
 
     qqq = 0;%-pi/7;
-% 分解加速度制御ゲイン
+% 分解加速度制御ゲイン % Decomposition acceleration control gain
     Kp = 20000;%10000;   % 20000;
     Kd = 500;%1000;   % 500;
 %     Kp_2 = 1;3;   % 0.8
 %     Kd_2 = 0.3;   % 0.3
 
-minus_time = 2;10*d_time;
+minus_time = 2;10*d_time; %ターゲットの回転角が0になるまでの時間 % Time until the rotation angle of the target reaches zero
 minus_time_2 = 0;
 minus_time_3 = 0;
 catchlimit = 20;
@@ -50,21 +53,22 @@ catchlimit = 20;
 %%%%%%%%%%%%%%%%%%%% ストップウォッチON %%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % シミュレーションにかかる時間の計測
+% Measure the time required for simulation
 startT = clock();
 startCPUT = cputime;
 endtime = zeta(2,1);
 
     conma = ',';
-    d_Time_name = [ 'dt=', num2str( zeta(1,1) ) ];      % 刻み時間はzetaの第一引数d_time
-    EndTime_name = [ 'et=', num2str( zeta(2,1) ) ];     % シミュレーション終了時間
-    tsX_name = [ 'Xts=', num2str( ts_X_i ) ];           % ターゲットのx座標   
-    tsY_name = [ 'Yts=', num2str( ts_Y_i ) ];           % ターゲットのy座標
-    tsVx_name = [ 'Vxts=', num2str( ts_Vx_i ) ];        % ターゲットのx速度
-    tsVy_name = [ 'Vyts=', num2str( ts_Vy_i ) ];        % ターゲットのy速度
-    tsDeg_name = [ 'THts=', num2str( ts_Deg_i ) ];      % ターゲットの回転角
-    tsW_name = [ 'Wts=', num2str( ts_W_i ) ];           % ターゲットの角速度
-    tsErLe_name = [ 'ErL=', num2str( ts_Error_Length_i ) ]; % 正方形幾何中心から，正方形対角線の半分の何割の距離に重心があるか0～1
-    tsErTH_name = [ 'ErTH=', num2str( ts_Error_Theta_i ) ]; % 何か分からんがとりあえず45度
+    d_Time_name = [ 'dt=', num2str( zeta(1,1) ) ];      % 刻み時間はzetaの第一引数d_time % The tick time is determined by the first argument of zeta, d_time
+    EndTime_name = [ 'et=', num2str( zeta(2,1) ) ];     % シミュレーション終了時間 % Simulation end time
+    tsX_name = [ 'Xts=', num2str( ts_X_i ) ];           % ターゲットのx座標 % x-coordinate of the target
+    tsY_name = [ 'Yts=', num2str( ts_Y_i ) ];           % ターゲットのy座標 % y-coordinate of the target
+    tsVx_name = [ 'Vxts=', num2str( ts_Vx_i ) ];        % ターゲットのx方向速度 % Target velocity in x direction
+    tsVy_name = [ 'Vyts=', num2str( ts_Vy_i ) ];        % ターゲットのy方向速度 % Target velocity in y direction
+    tsDeg_name = [ 'THts=', num2str( ts_Deg_i ) ];      % ターゲットの回転角 % Rotation angle of the target
+    tsW_name = [ 'Wts=', num2str( ts_W_i ) ];           % ターゲットの角速度 % Angular velocity of target
+    tsErLe_name = [ 'ErL=', num2str( ts_Error_Length_i ) ]; % 正方形幾何中心から，正方形対角線の半分の何割の距離に重心があるか0～1で決める　% Determine from 0 to 1 what fraction of the square diagonal the center of gravity is from the square geometric center
+    tsErTH_name = [ 'ErTH=', num2str( ts_Error_Theta_i ) ];
 %     Theta_h_name = [ 'THh=', num2str( Theta_h_i ) ];
 %     Kh_name = [ 'Kh=', num2str( Kh_i ) ];
 %     Vh_ini_name = [ 'Vh=', num2str( Vh_ini_i ) ];
@@ -83,9 +87,11 @@ ge = '%g\n';
 %%%%%%%%%%%%%%%%%%%% ロボット・ターゲットLP設定 %%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ロボットリンクパラメータ
+% Robot link parameter
 LP_d = DualArm_FourTips_LP_v3();   
 SV_d = DualArm_FourTips_SV_v3( LP_d );
 % ターゲットリンクパラメータ
+% Target link parameter
 LP_ts = TargetShikaku_FourTips_LP();
 SV_ts = TargetShikaku_FourTips_SV( LP_ts );
 
@@ -93,8 +99,9 @@ SV_ts = TargetShikaku_FourTips_SV( LP_ts );
 %%%%%%%%%%%%%%%%%%%% フォルダパス指定 %%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % フォルダ作成
+% Folder creation
 timepath = datestr( now, 'yyyy-mmdd-HHMMSS' );  % yはyear，mはmonth,dはday,Hはhour,Mはminute,Sはsecond.それぞれの文字数分出力する
-datepath = [ 'C:/Users/baske/OneDrive/デスクトップ/' datestr( now, 'yyyy-mmdd' ) '/' timepath, '_' ];  % データ保存のディレクトリを作る
+datepath = [ 'C:/Users/baske/OneDrive/デスクトップ/' datestr( now, 'yyyy-mmdd' ) '/' timepath, '_' ];  % データ保存のディレクトリを作る % Create a directory for data storage
 % path = [ datepath, '-Shikaku_', zetaname ];
 path = [ datepath, zetaname ];          % パスを引く
 datfile = [ path, '/', timepath, '-', 'dat' ];      % datファイルの名前指定
@@ -113,17 +120,19 @@ movpath = [ path, '/', timepath, '-', 'mov' ];
 %%%%%%%%%%%%%%%%%%%% 係数設定 %%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 剛性係数，粘性係数設定
-kw_1 = 1000;900; % 980.0;       % 剛性係数.誰が決めたんやこれ
-cw_1 = 20; % 8.7;              % 粘性係数.これも誰が決めた?
+% Rigidity coefficient, viscosity coefficient setting
+kw_1 = 1000;900; % 980.0;       % 剛性係数 % Rigidity coefficient
+cw_1 = 20; % 8.7;               % 粘性係数 % Viscosity coefficient
 % cw = 100.7;
-kw_2 =  0.0;                    % 剛性係数が0とは?
-cw_2 =  0.0;                    % 粘性係数が0とは?
+kw_2 =  0.0;
+cw_2 =  0.0;
 kkk = kw_1;
 ccc = cw_1;
 % 摩擦係数固定値
 cof = 0.3;   % 摩擦係数0.1で固定?
 
 % 図番号
+% Figure No.
 n_figure = 999;
 
 % 剛性係数，粘性係数，摩擦係数可変値   % 石井さん摩擦データから
@@ -164,13 +173,13 @@ flagphase5 = 0;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%% 長さパラメータ設定 %%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-r_tip = 0.01; %チェイサ先端球半径 1cm
-DHD = 0.113;%ターゲット対角の長さの半分 11.3cm
-side_target = 0.15;  %ターゲット1辺 15cm 
-half_side = side_target / 2;    % 1辺の半分
-base_yoko = 0.32;   % ベース四角形横 32cm
-base_tate = 0.15;   % ベース四角形縦 15cm
-base_jushin_teihen = 0.09754;   % ベース重心から底辺までの長さ 9.754cm
+r_tip = 0.01; %チェイサ先端球半径 % Radius of chaser spherical tip 1cm
+DHD = 0.113; %ターゲット対角の長さの半分 % Half of the length of the target diagonal 11.3cm
+side_target = 0.15;  %ターゲット1辺の長さ % Length of target 1 side 15cm 
+half_side = side_target / 2;
+base_yoko = 0.32;   % ベース四角形横  % Horizontal length of the base rectangle 32cm
+base_tate = 0.30;   % ベース四角形縦 % Vertical length of the base rectangle 30cm
+base_jushin_teihen = 0.09754;   % ベース重心から底辺までの長さ % Length from the base center of gravity to the bottom of the base 9.754cm
 base_arm_yoko_1 = abs( LP_d.c0(1,1) );  %abs()は絶対値を返す関数
 base_arm_yoko_2 = abs( LP_d.c0(1,4) );
 base_arm_tate_1 = abs( LP_d.c0(2,1) );
