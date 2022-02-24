@@ -68,6 +68,8 @@ switch(Phase)
         Phase = 1;
         end
         
+        %%% Phase1
+        %%% ターゲット回転角が0になるまでのPhase
     case 1
         d_POS_j4 = [ POS_j4' 0 ]';   % (3,1)
          d_POS_j8 = [ POS_j8' 0 ]';   % (3,1)
@@ -92,6 +94,7 @@ switch(Phase)
 
  
 %%% Phase 2
+%%% 目標手先位置とスプライン曲線の係数、目標手先角度を導出
     case 2
 
   delta_q = ( pi/4 - est_q );   % ターゲット角がπ/4になるまでの角度Δq       今は回転正なのでπ/4
@@ -191,6 +194,8 @@ switch(Phase)
 
 
 %%% Phase 3
+%%% 各ステップにおける目標手先角速度を算出
+%%% 手先を目標位置まで持っていくPhase
     case 3
 
   if     est_W(3,1) > 0   % ターゲット角速度が正のとき
@@ -252,7 +257,8 @@ switch(Phase)
      Phase = 3;
  end
  
-%%% Phase 4 待機フェーズ
+%%% Phase 4
+%%% 待機Phase
     case 4
 
 %     if     est_W(3,1) > 0   % ターゲット角速度が正のとき
@@ -296,7 +302,7 @@ switch(Phase)
  aeR_des = zeros(6,1);
  
  
- if ((time - t1) > 0.5) %&& contactflag_L2==1 )
+ if ((time - t1) > 0.5) %&& contactflag_L2==1 ) %待機時間は自分で設定
      Phase = 5;
  else
      Phase = 4;
@@ -304,6 +310,7 @@ switch(Phase)
  
  
  %%% Phase 5
+ %%% 目標手先位置を導出
     case 5
 %D = 0.020;
         
@@ -414,6 +421,7 @@ L_target = [ 1 0 0 ]';
 
 
 %%% Phase 6
+%%% 目標手先速度を導出
     case 6
 
   %{
@@ -468,6 +476,7 @@ d_q_joints = q_joints;   % 目標手先角度
 
 
 %%% Phase 7
+%%% 待機Phase
     case 7
 
 %     if     est_W(3,1) > 0   % ターゲット角速度が正のとき

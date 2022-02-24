@@ -84,16 +84,28 @@ Viscosity coefficient (damping coefficient)
 
 Make sure your environment satisfy the requirement above. Then you can run the code as follows.
 
-#### 1. Path Settings
+#### 1. Clone the repository
+
+You can simply clone this monorepository to access to whole software stack. To clone the repository, to avoid messing up, we reccomend you to make the independent directory in your home directory (e.g. named "bitbucket") and clone the repository there.
+```commandline
+$ mkdir ~/bitbucket && cd ~/bitbucket
+$ git clone git@bitbucket.org:srl-orbital/capturing_simulation.git
+```
+You can checkout "develop" branch, which contains the latest code if needed (default: "master" branch).
+```commandline
+$ git checkout origin/develop
+```
+
+#### 2. Path Settings
 Go to "Home", "Path Settings", and select "abeprograms". Then select "Add subfolders too" and save.
 
-#### 2. Change the Path
+#### 3. Change the Path
 Change the path to the directory where you want to save the output results.
 ```commandline
 datepath = [ 'C:/Users/baske/OneDrive/デスクトップ/' datestr( now, 'yyyy-mmdd' ) '/' timepath, '_' ];
 ```
 
-#### 3. Run the code
+#### 4. Run the code
 Click the "Run" button to run the simulation. If you do not need to output figures or videos, you can comment out the following.
 
 
