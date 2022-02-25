@@ -36,8 +36,7 @@ for ts_Error_Length_i = 0;%:0.25:0.5%;   % 3      % 正方形幾何中心から，正方形対
 for ts_Error_Theta_i = 45%:45:360;%220:20:360;%20:20:180%360%;   % 5
 
 zeta = [ d_time, 10, Theta_h_i, ts_X_i, ts_Y_i, ts_W_i, Vh_ini_i, Kh_i, ts_Deg_i, ts_Error_Length_i, ts_Error_Theta_i, ts_Vx_i, ts_Vy_i ]';
-% [刻み時間, シミュレーション時間, ターゲット回転角, ターゲットx座標, ターゲットy座標, ターゲット角速度, 手先初期速度,
-% 手先速度調整ゲイン, ターゲット姿勢, 重心位置のずれ, 重心角度のずれ]';
+% [刻み時間, シミュレーション時間, ターゲット回転角, ターゲットx座標, ターゲットy座標, ターゲット角速度, 手先初期速度, 
 
     qqq = 0;%-pi/7;
 % 分解加速度制御ゲイン % Decomposition acceleration control gain
