@@ -1,15 +1,15 @@
+# Space Debri Capturing Robot Simulations
 <center><img src="./docs/media/spacedebris.jpg" alt="spacedebris.jpg" title="Space debris" width="350"><img src="./docs/media/capturingsimulation.jpg" alt="Capturing simulation" title="Capturing simulation with Dual-arm service robot" width="350"></center>
 
--- Dual-arm service robot testbed for capturing space debris
-
+-- Space debris capturing by the dual-arm service robot testbed
 
 Author(s) and maintainer(s): Space Robotics Lab. Orbital Team
 
 * **Repository admin**: Koki Abe (abe.koki.p1 at dc.tohoku.ac.jp)
 
-* **Team admin**: Kentaro Uno (unoken at dc.tohoku.ac.jp)
+* **Team admin**: Kentaro Uno (unoken at tohoku.ac.jp)
 
-## Summary of the repository
+## Repository Summary 
 
 This repository contains the necessary codes for two-dimensional capture simulation written mainly using MATLAB. These codes include inverse kinematics calculations, target motion estimation, contact force calculations, and contact determination.
 In addition, a MATLAB tool called SpaceDyn, developed by the Tohoku University Space Robotics Laboratry is used for this capture simulation.
@@ -130,9 +130,9 @@ mat = [ mat_02(:,1), ...
 
 ## Contribution
 
-The development of the capture simulation tool using the dual-arm space robot is currently being conducted in the Space Robotics Lab within the Orbital Team, and the code improvements and additional implementations are versioned in the Orbital Team's bitbucket.
+The development of the capture simulation tool using the dual-arm space robot is currently being conducted in the Space Robotics Lab within the Orbital Robotics Team, and the code improvements and additional implementations are versioned in the Orbital Team's bitbucket.
 
-#### Instructive manual
+#### Git instructive manual
 For the detailed work flow under Git version control, refer to the team  instruction "[How to work in Git version control](https://docs.google.com/document/d/13-IrYbyNjKKX8clBSvSaJXkNx-QB75IRIWgK_Yo4LD4/edit)" (team member access only)
 
 #### Branches
@@ -168,5 +168,6 @@ After implementing your work, through the pull request and code review process, 
 
 ## Release note
 
+This code is not yet released.
 
 ## FAQ
