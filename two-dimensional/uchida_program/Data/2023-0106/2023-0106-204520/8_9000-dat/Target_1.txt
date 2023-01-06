@@ -1,1 +1,0 @@
-TargetPosX	TargetPosY	TargetPosZ	TargetOriX	TargetOriY	TargetOriZ	
