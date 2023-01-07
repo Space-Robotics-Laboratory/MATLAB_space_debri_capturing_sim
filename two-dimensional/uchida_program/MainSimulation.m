@@ -7,7 +7,7 @@ clear all
 close all
 
 %パラメータ設定
-Parameters = ParamSetting();
+Parameters = ParamSetting();    % 基本的にパラメータはParamSetting内で変更する．
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -26,31 +26,47 @@ Gravity = [ 0 0 0 ]'; % 重力（地球重力は Gravity = [0 0 -9.8]）
 % 保存用フォルダ作成
 FileNameList = ["RobotMotion.txt", "Target_1.txt"];                     %保存するデータファイル名
 paths = PathSetting(Parameters);                                        %保存先フォルダ作成．パスはParamSettingで設定
-FileIDList = FilesOpen(paths, FileNameList);                            %ファイルを開き，ファイルIDを配列に格納
+FileIDList = FilesOpen(paths, FileNameList);                            %ファイルを開き，ファイルIDを配列に格納．現状意味ないかも
 
-%保存用データ見出し
-TitleRobotMotion  = ["BasePosX","BasePosY","BasePosZ","BaseOriX","BaseOriY","BaseOriZ", ...
-    "JointPos1X","JointPos1Y","JointPos1Z","JointPos2X","JointPos2Y","JointPos2Z", ...
-    "JointPos3X","JointPos3Y","JointPos3Z","JointPos4X","JointPos4Y","JointPos4Z", ...
-    "JointPos5X","JointPos5Y","JointPos5Z","JointPos6X","JointPos6Y","JointPos6Z", ...
-    "JointPos7X","JointPos7Y","JointPos7Z","JointPos8X","JointPos8Y","JointPos8Z"];
+
+% 保存用データ見出し
+% ここわかりやすくしたい
+TitleRobotAnime  = ["BasePosX","BasePosY","BasePosZ","BaseOriX","BaseOriY","BaseOriZ"];
+for j = 1:8
+    for s = ["X", "Y", "Z"]
+        TitleRobotAnime = [TitleRobotAnime, sprintf("JointPos%d%s",j,s)]; %#ok<AGROW> 
+    end
+end
+for LR = ["L", "R"]
+    for tip = 1:2
+        for s = ["X", "Y"]
+            TitleRobotAnime = [TitleRobotAnime, sprintf("ET%s%dPos%s",LR,tip,s)]; %#ok<AGROW> 
+        end
+    end
+end
+for LR = ["L", "R"]
+    for s = ["X", "Y", "Z"]
+        TitleRobotAnime = [TitleRobotAnime, sprintf("End%sOri%s",LR,s)]; %#ok<AGROW> 
+    end
+end
 TitleTargetMotion = ["TargetPosX", "TargetPosY", "TargetPosZ", "TargetOriX", "TargetOriY", "TargetOriZ"];
 
-DataOut(FileIDList(FileNameList=="RobotMotion.txt"), TitleRobotMotion,  '%10s', Parameters.Delimiter)   %ロボモーションデータファイルの見出しを書き出し
-DataOut(FileIDList(FileNameList=="Target_1.txt"   ), TitleTargetMotion, '%10s', Parameters.Delimiter)   %ターゲットモーションデータファイルの見出しを書き出し                  
+DataOut(FileIDList(FileNameList=="RobotMotion.txt"), TitleRobotAnime,  Parameters.StringType, Parameters.Delimiter)   %ロボモーションデータファイルの見出しを書き出し
+DataOut(FileIDList(FileNameList=="Target_1.txt"   ), TitleTargetMotion, Parameters.StringType, Parameters.Delimiter)   %ターゲットモーションデータファイルの見出しを書き出し                  
 
 
 
-%双腕ロボクラス定義
+%双腕ロボインスタンス作成
 DualArmTestBed_1 = DualArmTestBed(Parameters);
 
 
 %シミュレーションループスタート
 endtime    = Parameters.EndTime;               % 終了時間設定．ここで変更しない
 minus_time = Parameters.MinusTime;             % マイナス時間設定．ここで変更しない
-RoboJointTau   = [40, 0, 0, 0,   -40, 0, 0, 0]';  % ロボ関節制御トルク
+RoboJointTau   = [-10, 0, 0, 0,   10, 0, 0, 0]';  % ロボ関節制御トルク
 RoboExtWrench  = zeros(6,3);                   % ロボ外力[ BaseTorque   LeftEdgeTorque  RightEdgeTorque ]
                                                % 　　　　[ BaseForce    LeftEdgeForce   RightEdgeForce  ]  
+RoboExtWrench(4:6,3) = [0, 0, 0]';
 startCPUT = cputime;
 startT = clock();
 
@@ -58,12 +74,13 @@ for time = 0 : d_time : ( endtime + minus_time )
     clc
     time %#ok<NOPTS> 
     % 運動状態更新
-    DualArmTestBed_1 = DualArmTestBed_1.Update(RoboJointTau, RoboExtWrench);            % methodを呼び出した後自身に代入することを忘れない！
+    DualArmTestBed_1 = DualArmTestBed_1.Update(RoboJointTau, RoboExtWrench, Parameters);    % methodを呼び出した後自身に代入することを忘れない！
    
     % データ書き出し
     % RoboMotion
-    data = [DualArmTestBed_1.SV.R0', DualArmTestBed_1.SV.Q0', reshape(DualArmTestBed_1.POS_j_L,[1,12]), reshape(DualArmTestBed_1.POS_j_R,[1,12])];   
-    DataOut(FileIDList(FileNameList=="RobotMotion.txt"), data, '%10f', Parameters.Delimiter)                  
+    data = [DualArmTestBed_1.SV.R0', DualArmTestBed_1.SV.Q0', reshape(DualArmTestBed_1.POS_j_L,[1,12]), reshape(DualArmTestBed_1.POS_j_R,[1,12]), ...
+            reshape(DualArmTestBed_1.POS_es_L,[1,4]), reshape(DualArmTestBed_1.POS_es_R,[1,4]), DualArmTestBed_1.SV.QeL', DualArmTestBed_1.SV.QeR'];   
+    DataOut(FileIDList(FileNameList=="RobotMotion.txt"), data, Parameters.DataType, Parameters.Delimiter)                  
                                                                                         
 end
 

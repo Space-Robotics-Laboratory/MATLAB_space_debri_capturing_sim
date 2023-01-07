@@ -42,7 +42,7 @@ LP_d.J_type = [ 'R' 'R' 'R' 'R'    'R' 'R' 'R' 'R' ];
 %%%%% ベース重心から関節iへの位置ベクトル %%%%%
 % 直接連結していないリンクはすべて0 ベースの座標系からみたもの
 zero3 = zeros(3,1);
-LP_d.c0 = [Param.J1Distance, zero3, zero3, zero3,   Param.J5Distance, zero3, zero3, zero3];
+LP_d.c0 = [Param.BaseCenter2J1, zero3, zero3, zero3,   Param.BaseCenter2J5, zero3, zero3, zero3];
 
 %%%%% ベース部 (リンク0) の質量 %%%%%
 LP_d.m0 = Param.BaseMass;%7.70;5.150+2.550
@@ -59,35 +59,21 @@ LP_d.mass = sum( LP_d.m ) + LP_d.m0;
 %%%%% 各リンク間の座標系の回転関係 %%%%%
 % 根元のリンク座標系を回転させる  列はリンク 行はx,y,z軸を表す  例えば下記の意味はリンク1はベースリンク(リンク0)と同じ
 % tipsangle1 =  pi/6; tipsangle2 = -pi/6; tipsangle3 =  pi/6; tipsangle4 = -pi/6;
-LP_d.Qi = [ 0 0 0 0  0 0 0 0;
-            0 0 0 0  0 0 0 0;
-            0 0 0 0  0 0 0 0 ];
+LP_d.Qi = zeros([3,8]);
     
 %%%%% 各リンクの慣性モーメント %%%%%
-LP_d.inertia = [Param.LaInertia, Param.LbInertia, Param.LcInertia, Param.LdInertia,  Param.LaInertia, Param.LbInertia, Param.LcInertia, Param.LdInertia];
+LP_d.inertia = [Param.LaInertia, Param.LbInertia, Param.LcInertia, Param.LdInertia,  ...
+                Param.LaInertia, Param.LbInertia, Param.LcInertia, Param.LdInertia];
 
 %%%%% 各リンク重心から関節への位置ベクトル %%%%%
 %座標の表現はリンクの根元の座標系から．
 % y要素以外全部ゼロ
 LP_d.cc = Param.Center2Joint;
 
-% 末端リンクから端点までの位置ベクトル  末端リンクの重心から手先への位置ベクトル(手先が球の場合は球の中心まで)  末端部を持たないリンクは0を入れる
-%これ様子見てParamSettingに入れる．ちょい待ち．
-% L = 0.07;
-% theta = pi/6;
-% te2 = L*sin(theta); te3 = L*cos(theta) - te1;
-
-% 定義
-te2 = 0;
-te3 = 0;
-
-LP_d.ce = [ 0 0 0 -te2    0 0 0 -te2;   % 手先リンク重心位置=手先位置
-            0 0 0  te3    0 0 0  te3;     % 結局ゼロなんかい
-            0 0 0  0      0 0 0  0 ];
+% 末端リンクから端点までの位置ベクトル  末端リンクの重心から手先（２つの先端球の中点）への位置ベクトル  末端部を持たないリンクは0を入れる
+LP_d.ce = Param.Center2JointEnd;
 
 % 末端リンクと端点の回転関係  末端リンクの根本と先端の座標系が同一であるということ  記述法はQiと同じ  末端部を持たないリンクは0を入れる
-LP_d.Qe = [ 0 0 0 0    0 0 0 0;
-            0 0 0 0    0 0 0 0;
-            0 0 0 0    0 0 0 0 ];
+LP_d.Qe = zeros([3,8]);
 
 % EOF

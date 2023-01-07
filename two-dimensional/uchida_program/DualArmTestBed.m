@@ -2,14 +2,20 @@ classdef DualArmTestBed
     properties
         LP;      % ロボットリンクパラメータ
         SV;      % ロボット状態パラメータ
-        num_eL;  % 左手手先の番号
-        num_eR;  % 右手手先の番号
+        num_eL;  % 左手手先の番号 1
+        num_eR;  % 右手手先の番号 2
         jointsL; % 左手のジョイント数
         jointsR; % 右手のジョイント数
-        POS_j_L; % 左手の関節位置
-        POS_j_R; % 右手の関節位置
-        ORI_j_L; % 左手の関節角度
-        ORI_j_R; % 右手の関節角度
+        POS_j_L; % 左手の関節位置 3*4
+        POS_j_R; % 右手の関節位置 3*4
+        ORI_j_L; % 左手の関節角度 3*3*4
+        ORI_j_R; % 右手の関節角度 3*3*4
+        POS_e_L; % 左手先の位置 3*1
+        POS_e_R; % 右手先の位置 3*1
+        ORI_e_L; % 左手先の姿勢 3*3
+        ORI_e_R; % 右手先の姿勢 3*3
+        POS_es_L; % 左手先端級の二次元位置 2*2
+        POS_es_R; % 右手先端球の二次元位置 2*2
     end
     methods
         % constructor
@@ -52,7 +58,7 @@ classdef DualArmTestBed
         % ExtWrenchは外力レンチ[[BaseTorque; BaseForce],[LeftEdgeTorque; LeftEdgeForce], [RightEdgeTorque; RightEdgeForce]]
         % SV.F0 ; [0, 0, 0]'
         % SV.Fe ; zeros(3, 8)
-        function obj = Update(obj, JointTau, ExtWrench)
+        function obj = Update(obj, JointTau, ExtWrench, Parameters)
             %能動的な力
             obj.SV.tau = JointTau;                  % 関節トルク代入
 
@@ -70,7 +76,13 @@ classdef DualArmTestBed
             obj.SV = calc_pos( obj.LP, obj.SV );                                     % 各リンク重心位置の計算
             [ obj.POS_j_L, obj.ORI_j_L ] = f_kin_j( obj.LP, obj.SV, obj.jointsL );   % 左手 関節位置・姿勢　jointsLは左手の関節数
             [ obj.POS_j_R, obj.ORI_j_R ] = f_kin_j( obj.LP, obj.SV, obj.jointsR );   % 右手 関節位置・姿勢　jointsRは右手の関節数
+            [ obj.POS_e_L, obj.ORI_e_L ] = f_kin_e( obj.LP, obj.SV, obj.jointsL );   % 左手先位置・姿勢（位置は２つの手先の中点）
+            [ obj.POS_e_R, obj.ORI_e_R ] = f_kin_e( obj.LP, obj.SV, obj.jointsR );   % 右手先位置・姿勢（位置は２つの手先の中点）
             obj.SV.Q0 = dc2rpy( obj.SV.A0' );                                        % ベース角度のオイラー角表現
+            obj.SV.QeL= dc2rpy( obj.ORI_e_L' );                                      % 左端リンクのオイラー角表現
+            obj.SV.QeR= dc2rpy( obj.ORI_e_R' );                                      % 右端リンクのオイラー角表現
+            obj.POS_es_L = CalcArmTips(obj.POS_e_L(1:2), obj.SV.QeL(3), Parameters);          % 左手の先端球
+            obj.POS_es_R = CalcArmTips(obj.POS_e_R(1:2), obj.SV.QeR(3), Parameters);          % 右手の先端球
         end
     end
 end
