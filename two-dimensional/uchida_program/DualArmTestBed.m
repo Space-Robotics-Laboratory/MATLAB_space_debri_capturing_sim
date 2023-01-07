@@ -14,8 +14,8 @@ classdef DualArmTestBed
         POS_e_R; % 右手先の位置 3*1
         ORI_e_L; % 左手先の姿勢 3*3
         ORI_e_R; % 右手先の姿勢 3*3
-        POS_es_L; % 左手先端級の二次元位置 2*2
-        POS_es_R; % 右手先端球の二次元位置 2*2
+        POS_es_L; % 左手先端級の位置 3*2
+        POS_es_R; % 右手先端球の位置 3*2
     end
     methods
         % constructor
@@ -81,8 +81,8 @@ classdef DualArmTestBed
             obj.SV.Q0 = dc2rpy( obj.SV.A0' );                                        % ベース角度のオイラー角表現
             obj.SV.QeL= dc2rpy( obj.ORI_e_L' );                                      % 左端リンクのオイラー角表現
             obj.SV.QeR= dc2rpy( obj.ORI_e_R' );                                      % 右端リンクのオイラー角表現
-            obj.POS_es_L = CalcArmTips(obj.POS_e_L(1:2), obj.SV.QeL(3), Parameters);          % 左手の先端球
-            obj.POS_es_R = CalcArmTips(obj.POS_e_R(1:2), obj.SV.QeR(3), Parameters);          % 右手の先端球
+            obj.POS_es_L = CalcArmTips(obj.POS_e_L, obj.ORI_e_L, Parameters);        % 左手の先端球
+            obj.POS_es_R = CalcArmTips(obj.POS_e_R, obj.ORI_e_R, Parameters);        % 右手の先端球
         end
     end
 end

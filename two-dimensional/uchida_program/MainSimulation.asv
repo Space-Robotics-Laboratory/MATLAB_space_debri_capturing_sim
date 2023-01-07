@@ -31,16 +31,17 @@ FileIDList = FilesOpen(paths, FileNameList);                            %ファ�
 
 % 保存用データ見出し
 % ここわかりやすくしたい
+% 10文字以内にしないと
 TitleRobotAnime  = ["BasePosX","BasePosY","BasePosZ","BaseOriX","BaseOriY","BaseOriZ"];
 for j = 1:8
     for s = ["X", "Y", "Z"]
         TitleRobotAnime = [TitleRobotAnime, sprintf("JointPos%d%s",j,s)]; %#ok<AGROW> 
     end
 end
-for tip = 1:2
-    for LR = ["L", "R"]
-        for s = ["X", "Y"]
-            TitleRobotAnime = [TitleRobotAnime, sprintf("EndTip%sPos%s",LR,s)]; %#ok<AGROW> 
+for LR = ["L", "R"]
+    for tip = 1:2
+        for s = ["X", "Y", "Z"]
+            TitleRobotAnime = [TitleRobotAnime, sprintf("ET%s%dPos%s",LR,tip,s)]; %#ok<AGROW> 
         end
     end
 end

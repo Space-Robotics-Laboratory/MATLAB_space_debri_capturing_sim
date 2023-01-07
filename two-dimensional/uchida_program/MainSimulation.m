@@ -31,6 +31,7 @@ FileIDList = FilesOpen(paths, FileNameList);                            %ファ�
 
 % 保存用データ見出し
 % ここわかりやすくしたい
+% 10文字以内にしないとバグるかも
 TitleRobotAnime  = ["BasePosX","BasePosY","BasePosZ","BaseOriX","BaseOriY","BaseOriZ"];
 for j = 1:8
     for s = ["X", "Y", "Z"]
@@ -39,7 +40,7 @@ for j = 1:8
 end
 for LR = ["L", "R"]
     for tip = 1:2
-        for s = ["X", "Y"]
+        for s = ["X", "Y", "Z"]
             TitleRobotAnime = [TitleRobotAnime, sprintf("ET%s%dPos%s",LR,tip,s)]; %#ok<AGROW> 
         end
     end
@@ -79,7 +80,7 @@ for time = 0 : d_time : ( endtime + minus_time )
     % データ書き出し
     % RoboMotion
     data = [DualArmTestBed_1.SV.R0', DualArmTestBed_1.SV.Q0', reshape(DualArmTestBed_1.POS_j_L,[1,12]), reshape(DualArmTestBed_1.POS_j_R,[1,12]), ...
-            reshape(DualArmTestBed_1.POS_es_L,[1,4]), reshape(DualArmTestBed_1.POS_es_R,[1,4]), DualArmTestBed_1.SV.QeL', DualArmTestBed_1.SV.QeR'];   
+            reshape(DualArmTestBed_1.POS_es_L,[1,6]), reshape(DualArmTestBed_1.POS_es_R,[1,6]), DualArmTestBed_1.SV.QeL', DualArmTestBed_1.SV.QeR'];   
     DataOut(FileIDList(FileNameList=="RobotMotion.txt"), data, Parameters.DataType, Parameters.Delimiter)                  
                                                                                         
 end

@@ -17,7 +17,7 @@ function Make2dAnime(datfile, Parameters)
     BaseCenterPos_Index = FindHeader(Data, 'BasePosX',   Parameters.StringType):FindHeader(Data,'BasePosY',Parameters.StringType);
     BaseOriZ_Index      = FindHeader(Data, 'BaseOriZ',  Parameters.StringType);
     JointPos_Index      = FindHeader(Data, 'JointPos1X',Parameters.StringType):FindHeader(Data,'JointPos8Z', Parameters.StringType);
-    EndEfectorPOS_Index= FindHeader(Data, 'ETL1PosX', Parameters.StringType):FindHeader(Data, 'ETR2PosY', Parameters.StringType);
+    EndETipPOS_Index= FindHeader(Data, 'ETL1PosX', Parameters.StringType):FindHeader(Data, 'ETR2PosZ', Parameters.StringType);
     EndEfectLeftOriZ_Index   = FindHeader(Data, 'EndLOriZ', Parameters.StringType);
     EndEfectRightOriZ_Index  = FindHeader(Data, 'EndROriZ', Parameters.StringType);
     
@@ -55,14 +55,14 @@ function Make2dAnime(datfile, Parameters)
                                             LdHs * cos(-EndROriZ),  LdH * sin(-EndROriZ+LdGamma); ...
                                             LdH * cos(-EndROriZ-LdGamma),  LdHs * sin(-EndROriZ), ... 
                                            -LdHs * sin(-EndROriZ),  LdH * cos(-EndROriZ+LdGamma)];
-        EndTipsPos = Data.data(count, EndEfectorPOS_Index);
-        EndTipsPos = reshape(EndTipsPos, [2, 4]);
+        EndTipsPos = Data.data(count, EndETipPOS_Index);
+        EndTipsPos = reshape(EndTipsPos, [3, 4]);
         plot(EndPos(1,1:4), EndPos(2,1:4),'-','LineWidth',  4,'Color','b') % 左手区の字描画
-        PlotCircle(EndTipsPos(:,1), LdD*.5, 'black')                       % 左手先端球描画
-        PlotCircle(EndTipsPos(:,2), LdD*.5, 'black')                       % 左手先端球描画
+        PlotCircle(EndTipsPos(1:2,1), LdD*.5, 'black')                       % 左手先端球描画
+        PlotCircle(EndTipsPos(1:2,2), LdD*.5, 'black')                       % 左手先端球描画
         plot(EndPos(1,5:8), EndPos(2,5:8),'-','LineWidth',  4,'Color','b') % 右手区の字描画
-        PlotCircle(EndTipsPos(:,3), LdD*.5, 'black')                       % 右手先端球描画
-        PlotCircle(EndTipsPos(:,4), LdD*.5, 'black')                       % 右手先端球描画
+        PlotCircle(EndTipsPos(1:2,3), LdD*.5, 'black')                       % 右手先端球描画
+        PlotCircle(EndTipsPos(1:2,4), LdD*.5, 'black')                       % 右手先端球描画
         
         hold off
         pause(0.01)
