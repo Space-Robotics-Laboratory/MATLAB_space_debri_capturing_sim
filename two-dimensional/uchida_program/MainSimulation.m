@@ -56,24 +56,27 @@ DataOut(FileIDList(FileNameList=="Anime.txt"), TitleAnime,  Parameters.StringTyp
 
 
 
-%双腕ロボインスタンス作成
+% 双腕ロボインスタンス作成
 DualArmTestBed_1 = DualArmTestBed(Parameters);
+% ターゲットインスタンス作成
 TargetSquare_1   = TargetSquare(Parameters);
 
 
 %シミュレーションループスタート
 endtime    = Parameters.EndTime;               % 終了時間設定．ここで変更しない
 minus_time = Parameters.MinusTime;             % マイナス時間設定．ここで変更しない
-RoboJointTau   = [-10, 0, 0, 0,   10, 0, 0, 0]';  % ロボ関節制御トルク
+
+% ロボット・ターゲット力初期化
+RoboJointTau   = zeros(8,1);                   % ロボ関節制御トルク
 RoboExtWrench  = zeros(6,3);                   % ロボ外力[ BaseTorque   LeftEdgeTorque  RightEdgeTorque ]
                                                % 　　　　[ BaseForce    LeftEdgeForce   RightEdgeForce  ]  
 TargetExtWrench= zeros(6,1);                   % タゲ外力[ BaseTorque ]
                                                % 　　　　[ BaseForce  ] 
-RoboExtWrench(4:6,3) = [0, 0, 0]';
+% タイマースタート                                               
 startCPUT = cputime;
 startT = clock();
 
-for time = 0 : d_time : ( endtime + minus_time )
+for time = minus_time : d_time : endtime 
     clc
     time %#ok<NOPTS> 
     % 運動状態更新
@@ -89,12 +92,14 @@ for time = 0 : d_time : ( endtime + minus_time )
 end
 
 % アニメーション作成
-% movfileに保存
-Make2dAnime([paths.datfile, '/', char("Anime.txt")], Parameters)
+% movfileにaviファイル保存
+% pngfileにpngファイル保存
+Make2dAnime("Anime.txt", paths, Parameters)
 
 %ファイルクローズ
 fclose('all');
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%% シミュレーション時間の計測と表示 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % シミュレーション全体時間 単位:秒
