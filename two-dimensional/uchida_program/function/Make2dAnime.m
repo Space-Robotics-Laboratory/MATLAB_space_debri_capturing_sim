@@ -54,7 +54,7 @@ function Make2dAnime(datfilename, paths, Parameters)
             % ロボベース描画
             BaseCenterPos = Data.data(count, BaseCenterPos_Index)';                                       % 重心位置
             BaseOriZ      = Data.data(count, BaseOriZ_Index);                                             % z軸周りの角度ラジアン
-            BaseTips = CalcBaseTips(BaseCenterPos + BaseMCenter2GCenter, BaseWidth, BaseDepth, BaseOriZ); % ベース頂点計算
+            BaseTips = CalcSquareTips(BaseCenterPos + BaseMCenter2GCenter, BaseWidth, BaseDepth, BaseOriZ); % ベース頂点計算
             PolyBase = polyshape(BaseTips(1,:), BaseTips(2,:));                                           % 四角描画
             plot(PolyBase)
             xlim( [ -0.5, 0.5 ] ); 
@@ -95,7 +95,7 @@ function Make2dAnime(datfilename, paths, Parameters)
             % ターゲット描画
             TargetCenterPos = Data.data(count, TargetCenterPos_Index)';                                               % 重心位置
             TargetOriZ      = Data.data(count, TargetOriZ_Index);                                                     % z軸周りの角度ラジアン
-            TargetTips = CalcBaseTips(TargetCenterPos + TargetMCenter2GCenter, TargetWidth, TargetDepth, TargetOriZ); % ベース頂点計算
+            TargetTips = CalcSquareTips(TargetCenterPos + TargetMCenter2GCenter, TargetWidth, TargetDepth, TargetOriZ); % ベース頂点計算
             PolyTarget = polyshape(TargetTips(1,:), TargetTips(2,:));                                                 % 四角描画
             plot(PolyTarget)
             
