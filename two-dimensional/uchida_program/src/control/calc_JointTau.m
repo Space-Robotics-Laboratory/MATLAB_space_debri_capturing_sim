@@ -4,5 +4,5 @@
 % output: JointTorque 8*1
 
 function JointTau = calc_JointTau(DualArmRobo, DesiredHandVel, Parameters)
-    JointTau = zeros(6,1);
+    JointTau = [5, 0, 0, -5, 0, 0];
 end
