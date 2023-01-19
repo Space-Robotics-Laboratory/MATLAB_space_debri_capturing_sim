@@ -192,7 +192,7 @@ Param.ContactElasticy = 9000;      % 接触力弾性係数
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ファイル設定
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Param.DateSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/two-dimensional/uchida_program/Data';
+Param.DateSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/two-dimensional/uchida_program/dat';
 Param.FileName     = [num2str(Param.ContactDamp),'_' ,num2str(Param.ContactElasticy)]; 
 Param.Delimiter    = '\t';
 Param.StringType   = '%10s';
