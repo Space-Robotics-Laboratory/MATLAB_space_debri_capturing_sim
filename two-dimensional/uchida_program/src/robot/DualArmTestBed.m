@@ -27,7 +27,7 @@ classdef DualArmTestBed
             % ロボットリンクパラメータ設定
             obj.LP = DualArm_FourTips_LP(Parameters);
             % ロボット状態を初期化
-            obj.SV = DualArm_FourTips_SV(obj.LP);
+            obj.SV = init_SV(obj.LP);
 
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%% 初期値設定 %%%%%%%%%%%%%%%%%%%%

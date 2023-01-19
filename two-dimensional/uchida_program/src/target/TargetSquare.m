@@ -13,7 +13,7 @@ classdef TargetSquare
             % ターゲットリンクパラメータ設定
             obj.LP = TargetSquare_LP(Parameters);
             % ターゲット状態を初期化
-            obj.SV = TargetSquare_SV(obj.LP);
+            obj.SV = init_SV(obj.LP);
 
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%% 初期値設定 %%%%%%%%%%%%%%%%%%%%
