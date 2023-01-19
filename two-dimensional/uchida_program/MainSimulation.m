@@ -50,9 +50,6 @@ TargetExtWrench= zeros(6,1);                   % タゲ外力[ BaseTorque ]
 StartCPUT = cputime;
 StartT = clock();
 
-% test
-%RoboJointTau = [5, 0, 0, -1, 0, 0]';
-
 %シミュレーションループスタート
 for time = minus_time : d_time : endtime 
     clc
@@ -65,8 +62,8 @@ for time = minus_time : d_time : endtime
     RoboJointTau = calc_JointTau(DualArmRobo_1, DesiredHandVel);
 
     % 運動状態更新
-    DualArmRobo_1 = DualArmRobo_1.update(RoboJointTau, RoboExtWrench, Parameters);    % methodを呼び出した後自身に代入することを忘れない！
-    TargetSquare_1   = TargetSquare_1.update(TargetExtWrench);
+    DualArmRobo_1  = DualArmRobo_1.update(RoboJointTau, RoboExtWrench, Parameters);    % methodを呼び出した後自身に代入することを忘れない！
+    TargetSquare_1 = TargetSquare_1.update(TargetExtWrench);
 
     % データ書き出し
     % Anime
