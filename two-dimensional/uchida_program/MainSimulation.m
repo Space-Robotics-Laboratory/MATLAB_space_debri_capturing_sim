@@ -56,10 +56,10 @@ DataOut(FileIDList(FileNameList=="Anime.txt"), TitleAnime,  Parameters.StringTyp
 
 
 
-% 双腕ロボインスタンス作成
-DualArmTestBed_1 = DualArmTestBed(Parameters);
-% ターゲットインスタンス作成
-TargetSquare_1   = TargetSquare(Parameters);
+% 双腕ロボイン初期化
+DualArmRobo_1 = Init_DualArmRobo(Parameters);
+% ターゲット初期化
+TargetSquare_1   = Init_TargetSquare(Parameters);
 
 
 %シミュレーションループスタート
@@ -80,13 +80,13 @@ for time = minus_time : d_time : endtime
     clc
     time %#ok<NOPTS> 
     % 運動状態更新
-    DualArmTestBed_1 = DualArmTestBed_1.Update(RoboJointTau, RoboExtWrench, Parameters);    % methodを呼び出した後自身に代入することを忘れない！
-    TargetSquare_1   = TargetSquare_1.Update(TargetExtWrench);
+    DualArmRobo_1  = UpdateDualArmRobo(DualArmRobo_1, RoboJointTau, RoboExtWrench, Parameters);
+    TargetSquare_1 = UpdateTargetSquare(TargetSquare_1, TargetExtWrench);
 
     % データ書き出し
     % Anime
-    dataAnime = [DualArmTestBed_1.SV.R0', DualArmTestBed_1.SV.Q0', reshape(DualArmTestBed_1.POS_j_L,[1,12]), reshape(DualArmTestBed_1.POS_j_R,[1,12]),   ...
-                     reshape(DualArmTestBed_1.POS_es_L,[1,6]), reshape(DualArmTestBed_1.POS_es_R,[1,6]), DualArmTestBed_1.SV.QeL', DualArmTestBed_1.SV.QeR', ...
+    dataAnime = [DualArmRobo_1.SV.R0', DualArmRobo_1.SV.Q0', reshape(DualArmRobo_1.POS_j_L,[1,12]), reshape(DualArmRobo_1.POS_j_R,[1,12]),   ...
+                     reshape(DualArmRobo_1.POS_es_L,[1,6]), reshape(DualArmRobo_1.POS_es_R,[1,6]), DualArmRobo_1.SV.QeL', DualArmRobo_1.SV.QeR', ...
                      TargetSquare_1.SV.R0', TargetSquare_1.SV.Q0'];   
     DataOut(FileIDList(FileNameList=="Anime.txt"), dataAnime, Parameters.DataType, Parameters.Delimiter)                                                                      
 end
@@ -94,7 +94,7 @@ end
 % アニメーション作成
 % movfileにaviファイル保存
 % pngfileにpngファイル保存
-Make2dAnime("Anime.txt", paths, Parameters)
+%Make2dAnime("Anime.txt", paths, Parameters)
 
 %ファイルクローズ
 fclose('all');
