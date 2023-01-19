@@ -54,15 +54,17 @@ classdef DualArmRobo
         end
         
         % 動力学を計算し，単位時間でロボットの状態を更新する．実際のシミュレーションループでこれを回す．
-        % Tauは関節制御トルク
+        % Tauは関節制御トルク.手首を除く，joint[1 2 3, 5 6 7]'であることに注意
         % ExtWrenchは外力レンチ[[BaseTorque; BaseForce],[LeftEdgeTorque; LeftEdgeForce], [RightEdgeTorque; RightEdgeForce]]
         % SV.F0 ; [0, 0, 0]'
         % SV.Fe ; zeros(3, 8)
         function obj = update(obj, JointTau, ExtWrench, Parameters)
             %能動的な力
-            obj.SV.tau = JointTau;                  % 関節トルク代入
+            obj.SV.tau([1,2,3,5,6,7]) = JointTau;   % 関節トルク代入
 
             %受動的な力
+            obj.SV.tau([4, 8]) = -Parameters.WristDamp*obj.SV.qd([4, 8]) ...         % 手首関節トルクをバネダンパ系で計算
+                                 -Parameters.WristElast*obj.SV.q([4, 8]);            % 物理係数はパラメータで設定
             obj.SV.T0 = ExtWrench(1:3, 1);          % ベーストルク
             obj.SV.F0 = ExtWrench(4:6, 1);          % ベース力
             obj.SV.Te(:, 4) = ExtWrench(1:3, 2);    % 左手手先トルク
@@ -81,8 +83,8 @@ classdef DualArmRobo
             obj.SV.Q0 = dc2rpy( obj.SV.A0' );                                        % ベース角度のオイラー角表現
             obj.SV.QeL= dc2rpy( obj.ORI_e_L' );                                      % 左端リンクのオイラー角表現
             obj.SV.QeR= dc2rpy( obj.ORI_e_R' );                                      % 右端リンクのオイラー角表現
-            obj.POS_es_L = calc_ArmTips(obj.POS_e_L, obj.ORI_e_L, Parameters);        % 左手の先端球位置 3*2
-            obj.POS_es_R = calc_ArmTips(obj.POS_e_R, obj.ORI_e_R, Parameters);        % 右手の先端球位置 3*2
+            obj.POS_es_L = calc_ArmTips(obj.POS_e_L, obj.ORI_e_L, Parameters);       % 左手の先端球位置 3*2
+            obj.POS_es_R = calc_ArmTips(obj.POS_e_R, obj.ORI_e_R, Parameters);       % 右手の先端球位置 3*2
         end
     end
 end

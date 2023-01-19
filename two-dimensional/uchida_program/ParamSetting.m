@@ -186,14 +186,16 @@ Param.TargetAngVel0       = [ 0 0 1 ]';              % 初期角速度 ;SV.w0
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 物理係数設定
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Param.ContactDamp     = 8;         % 接触力減衰係数
-Param.ContactElasticy = 9000;      % 接触力弾性係数
+Param.ContactDamp  = 8;         % 接触力減衰係数
+Param.ContactElast = 9000;      % 接触力弾性係数
+Param.WristDamp    = 0.3;       % 手首関節減衰係数
+Param.WristElast   = 0.1;       % 手首関節弾性係数
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ファイル設定
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Param.DateSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/two-dimensional/uchida_program/dat';
-Param.FileName     = [num2str(Param.ContactDamp),'_' ,num2str(Param.ContactElasticy)]; 
+Param.FileName     = [num2str(Param.ContactDamp),'_' ,num2str(Param.ContactElast)]; 
 Param.Delimiter    = '\t';
 Param.StringType   = '%10s';
 Param.DataType     = '%10f';

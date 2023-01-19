@@ -23,38 +23,13 @@ Gravity = [ 0 0 0 ]'; % 重力（地球重力は Gravity = [0 0 -9.8]）
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % パス設定
-% 保存用フォルダ作成
 FileNameList = ["Anime.txt"];                     %保存するデータファイル名
-paths = PathSetting(Parameters);                                        %保存先フォルダ作成．パスはParamSettingで設定
-FileIDList = FilesOpen(paths, FileNameList);                            %ファイルを開き，ファイルIDを配列に格納．現状意味ないかも
-
+paths = make_DataFolder(Parameters);              %保存先フォルダ作成．パスはParamSettingで設定
+FileIDList = FilesOpen(paths, FileNameList);      %ファイルを開き，ファイルIDを配列に格納．現状意味ないかも
 
 % 保存用データ見出し
-% ここわかりやすくしたい
-% 10文字以内にしないとバグるかも
-TitleAnime  = ["BasePosX","BasePosY","BasePosZ","BaseOriX","BaseOriY","BaseOriZ"];
-for j = 1:8
-    for s = ["X", "Y", "Z"]
-        TitleAnime = [TitleAnime, sprintf("JointPos%d%s",j,s)]; %#ok<AGROW> 
-    end
-end
-for LR = ["L", "R"]
-    for tip = 1:2
-        for s = ["X", "Y", "Z"]
-            TitleAnime = [TitleAnime, sprintf("ET%s%dPos%s",LR,tip,s)]; %#ok<AGROW> 
-        end
-    end
-end
-for LR = ["L", "R"]
-    for s = ["X", "Y", "Z"]
-        TitleAnime = [TitleAnime, sprintf("End%sOri%s",LR,s)]; %#ok<AGROW> 
-    end
-end
-TitleAnime = [TitleAnime, "TargetPosX", "TargetPosY", "TargetPosZ", "TargetOriX", "TargetOriY", "TargetOriZ"];
-
-DataOut(FileIDList(FileNameList=="Anime.txt"), TitleAnime,  Parameters.StringType, Parameters.Delimiter)   % アニメデータファイルの見出しを書き出し
-
-
+AnimeTitle = set_AnimeTitleHeader();
+DataOut(FileIDList(FileNameList=="Anime.txt"), AnimeTitle,  Parameters.StringType, Parameters.Delimiter)   % アニメデータファイルの見出しを書き出し
 
 % 双腕ロボインスタンス作成
 DualArmRobo_1 = DualArmRobo(Parameters);
@@ -66,7 +41,7 @@ endtime    = Parameters.EndTime;               % 終了時間設定．ここで�
 minus_time = Parameters.MinusTime;             % マイナス時間設定．ここで変更しない
 
 % ロボット・ターゲット力初期化
-RoboJointTau   = zeros(8,1);                   % ロボ関節制御トルク
+RoboJointTau   = zeros(6,1);                   % ロボ関節制御トルク，手首関節を除くことに注意
 RoboExtWrench  = zeros(6,3);                   % ロボ外力[ BaseTorque   LeftEdgeTorque  RightEdgeTorque ]
                                                % 　　　　[ BaseForce    LeftEdgeForce   RightEdgeForce  ]  
 TargetExtWrench= zeros(6,1);                   % タゲ外力[ BaseTorque ]
@@ -82,6 +57,9 @@ for time = minus_time : d_time : endtime
 
     % 目標手先速度計算
     DesiredHandVel = calc_DesiredHandVelocity(TargetSquare_1, DualArmRobo_1);   % [LeftVel, RoghtVel]
+
+    % 目標関節トルク計算
+    %RoboJointTau = calc_JointTau(DualArmRobo_1, DesiredHandVel);
 
     % 運動状態更新
     DualArmRobo_1 = DualArmRobo_1.update(RoboJointTau, RoboExtWrench, Parameters);    % methodを呼び出した後自身に代入することを忘れない！

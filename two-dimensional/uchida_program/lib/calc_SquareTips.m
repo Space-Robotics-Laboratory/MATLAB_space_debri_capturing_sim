@@ -3,7 +3,7 @@
 % Tips : [x1 x2 x3 x4
 %         y1 y2 y3 y4]
 
-function TipsPos = CalcSquareTips(GCenter, Width, Depth, OriZ)
+function TipsPos = calc_SquareTips(GCenter, Width, Depth, OriZ)
     Tip1 = GCenter - Width*.5*[cos(OriZ); sin(OriZ)] - Depth*.5*[-sin(OriZ); cos(OriZ)];
     Tip2 = GCenter - Width*.5*[cos(OriZ); sin(OriZ)] + Depth*.5*[-sin(OriZ); cos(OriZ)];
     Tip3 = GCenter + Width*.5*[cos(OriZ); sin(OriZ)] + Depth*.5*[-sin(OriZ); cos(OriZ)];
