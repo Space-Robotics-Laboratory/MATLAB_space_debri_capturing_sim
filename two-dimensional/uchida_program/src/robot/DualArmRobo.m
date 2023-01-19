@@ -1,4 +1,4 @@
-classdef DualArmTestBed
+classdef DualArmRobo
     properties
         LP;      % ロボットリンクパラメータ
         SV;      % ロボット状態パラメータ
@@ -20,12 +20,12 @@ classdef DualArmTestBed
     methods
         % constructor
         % 呼び出し時に実行し，ParamSettingをもとに初期位置姿勢，各リンクの重心位置，方向余弦行列を計算する
-        function obj = DualArmTestBed(Parameters)
+        function obj = DualArmRobo(Parameters)
             if nargin ~= 1
                 error("DualArmTestBed must have Paramsters")
             end
             % ロボットリンクパラメータ設定
-            obj.LP = DualArm_FourTips_LP(Parameters);
+            obj.LP = DualArmRobo_LP(Parameters);
             % ロボット状態を初期化
             obj.SV = init_SV(obj.LP);
 
