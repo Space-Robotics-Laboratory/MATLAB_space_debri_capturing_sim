@@ -1,7 +1,7 @@
 % アニメ描画
 % 動画，png保存
 
-function Make2dAnime(datfilename, paths, Parameters)
+function make_2dAnime(datfilename, paths, Parameters)
     % パラメータインポート
     BaseWidth = Parameters.BaseWidth;
     BaseDepth = Parameters.BaseDepth;
@@ -54,7 +54,7 @@ function Make2dAnime(datfilename, paths, Parameters)
             % ロボベース描画
             BaseCenterPos = Data.data(count, BaseCenterPos_Index)';                                       % 重心位置
             BaseOriZ      = Data.data(count, BaseOriZ_Index);                                             % z軸周りの角度ラジアン
-            BaseTips = CalcSquareTips(BaseCenterPos + BaseMCenter2GCenter, BaseWidth, BaseDepth, BaseOriZ); % ベース頂点計算
+            BaseTips = calc_SquareTips(BaseCenterPos + BaseMCenter2GCenter, BaseWidth, BaseDepth, BaseOriZ); % ベース頂点計算
             PolyBase = polyshape(BaseTips(1,:), BaseTips(2,:));                                           % 四角描画
             plot(PolyBase)
             xlim( [ -0.5, 0.5 ] ); 
@@ -86,16 +86,16 @@ function Make2dAnime(datfilename, paths, Parameters)
             EndTipsPos = Data.data(count, EndETipPos_Index);
             EndTipsPos = reshape(EndTipsPos, [3, 4]);
             plot(EndPos(1,1:4), EndPos(2,1:4),'-','LineWidth',  4,'Color','b') % 左手区の字描画
-            PlotCircle(EndTipsPos(1:2,1), LdD*.5, 'black')                     % 左手先端球描画
-            PlotCircle(EndTipsPos(1:2,2), LdD*.5, 'black')                     % 左手先端球描画
+            plot_Circle(EndTipsPos(1:2,1), LdD*.5, 'black')                     % 左手先端球描画
+            plot_Circle(EndTipsPos(1:2,2), LdD*.5, 'black')                     % 左手先端球描画
             plot(EndPos(1,5:8), EndPos(2,5:8),'-','LineWidth',  4,'Color','b') % 右手区の字描画
-            PlotCircle(EndTipsPos(1:2,3), LdD*.5, 'black')                     % 右手先端球描画
-            PlotCircle(EndTipsPos(1:2,4), LdD*.5, 'black')                     % 右手先端球描画
+            plot_Circle(EndTipsPos(1:2,3), LdD*.5, 'black')                     % 右手先端球描画
+            plot_Circle(EndTipsPos(1:2,4), LdD*.5, 'black')                     % 右手先端球描画
     
             % ターゲット描画
             TargetCenterPos = Data.data(count, TargetCenterPos_Index)';                                               % 重心位置
             TargetOriZ      = Data.data(count, TargetOriZ_Index);                                                     % z軸周りの角度ラジアン
-            TargetTips = CalcSquareTips(TargetCenterPos + TargetMCenter2GCenter, TargetWidth, TargetDepth, TargetOriZ); % ベース頂点計算
+            TargetTips = calc_SquareTips(TargetCenterPos + TargetMCenter2GCenter, TargetWidth, TargetDepth, TargetOriZ); % ベース頂点計算
             PolyTarget = polyshape(TargetTips(1,:), TargetTips(2,:));                                                 % 四角描画
             plot(PolyTarget)
             

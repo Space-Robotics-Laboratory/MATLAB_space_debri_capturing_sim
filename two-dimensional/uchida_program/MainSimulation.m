@@ -23,65 +23,47 @@ Gravity = [ 0 0 0 ]'; % 重力（地球重力は Gravity = [0 0 -9.8]）
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % パス設定
-% 保存用フォルダ作成
 FileNameList = ["Anime.txt"];                     %保存するデータファイル名
-paths = PathSetting(Parameters);                                        %保存先フォルダ作成．パスはParamSettingで設定
-FileIDList = FilesOpen(paths, FileNameList);                            %ファイルを開き，ファイルIDを配列に格納．現状意味ないかも
-
+paths = make_DataFolder(Parameters);              %保存先フォルダ作成．パスはParamSettingで設定
+FileIDList = FilesOpen(paths, FileNameList);      %ファイルを開き，ファイルIDを配列に格納．現状意味ないかも
 
 % 保存用データ見出し
-% ここわかりやすくしたい
-% 10文字以内にしないとバグるかも
-TitleAnime  = ["BasePosX","BasePosY","BasePosZ","BaseOriX","BaseOriY","BaseOriZ"];
-for j = 1:8
-    for s = ["X", "Y", "Z"]
-        TitleAnime = [TitleAnime, sprintf("JointPos%d%s",j,s)]; %#ok<AGROW> 
-    end
-end
-for LR = ["L", "R"]
-    for tip = 1:2
-        for s = ["X", "Y", "Z"]
-            TitleAnime = [TitleAnime, sprintf("ET%s%dPos%s",LR,tip,s)]; %#ok<AGROW> 
-        end
-    end
-end
-for LR = ["L", "R"]
-    for s = ["X", "Y", "Z"]
-        TitleAnime = [TitleAnime, sprintf("End%sOri%s",LR,s)]; %#ok<AGROW> 
-    end
-end
-TitleAnime = [TitleAnime, "TargetPosX", "TargetPosY", "TargetPosZ", "TargetOriX", "TargetOriY", "TargetOriZ"];
+AnimeTitle = set_AnimeTitleHeader();
+DataOut(FileIDList(FileNameList=="Anime.txt"), AnimeTitle,  Parameters.StringType, Parameters.Delimiter)   % アニメデータファイルの見出しを書き出し
 
-DataOut(FileIDList(FileNameList=="Anime.txt"), TitleAnime,  Parameters.StringType, Parameters.Delimiter)   % アニメデータファイルの見出しを書き出し
+% 双腕ロボインスタンス作成
+DualArmRobo_1 = DualArmRobo(Parameters);
+% ターゲットインスタンス作成
+TargetSquare_1   = TargetSquare(Parameters);
 
-
-
-% 双腕ロボイン初期化
-DualArmRobo_1 = Init_DualArmRobo(Parameters);
-% ターゲット初期化
-TargetSquare_1   = Init_TargetSquare(Parameters);
-
-
-%シミュレーションループスタート
+% シミュレーション準備
 endtime    = Parameters.EndTime;               % 終了時間設定．ここで変更しない
 minus_time = Parameters.MinusTime;             % マイナス時間設定．ここで変更しない
 
 % ロボット・ターゲット力初期化
-RoboJointTau   = zeros(8,1);                   % ロボ関節制御トルク
+RoboJointTau   = zeros(6,1);                   % ロボ関節制御トルク，手首関節を除くことに注意
 RoboExtWrench  = zeros(6,3);                   % ロボ外力[ BaseTorque   LeftEdgeTorque  RightEdgeTorque ]
                                                % 　　　　[ BaseForce    LeftEdgeForce   RightEdgeForce  ]  
 TargetExtWrench= zeros(6,1);                   % タゲ外力[ BaseTorque ]
                                                % 　　　　[ BaseForce  ] 
 % タイマースタート                                               
-startCPUT = cputime;
-startT = clock();
+StartCPUT = cputime;
+StartT = clock();
 
+%シミュレーションループスタート
 for time = minus_time : d_time : endtime 
     clc
     time %#ok<NOPTS> 
+
+    % 目標手先速度計算
+    DesiredHandVel = calc_DesiredHandVelocity(TargetSquare_1, DualArmRobo_1);   % [LeftVel, RoghtVel]
+
+    % 目標関節トルク計算
+    RoboJointTau = calc_JointTau(DualArmRobo_1, DesiredHandVel);
+
     % 運動状態更新
-    DualArmRobo_1  = UpdateDualArmRobo(DualArmRobo_1, RoboJointTau, RoboExtWrench, Parameters);
-    TargetSquare_1 = UpdateTargetSquare(TargetSquare_1, TargetExtWrench);
+    DualArmRobo_1  = DualArmRobo_1.update(RoboJointTau, RoboExtWrench, Parameters);    % methodを呼び出した後自身に代入することを忘れない！
+    TargetSquare_1 = TargetSquare_1.update(TargetExtWrench);
 
     % データ書き出し
     % Anime
@@ -94,7 +76,7 @@ end
 % アニメーション作成
 % movfileにaviファイル保存
 % pngfileにpngファイル保存
-%Make2dAnime("Anime.txt", paths, Parameters)
+make_2dAnime("Anime.txt", paths, Parameters)
 
 %ファイルクローズ
 fclose('all');
@@ -103,14 +85,14 @@ fclose('all');
 %%%%%%%%%%%%%%%%%%%% シミュレーション時間の計測と表示 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % シミュレーション全体時間 単位:秒
-ntime = cputime - startCPUT;
+ntime = cputime - StartCPUT;
 
 nhour = floor( ntime / 3600 );                    % 単位:時間 各要素以下の最も近い整数に丸める
 nmin  = floor( ( ntime - nhour * 3600 ) / 60 );   % 単位:分 残りの分，整数に丸める
 nsec  = ntime - nhour * 3600 - nmin * 60;         % 単位:秒 残りの秒，整数に丸める
 
 % 結果表示
-fprintf( '\n\n %s %s', '開始時間 :', datestr( startT, 31 ) );
+fprintf( '\n\n %s %s', '開始時間 :', datestr( StartT, 31 ) );
 fprintf( '\n %s %s',   '終了時間 :', datestr( clock,  31 ) );
 fprintf( '\n %s %d %s %02d %s %04.1f %s \n\n\n', '計算所要時間 :', nhour, ' 時間 ', nmin, ' 分 ', nsec, ' 秒 ' );
 
