@@ -36,7 +36,7 @@ classdef TargetSquare
         % ExtWrenchは外力レンチ[[BaseTorque; BaseForce],[LeftEdgeTorque; LeftEdgeForce], [RightEdgeTorque; RightEdgeForce]]
         % SV.F0 ; [0, 0, 0]'
         % SV.Fe ; zeros(3, 8)
-        function obj = Update(obj, ExtWrench)
+        function obj = update(obj, ExtWrench)
             %受動的な力
             obj.SV.T0 = ExtWrench(1:3, 1);          % ターゲットトルク
             obj.SV.F0 = ExtWrench(4:6, 1);          % ターゲット力

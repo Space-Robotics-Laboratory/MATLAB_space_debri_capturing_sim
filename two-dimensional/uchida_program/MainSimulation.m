@@ -61,8 +61,7 @@ DualArmRobo_1 = DualArmRobo(Parameters);
 % ターゲットインスタンス作成
 TargetSquare_1   = TargetSquare(Parameters);
 
-
-%シミュレーションループスタート
+% シミュレーション準備
 endtime    = Parameters.EndTime;               % 終了時間設定．ここで変更しない
 minus_time = Parameters.MinusTime;             % マイナス時間設定．ここで変更しない
 
@@ -73,15 +72,20 @@ RoboExtWrench  = zeros(6,3);                   % ロボ外力[ BaseTorque   Left
 TargetExtWrench= zeros(6,1);                   % タゲ外力[ BaseTorque ]
                                                % 　　　　[ BaseForce  ] 
 % タイマースタート                                               
-startCPUT = cputime;
-startT = clock();
+StartCPUT = cputime;
+StartT = clock();
 
+%シミュレーションループスタート
 for time = minus_time : d_time : endtime 
     clc
     time %#ok<NOPTS> 
+
+    % 目標手先速度計算
+    DesiredHandVel = calc_DesiredHandVelocity(TargetSquare_1, DualArmRobo_1);   % [LeftVel, RoghtVel]
+
     % 運動状態更新
-    DualArmRobo_1 = DualArmRobo_1.Update(RoboJointTau, RoboExtWrench, Parameters);    % methodを呼び出した後自身に代入することを忘れない！
-    TargetSquare_1   = TargetSquare_1.Update(TargetExtWrench);
+    DualArmRobo_1 = DualArmRobo_1.update(RoboJointTau, RoboExtWrench, Parameters);    % methodを呼び出した後自身に代入することを忘れない！
+    TargetSquare_1   = TargetSquare_1.update(TargetExtWrench);
 
     % データ書き出し
     % Anime
@@ -94,7 +98,7 @@ end
 % アニメーション作成
 % movfileにaviファイル保存
 % pngfileにpngファイル保存
-Make2dAnime("Anime.txt", paths, Parameters)
+make_2dAnime("Anime.txt", paths, Parameters)
 
 %ファイルクローズ
 fclose('all');
@@ -103,14 +107,14 @@ fclose('all');
 %%%%%%%%%%%%%%%%%%%% シミュレーション時間の計測と表示 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % シミュレーション全体時間 単位:秒
-ntime = cputime - startCPUT;
+ntime = cputime - StartCPUT;
 
 nhour = floor( ntime / 3600 );                    % 単位:時間 各要素以下の最も近い整数に丸める
 nmin  = floor( ( ntime - nhour * 3600 ) / 60 );   % 単位:分 残りの分，整数に丸める
 nsec  = ntime - nhour * 3600 - nmin * 60;         % 単位:秒 残りの秒，整数に丸める
 
 % 結果表示
-fprintf( '\n\n %s %s', '開始時間 :', datestr( startT, 31 ) );
+fprintf( '\n\n %s %s', '開始時間 :', datestr( StartT, 31 ) );
 fprintf( '\n %s %s',   '終了時間 :', datestr( clock,  31 ) );
 fprintf( '\n %s %d %s %02d %s %04.1f %s \n\n\n', '計算所要時間 :', nhour, ' 時間 ', nmin, ' 分 ', nsec, ' 秒 ' );
 
