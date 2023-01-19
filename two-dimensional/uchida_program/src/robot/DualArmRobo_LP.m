@@ -1,4 +1,4 @@
-function LP_d = DualArm_FourTips_LP(Param)   %update uchida
+function LP_d = DualArmRobo_LP(Param)   %update uchida
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%% 各リンクパラメータの定義 %%%%%%%%%%%%%%%%%%%%%%
