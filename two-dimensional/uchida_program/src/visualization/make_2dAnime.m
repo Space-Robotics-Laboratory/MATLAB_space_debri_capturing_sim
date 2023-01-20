@@ -3,17 +3,17 @@
 
 function make_2dAnime(datfilename, paths, Parameters)
     % パラメータインポート
-    BaseWidth = Parameters.BaseWidth;
-    BaseDepth = Parameters.BaseDepth;
-    BaseMCenter2GCenter = Parameters.BaseMCenter2GCenter(1:2);
-    TargetWidth = Parameters.TaegetWidth;
-    TargetDepth = Parameters.TargetDepth;
-    TargetMCenter2GCenter = Parameters.TargetMCenter2GCenter(1:2);
-    LdGamma = Parameters.LdGamma;
-    LdH  = Parameters.LdH;
-    LdHs = LdH * sin(LdGamma);
-    LdD = Parameters.LdD;
-    mov_dtime = Parameters.MovDivTime;
+    BaseWidth = Parameters.BaseWidth;                               % 横長さ
+    BaseDepth = Parameters.BaseDepth;                               % 縦長さ
+    BaseMCenter2GCenter = Parameters.BaseMCenter2GCenter(1:2);      % 質量重心から幾何中心への相対位置ベクトル
+    TargetWidth = Parameters.TaegetWidth;                           % 横長さ
+    TargetDepth = Parameters.TargetDepth;                           % 縦長さ
+    TargetMCenter2GCenter = Parameters.TargetMCenter2GCenter(1:2);  % 質量重心から幾何中心への相対位置ベクトル
+    LdGamma = Parameters.LdGamma;                                   % 阿部さん修論参照
+    LdH  = Parameters.LdH;                                          % 阿部さん修論参照
+    LdHs = LdH * sin(LdGamma);                                      % 阿部さん修論参照
+    LdD = Parameters.LdD;                                           % 阿部さん修論参照
+    mov_dtime = Parameters.MovDivTime;                              % 動画刻み時間
     
     % データインポート
     datfile = [paths.datfile, '/', char(datfilename)];
@@ -85,10 +85,10 @@ function make_2dAnime(datfilename, paths, Parameters)
                                                -LdHs * sin(-EndROriZ),  LdH * cos(-EndROriZ+LdGamma)];
             EndTipsPos = Data.data(count, EndETipPos_Index);
             EndTipsPos = reshape(EndTipsPos, [3, 4]);
-            plot(EndPos(1,1:4), EndPos(2,1:4),'-','LineWidth',  4,'Color','b') % 左手区の字描画
+            plot(EndPos(1,1:4), EndPos(2,1:4),'-','LineWidth',  4,'Color','b')  % 左手区の字描画
             plot_Circle(EndTipsPos(1:2,1), LdD*.5, 'black')                     % 左手先端球描画
             plot_Circle(EndTipsPos(1:2,2), LdD*.5, 'black')                     % 左手先端球描画
-            plot(EndPos(1,5:8), EndPos(2,5:8),'-','LineWidth',  4,'Color','b') % 右手区の字描画
+            plot(EndPos(1,5:8), EndPos(2,5:8),'-','LineWidth',  4,'Color','b')  % 右手区の字描画
             plot_Circle(EndTipsPos(1:2,3), LdD*.5, 'black')                     % 右手先端球描画
             plot_Circle(EndTipsPos(1:2,4), LdD*.5, 'black')                     % 右手先端球描画
     

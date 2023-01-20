@@ -32,9 +32,9 @@ AnimeTitle = set_AnimeTitleHeader();
 DataOut(FileIDList(FileNameList=="Anime.txt"), AnimeTitle,  Parameters.StringType, Parameters.Delimiter)   % アニメデータファイルの見出しを書き出し
 
 % 双腕ロボインスタンス作成
-DualArmRobo_1 = DualArmRobo(Parameters);
+DualArmRobo_1  = DualArmRobo(Parameters);
 % ターゲットインスタンス作成
-TargetSquare_1   = TargetSquare(Parameters);
+TargetSquare_1 = TargetSquare(Parameters);
 
 % シミュレーション準備
 endtime    = Parameters.EndTime;               % 終了時間設定．ここで変更しない
@@ -55,6 +55,13 @@ for time = minus_time : d_time : endtime
     clc
     time %#ok<NOPTS> 
 
+    % データ書き出し
+    % Anime
+    dataAnime = [DualArmRobo_1.SV.R0', DualArmRobo_1.SV.Q0', reshape(DualArmRobo_1.POS_j_L,[1,12]), reshape(DualArmRobo_1.POS_j_R,[1,12]),   ...
+                     reshape(DualArmRobo_1.POS_es_L,[1,6]), reshape(DualArmRobo_1.POS_es_R,[1,6]), DualArmRobo_1.SV.QeL', DualArmRobo_1.SV.QeR', ...
+                     TargetSquare_1.SV.R0', TargetSquare_1.SV.Q0'];   
+    DataOut(FileIDList(FileNameList=="Anime.txt"), dataAnime, Parameters.DataType, Parameters.Delimiter)
+    
     % 目標手先速度計算
     DesiredHandVel = calc_DesiredHandVelocity(TargetSquare_1, DualArmRobo_1);   % [LeftVel, RoghtVel]
 
@@ -63,14 +70,7 @@ for time = minus_time : d_time : endtime
 
     % 運動状態更新
     DualArmRobo_1  = DualArmRobo_1.update(RoboJointTau, RoboExtWrench, Parameters);    % methodを呼び出した後自身に代入することを忘れない！
-    TargetSquare_1 = TargetSquare_1.update(TargetExtWrench);
-
-    % データ書き出し
-    % Anime
-    dataAnime = [DualArmRobo_1.SV.R0', DualArmRobo_1.SV.Q0', reshape(DualArmRobo_1.POS_j_L,[1,12]), reshape(DualArmRobo_1.POS_j_R,[1,12]),   ...
-                     reshape(DualArmRobo_1.POS_es_L,[1,6]), reshape(DualArmRobo_1.POS_es_R,[1,6]), DualArmRobo_1.SV.QeL', DualArmRobo_1.SV.QeR', ...
-                     TargetSquare_1.SV.R0', TargetSquare_1.SV.Q0'];   
-    DataOut(FileIDList(FileNameList=="Anime.txt"), dataAnime, Parameters.DataType, Parameters.Delimiter)                                                                      
+    TargetSquare_1 = TargetSquare_1.update(TargetExtWrench);                                                                      
 end
 
 % アニメーション作成

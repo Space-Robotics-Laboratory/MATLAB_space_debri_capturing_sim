@@ -57,8 +57,7 @@ LP_d.m = [Param.LaMass, Param.LbMass, Param.LcMass, Param.LdMass,   Param.LaMass
 LP_d.mass = sum( LP_d.m ) + LP_d.m0;
 
 %%%%% 各リンク間の座標系の回転関係 %%%%%
-% 根元のリンク座標系を回転させる  列はリンク 行はx,y,z軸を表す  例えば下記の意味はリンク1はベースリンク(リンク0)と同じ
-% tipsangle1 =  pi/6; tipsangle2 = -pi/6; tipsangle3 =  pi/6; tipsangle4 = -pi/6;
+% 根元のリンク座標系を回転させる  列はリンク 行はx,y,z軸を表す.
 LP_d.Qi = zeros([3,8]);
     
 %%%%% 各リンクの慣性モーメント %%%%%

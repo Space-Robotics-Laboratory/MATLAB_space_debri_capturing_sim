@@ -49,6 +49,17 @@ classdef DualArmRobo
             obj.SV = calc_aa(  obj.LP, obj.SV );        % 各リンクの座標返還行列(方向余弦行列)の計算(リンクi->慣性座標系)
             obj.SV = calc_pos( obj.LP, obj.SV );        % 各リンク重心位置の計算
 
+            % 関節位置角度初期化
+            [ obj.POS_j_L, obj.ORI_j_L ] = f_kin_j( obj.LP, obj.SV, obj.jointsL );   % 左手 関節位置・姿勢　jointsLは左手の関節数
+            [ obj.POS_j_R, obj.ORI_j_R ] = f_kin_j( obj.LP, obj.SV, obj.jointsR );   % 右手 関節位置・姿勢　jointsRは右手の関節数
+            [ obj.POS_e_L, obj.ORI_e_L ] = f_kin_e( obj.LP, obj.SV, obj.jointsL );   % 左手先位置・姿勢（位置は２つの手先の中点）
+            [ obj.POS_e_R, obj.ORI_e_R ] = f_kin_e( obj.LP, obj.SV, obj.jointsR );   % 右手先位置・姿勢（位置は２つの手先の中点）
+            obj.SV.Q0 = dc2rpy( obj.SV.A0' );                                        % ベース角度のオイラー角表現
+            obj.SV.QeL= dc2rpy( obj.ORI_e_L' );                                      % 左端リンクのオイラー角表現
+            obj.SV.QeR= dc2rpy( obj.ORI_e_R' );                                      % 右端リンクのオイラー角表現
+            obj.POS_es_L = calc_ArmTips(obj.POS_e_L, obj.ORI_e_L, Parameters);       % 左手の先端球位置 3*2
+            obj.POS_es_R = calc_ArmTips(obj.POS_e_R, obj.ORI_e_R, Parameters);       % 右手の先端球位置 3*2
+
             % % ロボットの初期関節角度を設定
             obj.SV.q = [ Parameters.LinkAngLeft; Parameters.LinkAngRight ];    % 縦に格納
         end
@@ -63,8 +74,8 @@ classdef DualArmRobo
             obj.SV.tau([1,2,3,5,6,7]) = JointTau;   % 関節トルク代入
 
             %受動的な力
-            obj.SV.tau([4, 8]) = -Parameters.WristDamp*obj.SV.qd([4, 8]) ...         % 手首関節トルクをバネダンパ系で計算
-                                 -Parameters.WristElast*obj.SV.q([4, 8]);            % 物理係数はパラメータで設定
+            obj.SV.tau([4, 8]) = -Parameters.WristDamp  * obj.SV.qd([4, 8]) ...      % 手首関節トルクをバネダンパ系で計算
+                                 -Parameters.WristElast * obj.SV.q([4, 8]);          % 物理係数はパラメータで設定
             obj.SV.T0 = ExtWrench(1:3, 1);          % ベーストルク
             obj.SV.F0 = ExtWrench(4:6, 1);          % ベース力
             obj.SV.Te(:, 4) = ExtWrench(1:3, 2);    % 左手手先トルク
