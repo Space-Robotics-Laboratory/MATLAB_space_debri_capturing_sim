@@ -59,28 +59,34 @@ global d_time
 
     % Calculate Interference matrix of the base and the arm
     % Jtwを計算するための一次変数計算
-    Jtw_L_0 = zeros(3, 4, 4);
-    Jtw_L_0(:, 1 ,:) = m_L               .* (r_L - p_L(:, 1)); 
-    Jtw_L_0(:, 2, :) = [0, m_L(2:4)]     .* (r_L - p_L(:, 2));
-    Jtw_L_0(:, 3, :) = [0, 0, m_L(3:4)]  .* (r_L - p_L(:, 3));
-    Jtw_L_0(:, 4, :) = [0, 0, 0, m_L(4)] .* (r_L - p_L(:, 4));
-    Jtw_R_0 = zeros(3, 4, 4);
-    Jtw_R_0(:, 1 ,:) = m_R               .* (r_R - p_R(:, 1)); 
-    Jtw_R_0(:, 2, :) = [0, m_R(2:4)]     .* (r_R - p_R(:, 2));
-    Jtw_R_0(:, 3, :) = [0, 0, m_R(3:4)]  .* (r_R - p_R(:, 3));
-    Jtw_R_0(:, 4, :) = [0, 0, 0, m_R(4)] .* (r_R - p_R(:, 4));
+    % Jtを計算
+    E = true(4);
+    index = ~triu(E);
+
+    K_L = repmat(k_L, 1, 1, 4);                         % Left
+    M_L = permute( repmat(m_L, 3, 1, 4), [1, 3, 2]);
+    R_L = permute( repmat(r_L, 1, 1, 4), [1, 3, 2]);
+    P_L = repmat(p_L, 1, 1, 4);
+    Jt_L_0 = (R_L - P_L);
+    Jt_L_0(:, index)  = 0;
+    Jt_L = cross(K_L, Jt_L_0, 1);
+
+    K_R = repmat(k_R, 1, 1, 4);                         % Right
+    M_R = permute( repmat(m_R, 3, 1, 4), [1, 3, 2]);
+    R_R = permute( repmat(r_R, 1, 1, 4), [1, 3, 2]);
+    P_R = repmat(p_R, 1, 1, 4);
+    Jt_R_0 = (R_R - P_R);
+    Jt_R_0(:, index)  = 0;
+    Jt_R = cross(K_R, Jt_R_0, 1);
 
     % Jtwを計算
-    Jtw_L = cross(k_L, sum(Jtw_L_0, 3), 1);
-    Jtw_R = cross(k_R, sum(Jtw_R_0, 3), 1);    
+    Jtw_L = sum(Jt_L .* M_L, 3);
+    Jtw_R = sum(Jt_R .* M_R, 3);
 
     % Hwmを計算
-    Htw_L_0 = zeros(3, 4, 4);
-    Jtw_L_0(:, 1 ,:) = m_L               .* (r_L - p_L(:, 1)); 
-    Jtw_L_0(:, 2, :) = [0, m_L(2:4)]     .* (r_L - p_L(:, 2));
-    Jtw_L_0(:, 3, :) = [0, 0, m_L(3:4)]  .* (r_L - p_L(:, 3));
-    Jtw_L_0(:, 4, :) = [0, 0, 0, m_L(4)] .* (r_L - p_L(:, 4));
+    Hwm_L_2 = (Jt_L .* M_L);
 
+    
 
 
     %Jstar_L = [Jm_L - Jb_L*(Hb\Hbm_L) ]
