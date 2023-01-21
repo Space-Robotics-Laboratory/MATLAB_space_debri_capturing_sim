@@ -41,7 +41,7 @@ endtime    = Parameters.EndTime;               % 終了時間設定．ここで�
 minus_time = Parameters.MinusTime;             % マイナス時間設定．ここで変更しない
 
 % ロボット・ターゲット力初期化
-RoboJointTau   = zeros(6,1);                   % ロボ関節制御トルク，手首関節を除くことに注意
+RoboJointTau   = zeros(8,1);                   % ロボ関節制御トルク，手首関節を除くことに注意 -> 一度手先を入れる
 RoboExtWrench  = zeros(6,3);                   % ロボ外力[ BaseTorque   LeftEdgeTorque  RightEdgeTorque ]
                                                % 　　　　[ BaseForce    LeftEdgeForce   RightEdgeForce  ]  
 TargetExtWrench= zeros(6,1);                   % タゲ外力[ BaseTorque ]
@@ -63,7 +63,7 @@ for time = minus_time : d_time : endtime
     DataOut(FileIDList(FileNameList=="Anime.txt"), dataAnime, Parameters.DataType, Parameters.Delimiter)
     
     % 目標手先速度計算
-    DesiredHandVel = calc_DesiredHandVelocity(TargetSquare_1, DualArmRobo_1);   % [LeftVel, RoghtVel]
+    DesiredHandVel = calc_DesiredHandVelocity(TargetSquare_1, DualArmRobo_1);   % [LeftVel; RoghtVel]
 
     % 目標関節トルク計算
     RoboJointTau = calc_JointTau(DualArmRobo_1, DesiredHandVel);

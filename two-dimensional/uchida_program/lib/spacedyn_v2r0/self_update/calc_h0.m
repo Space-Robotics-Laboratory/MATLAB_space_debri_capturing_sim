@@ -8,14 +8,11 @@
 % 　
 % 2023.1 uchida akiyoshi
 % 
-% 　calc_hhを編集して作成
-% 
-%    CALC_HH	Calculate the Inertia Matrices H.
-%
-%    CALC_HH returns the inertia matrices HH (6+n)x(6+n).
+% 　calc_hhを編集して作成．作ってから気づいたが，使うことなくね？
 % 
 %    CALC_HO returns the inertia matrix of base 6*6
 % 
+% CALC_HH
 %   (C)Space Robotics Lab, by Koichi Fujishima
 %   2001.9.12 modified by H.Hamano
 %   2002.2.27 H.Hamano modified to version up
