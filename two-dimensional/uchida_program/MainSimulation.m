@@ -1,6 +1,7 @@
 %%%%%%%%%%DualArmTestBed Simulation%%%%%%%%%%
 % 2023/01/01 Akiyoshi Uchida
 % SpaceDyn_v2r0
+% 
 % main simulation
 %
 
@@ -25,9 +26,9 @@ Gravity = [ 0 0 0 ]'; % 重力（地球重力は Gravity = [0 0 -9.8]）
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % パス設定
-FileNameList = ["Anime.txt"];                     %保存するデータファイル名
-paths = make_DataFolder(Parameters);              %保存先フォルダ作成．パスはParamSettingで設定
-FileIDList = FilesOpen(paths, FileNameList);      %ファイルを開き，ファイルIDを配列に格納．現状意味ないかも
+FileNameList = ["Anime.txt"];                     % 保存するデータファイル名
+paths = make_DataFolder(Parameters);              % 保存先フォルダ作成．パスはParamSettingで設定
+FileIDList = FilesOpen(paths, FileNameList);      % ファイルを開き，ファイルIDを配列に格納．現状意味ないかも
 
 % 保存用データ見出し
 AnimeTitle = set_AnimeTitleHeader();
@@ -53,7 +54,7 @@ TargetExtWrench= zeros(6,1);                   % タゲ外力[ BaseForce  ]
 StartCPUT = cputime;
 StartT = clock();
 
-%シミュレーションループスタート
+% シミュレーションループスタート
 for time = minus_time : d_time : endtime 
     clc
     time %#ok<NOPTS> 
@@ -86,7 +87,7 @@ end
 % pngfileにpngファイル保存
 make_2dAnime("Anime.txt", paths, Parameters)
 
-%ファイルクローズ
+% ファイルクローズ
 fclose('all');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

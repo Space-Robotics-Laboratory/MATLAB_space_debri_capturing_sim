@@ -18,8 +18,10 @@
 % CALC_GJを編集して作成
 % 
 % CALC_GJ_2ARM returns generalized jacobian of 2 arm robot, GJ2A ( 12*n )
+%                      base-tip jacobian, Jb = [ Jb_L; Jb_R ]    ( 12*6 )
+%                      inertia matrix, HH                        (6+n * &+n)
 
-function GJ2A = calc_gj_2arm( LP, SV, num_eL, num_eR )
+function [GJ2A, Jb, HH] = calc_gj_2arm( LP, SV, num_eL, num_eR )
 
 % Calculate inertia matrices, HH
 HH = calc_hh( LP, SV );
@@ -50,6 +52,9 @@ Hbm_R = HH(1:6, 6+jointsR);
 % Calculate the Generalized Jacobian
 GJ2A = [ Jm_L - Jb_L*(Hb\Hbm_L), -Jb_L*(Hb\Hbm_R)       ;
          -Jb_R*(Hb\Hbm_L)      , Jm_R - Jb_R*(Hb\Hbm_R)];
+
+% base tip jacobian
+Jb = [Jb_L; Jb_R];
  
 
 

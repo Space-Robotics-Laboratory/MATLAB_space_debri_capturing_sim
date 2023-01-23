@@ -1,6 +1,9 @@
 %%%%%%%%%%DualArmTestBed Simulation%%%%%%%%%%
-%2023/01/01 Akiyoshi Uchida
-%SpaceDyn_v2r0
+% 2023/01/01 Akiyoshi Uchida
+% SpaceDyn_v2r0
+% 
+% main simulation
+%
 
 clc
 clear all
@@ -23,9 +26,9 @@ Gravity = [ 0 0 0 ]'; % 重力（地球重力は Gravity = [0 0 -9.8]）
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % パス設定
-FileNameList = ["Anime.txt"];                     %保存するデータファイル名
-paths = make_DataFolder(Parameters);              %保存先フォルダ作成．パスはParamSettingで設定
-FileIDList = FilesOpen(paths, FileNameList);      %ファイルを開き，ファイルIDを配列に格納．現状意味ないかも
+FileNameList = ["Anime.txt"];                     % 保存するデータファイル名
+paths = make_DataFolder(Parameters);              % 保存先フォルダ作成．パスはParamSettingで設定
+FileIDList = FilesOpen(paths, FileNameList);      % ファイルを開き，ファイルIDを配列に格納．現状意味ないかも
 
 % 保存用データ見出し
 AnimeTitle = set_AnimeTitleHeader();
@@ -41,29 +44,24 @@ endtime    = Parameters.EndTime;               % 終了時間設定．ここで�
 minus_time = Parameters.MinusTime;             % マイナス時間設定．ここで変更しない
 
 % ロボット・ターゲット力初期化
-RoboJointTau   = zeros(6,1);                   % ロボ関節制御トルク，手首関節を除くことに注意 
+% RoboJointTau   = zeros(6,1);                   % ロボ関節制御トルク，手首関節を除くことに注意 
+RoboJointTau = zeros(8,1);                     % ロボ関節制御トルク．手首を能動関節に設定
 RoboExtWrench  = zeros(6,3);                   % ロボ外力[ BaseForce    LeftEdgeForce   RightEdgeForce  ]
                                                % 　　　　[ BaseTorque   LeftEdgeTorque  RightEdgeTorque ]
-TargetExtWrench= zeros(6,1);                   % タゲ外力[ BaseForce ]
-                                               % 　　　　[ BaseTorque  ] 
+TargetExtWrench= zeros(6,1);                   % タゲ外力[ BaseForce  ]
+                                               % 　　　　[ BaseTorque ] 
 % タイマースタート                                               
 StartCPUT = cputime;
 StartT = clock();
 
-% RoboExtWrench(1:2, 2) = [0.1, -0.1]';
-% RoboExtWrench(6, 2) = 0.1;
+% 外力を一時的に設定
+RoboExtWrench(1:2, 2) = [0.1, 0.1]';
+% RoboExtWrench(6, 2) = 0.5;
 
-%シミュレーションループスタート
+% シミュレーションループスタート
 for time = minus_time : d_time : endtime 
     clc
     time %#ok<NOPTS> 
-
-    if time < (endtime + minus_time)/ 2
-        phase = 1;
-    else
-        phase = 2;
-    end
-    
 
     % データ書き出し
     % Anime
@@ -73,16 +71,15 @@ for time = minus_time : d_time : endtime
     DataOut(FileIDList(FileNameList=="Anime.txt"), dataAnime, Parameters.DataType, Parameters.Delimiter)
     
     % 目標手先速度計算
-    DesiredHandVel = calc_DesiredHandVelocity(phase, TargetSquare_1, DualArmRobo_1);   % [LeftVel; RoghtVel]
+    DesiredHandVel = calc_DesiredHandVelocity(TargetSquare_1, DualArmRobo_1);   % [LeftVel; RoghtVel]
 
     % 手先外力センサー値計算
+    % currentry, not used
     RoboExtEst = zeros(6, 3);
     RoboExtEst = RoboExtWrench;
 
     % 目標関節トルク計算
-    RoboJointTau_0 = calc_JointTau(DualArmRobo_1, DesiredHandVel, RoboExtEst, Parameters);
-    RoboJointTau = RoboJointTau_0([1:3, 5:7]);
-    DualArmRobo_1.SV.tau([4,8]) = RoboJointTau_0([4,8]);
+    RoboJointTau = calc_JointTau(DualArmRobo_1, DesiredHandVel, RoboExtEst);
 
     % 運動状態更新
     DualArmRobo_1  = DualArmRobo_1.update(RoboJointTau, RoboExtWrench, Parameters);    % methodを呼び出した後自身に代入することを忘れない！
@@ -95,7 +92,7 @@ end
 % pngfileにpngファイル保存
 make_2dAnime("Anime.txt", paths, Parameters)
 
-%ファイルクローズ
+% ファイルクローズ
 fclose('all');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

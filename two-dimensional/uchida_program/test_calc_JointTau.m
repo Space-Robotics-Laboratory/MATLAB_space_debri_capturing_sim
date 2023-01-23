@@ -27,7 +27,7 @@ DualArmRobo_2  = DualArmRobo(Parameters);
 TargetSquare_1 = TargetSquare(Parameters);
 
 % ロボット・ターゲット力初期化
-RoboJointTau   = zeros(8,1);                   % ロボ関節制御トルク，手首関節を除くことに注意 -> 一度入れる
+RoboJointTau   = zeros(6,1);                   % ロボ関節制御トルク，手首関節を除くことに注意 
 RoboExtWrench  = zeros(6,3);                   % ロボ外力[ BaseTorque   LeftEdgeTorque  RightEdgeTorque ]
                                                % 　　　　[ BaseForce    LeftEdgeForce   RightEdgeForce  ]  
 TargetExtWrench= zeros(6,1);                   % タゲ外力[ BaseTorque ]
@@ -39,13 +39,13 @@ for time = 1:20
     DesiredHandVel = calc_DesiredHandVelocity(TargetSquare_1, DualArmRobo_2);   % [LeftVel, RoghtVel]
 
     % 目標関節トルク計算
-    RoboJointTau = calc_JointTau(DualArmRobo_2, DesiredHandVel);
+    RoboJointTau = calc_JointTau(DualArmRobo_2, DesiredHandVel, Parameters);
 
     % 運動状態更新
     DualArmRobo_2  = DualArmRobo_2.update(RoboJointTau, RoboExtWrench, Parameters);    % methodを呼び出した後自身に代入することを忘れない！
 end
 
-% f1 = @() calc_gj_2arm(DualArmRobo_2);
+% f1 = @() calc_gj_2arm(DualArmRobo_2.LP, DualArmRobo_2.SV, num_eL, num_eR);
 % f2 = @() calc_gj_DualArmRobo(DualArmRobo_2);
 % f3 = @() calc_gj(DualArmRobo_2.LP, DualArmRobo_2.SV, 1);
 % 
@@ -53,8 +53,8 @@ end
 % timeit(f2)
 % timeit(f3)
 
-calc_gj_DualArmRobo(DualArmRobo_2);
-% calc_gj_2arm(DualArmRobo_2);
+% calc_gj_DualArmRobo(DualArmRobo_2);
+% calc_gj_2arm(DualArmRobo_2.LP, );
 
 
 
