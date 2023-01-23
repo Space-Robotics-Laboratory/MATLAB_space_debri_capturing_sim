@@ -62,6 +62,7 @@ function make_2dAnime(datfilename, paths, Parameters)
             daspect([1, 1, 1]);
 
             hold on
+            grid on
     
             % ロボアーム描画
             % ジョイント
