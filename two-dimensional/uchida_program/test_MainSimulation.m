@@ -55,9 +55,9 @@ StartCPUT = cputime;
 StartT = clock();
 
 % 外力を一時的に設定
-RoboExtWrench(1:2, 2) = [0, 0.1]';
-RoboExtWrench(1:2, 3) = [0, 0.1]';
-% RoboExtWrench(6, 2) = 0.1;
+% RoboExtWrench(1:2, 2) = [0, 0.1]';
+% RoboExtWrench(1:2, 3) = [0, 0.1]';
+RoboExtWrench(6, 2) = 0.035;
 
 % シミュレーションループスタート
 for time = minus_time : d_time : endtime 
@@ -76,7 +76,7 @@ for time = minus_time : d_time : endtime
 
     % 手先外力センサー値計算
     RoboExtEst = zeros(6, 3);
-    RoboExtEst = RoboExtWrench;
+%     RoboExtEst = RoboExtWrench;
 
     % 目標関節トルク計算
     RoboJointTau = calc_JointTau(DualArmRobo_1, DesiredHandVel, RoboExtEst);

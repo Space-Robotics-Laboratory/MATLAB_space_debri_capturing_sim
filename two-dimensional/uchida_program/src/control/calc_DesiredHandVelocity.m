@@ -6,7 +6,7 @@
 % 関節自由度が6なので，desiredVelocityも6次元
 
 function vel = calc_DesiredHandVelocity(Target, Robo)
-    vel_L = [0, 0.02, 0]';
+    vel_L = [0, -0.04, 0]';
     vel_R = [0, 0, 0]';
     vel = [vel_L; vel_R];
 end
