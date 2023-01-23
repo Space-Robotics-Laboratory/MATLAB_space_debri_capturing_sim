@@ -19,17 +19,14 @@
 % 
 % CALC_GJ_2ARM returns generalized jacobian of 2 arm robot, GJ2A ( 12*n )
 
-function GJ2A = calc_gj_2arm( DualArmRobo )
-
-LP = DualArmRobo.LP;
-SV = DualArmRobo.SV;
+function GJ2A = calc_gj_2arm( LP, SV, num_eL, num_eR )
 
 % Calculate inertia matrices, HH
 HH = calc_hh( LP, SV );
 
 % Find joint connection from the end-link to the 0-th link
-jointsL = DualArmRobo.jointsL;
-jointsR = DualArmRobo.jointsR;
+jointsL = j_num(LP, num_eL);
+jointsR = j_num(LP, num_eR);
 
 % calculate Jacobian and inertia matrices
 Jm_L_ = calc_je( LP, SV, jointsL );
