@@ -59,6 +59,8 @@ function make_2dAnime(datfilename, paths, Parameters)
             plot(PolyBase)
             xlim( [ -0.5, 0.5 ] ); 
             ylim( [ -0.2, 0.8 ] );
+            xticks( -0.5:0.1:0.5 );
+            yticks( -0.2:0.1:0.8 );
             daspect([1, 1, 1]);
 
             hold on

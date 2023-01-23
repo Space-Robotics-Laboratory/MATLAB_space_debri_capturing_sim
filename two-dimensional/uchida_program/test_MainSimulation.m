@@ -55,8 +55,9 @@ StartCPUT = cputime;
 StartT = clock();
 
 % 外力を一時的に設定
-RoboExtWrench(1:2, 2) = [0.1, 0.1]';
-% RoboExtWrench(6, 2) = 0.5;
+RoboExtWrench(1:2, 2) = [0, 0.1]';
+RoboExtWrench(1:2, 3) = [0, 0.1]';
+% RoboExtWrench(6, 2) = 0.1;
 
 % シミュレーションループスタート
 for time = minus_time : d_time : endtime 
@@ -74,7 +75,6 @@ for time = minus_time : d_time : endtime
     DesiredHandVel = calc_DesiredHandVelocity(TargetSquare_1, DualArmRobo_1);   % [LeftVel; RoghtVel]
 
     % 手先外力センサー値計算
-    % currentry, not used
     RoboExtEst = zeros(6, 3);
     RoboExtEst = RoboExtWrench;
 

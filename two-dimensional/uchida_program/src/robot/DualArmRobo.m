@@ -54,6 +54,11 @@ classdef DualArmRobo
             obj.SV.A0 = rpy2dc( obj.SV.Q0 )';           % 初期姿勢から方向余弦行列を算出
             obj.SV.v0 = Parameters.BaseVelocity0;       % 初期並進速度
             obj.SV.w0 = Parameters.BaseAngVel0;         % 初期角速度
+            
+            % ロボットの初期関節角度を設定
+            obj.SV.q = [ Parameters.LinkAngLeft; Parameters.LinkAngRight ];    % 縦に格納
+            
+            % 設定反映
             obj.SV = calc_aa(  obj.LP, obj.SV );        % 各リンクの座標返還行列(方向余弦行列)の計算(リンクi->慣性座標系)
             obj.SV = calc_pos( obj.LP, obj.SV );        % 各リンク重心位置の計算
 
@@ -67,9 +72,6 @@ classdef DualArmRobo
             obj.SV.QeR= dc2rpy( obj.ORI_e_R' );                                      % 右端リンクのオイラー角表現
             obj.POS_es_L = calc_ArmTips(obj.POS_e_L, obj.ORI_e_L, Parameters);       % 左手の先端球位置 3*2
             obj.POS_es_R = calc_ArmTips(obj.POS_e_R, obj.ORI_e_R, Parameters);       % 右手の先端球位置 3*2
-
-            % ロボットの初期関節角度を設定
-            obj.SV.q = [ Parameters.LinkAngLeft; Parameters.LinkAngRight ];    % 縦に格納
         end
         
         % 動力学を計算し，単位時間でロボットの状態を更新する．実際のシミュレーションループでこれを回す．

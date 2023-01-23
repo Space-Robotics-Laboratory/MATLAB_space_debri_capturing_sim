@@ -9,8 +9,8 @@
 %         RoboExtWrench 6*3(base, leftEdgem, rightEdge) 
 % output: JointTorque 8*1, but only used 6*1
 %
-% to do: 手先力がある場合にも手先速度を制御可能にする作業が残っている
-%        HHを計算する際，複数の関数で計算しているのでロスがある．関数の構造を変更することを検討．
+% to do: HHを計算する際，複数の関数で計算しているのでロスがある．関数の構造を変更することを検討．
+% 
 
 function JointTau = calc_JointTau(DualArmRobo, DesiredHandVel, RoboExtEst)
 global d_time
@@ -28,6 +28,7 @@ global d_time
     Hb = HH(1:6, 1:6);
 
     % 現時刻の運動量計算
+    % 現時刻でのロボット速度を使用している．想定される環境に注意
     PL = HH(1:6, 1:6) * [SV.v0; SV.w0] + HH(1:6, 7:6+LP.num_q) * SV.qd;
 
     % 目標自由度削減 6*8
@@ -41,5 +42,4 @@ global d_time
     qd_des = pinv(Jg_s) * (DesiredHandVel - Jb_s * (Hb\PL));    % 関節角速度．運動量変化について考える.
     qdd_des = (qd_des - SV.qd) / d_time;                        % 関節角加速度
     JointTau = H_asuta * qdd_des + C_asuta - Jg' * F_c;         % 8関節トルク（set wrist active joint）
-%     JointTau = JointTau_0([1:3, 5:7]');
 end
