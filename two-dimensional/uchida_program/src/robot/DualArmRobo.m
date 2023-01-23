@@ -66,23 +66,23 @@ classdef DualArmRobo
         
         % 動力学を計算し，単位時間でロボットの状態を更新する．実際のシミュレーションループでこれを回す．
         % Tauは関節制御トルク.手首を除く，joint[1 2 3, 5 6 7]'であることに注意
-        % ExtWrenchは外力レンチ[[BaseTorque; BaseForce],[LeftEdgeTorque; LeftEdgeForce], [RightEdgeTorque; RightEdgeForce]]
+        % ExtWrenchは外力レンチ[[BaseForce; BaseTorque],[LeftEdgeForce; LeftEdgeTorque], [RightEdgeForce; RightEdgeTorque]]
         % SV.F0 ; [0, 0, 0]'
         % SV.Fe ; zeros(3, 8)
         function obj = update(obj, JointTau, ExtWrench, Parameters)
-            %能動的な力
-%             obj.SV.tau([1,2,3,5,6,7]) = JointTau;   % 関節トルク代入
-            obj.SV.tau = JointTau;
+            % 能動的な力
+            obj.SV.tau([1,2,3,5,6,7]) = JointTau;   % 関節トルク代入
 
-            %受動的な力
+            % 受動的な力
 %             obj.SV.tau([4, 8]) = -Parameters.WristDamp  * obj.SV.qd([4, 8]) ...      % 手首関節トルクをバネダンパ系で計算
 %                                  -Parameters.WristElast * obj.SV.q([4, 8]);          % 物理係数はパラメータで設定
-            obj.SV.T0 = ExtWrench(1:3, 1);          % ベーストルク
-            obj.SV.F0 = ExtWrench(4:6, 1);          % ベース力
-            obj.SV.Te(:, 4) = ExtWrench(1:3, 2);    % 左手手先トルク
-            obj.SV.Fe(:, 4) = ExtWrench(4:6, 2);    % 左手手先力
-            obj.SV.Te(:, 8) = ExtWrench(1:3, 3);    % 右手手先トルク
-            obj.SV.Fe(:, 8) = ExtWrench(4:6, 3);    % 右手手先力
+%             obj.SV.tau([4, 8]') = 0.0;
+            obj.SV.F0 = ExtWrench(1:3, 1);          % ベース力
+            obj.SV.T0 = ExtWrench(4:6, 1);          % ベーストルク
+            obj.SV.Fe(:, 4) = ExtWrench(1:3, 2);    % 左手手先力
+            obj.SV.Te(:, 4) = ExtWrench(4:6, 2);    % 左手手先トルク
+            obj.SV.Fe(:, 8) = ExtWrench(1:3, 3);    % 右手手先力
+            obj.SV.Te(:, 8) = ExtWrench(4:6, 3);    % 右手手先トルク
 
             % 順運動学によって関節位置，角度を計算
             obj.SV = f_dyn_rk2(obj.LP, obj.SV);                                      % ロボットに関する順動力学
