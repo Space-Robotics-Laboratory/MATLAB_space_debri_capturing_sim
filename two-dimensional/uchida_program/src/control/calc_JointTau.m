@@ -32,14 +32,15 @@ global d_time
     PL = HH(1:6, 1:6) * [SV.v0; SV.w0] + HH(1:6, 7:6+LP.num_q) * SV.qd;
 
     % 目標自由度削減 6*8
-    Jg_s = Jg([1,2,6, 7,8,12], :);
+    Jg_s = Jg([1,2,6, 7,8,12], :);                      
+%     Jg_s(:, [4,8]) = 0;                     % jg_sは目標速度の次元を削減し，受動関節角速度0を仮定したヤコビアン
     Jb_s = Jb([1,2,6, 7,8,12], :);
 
     % 手先にかかる外力の推定値を代入 
     F_c = reshape(RoboExtEst(:, 2:3), [12,1]);
 
     % 目標関節角速度計算
-    qd_des = pinv(Jg_s) * (DesiredHandVel - Jb_s * (Hb\PL));    % 関節角速度．運動量変化について考える.
-    qdd_des = (qd_des - SV.qd) / d_time;                        % 関節角加速度
-    JointTau = H_asuta * qdd_des + C_asuta - Jg' * F_c;         % 8関節トルク（set wrist active joint）
+    qd_des = pinv(Jg_s) * (DesiredHandVel - Jb_s * (Hb\PL));                % 関節角速度．運動量変化について考える.
+    qdd_des = (qd_des - SV.qd) / d_time;                                    % 関節角加速度
+    JointTau = H_asuta * qdd_des + C_asuta - Jg' * F_c;                     % 8関節トルク（set wrist active joint）
 end

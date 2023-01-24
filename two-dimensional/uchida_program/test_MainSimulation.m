@@ -57,7 +57,7 @@ StartT = clock();
 % 外力を一時的に設定
 % RoboExtWrench(1:2, 2) = [0, 0.1]';
 % RoboExtWrench(1:2, 3) = [0, 0.1]';
-RoboExtWrench(6, 2) = 0.035;
+% RoboExtWrench(6, 2) = 0.035;
 
 % シミュレーションループスタート
 for time = minus_time : d_time : endtime 
@@ -72,7 +72,7 @@ for time = minus_time : d_time : endtime
     DataOut(FileIDList(FileNameList=="Anime.txt"), dataAnime, Parameters.DataType, Parameters.Delimiter)
     
     % 目標手先速度計算
-    DesiredHandVel = calc_DesiredHandVelocity(TargetSquare_1, DualArmRobo_1);   % [LeftVel; RoghtVel]
+    DesiredHandVel = calc_DesiredHandVelocity(time);   % [LeftVel; RoghtVel]
 
     % 手先外力センサー値計算
     RoboExtEst = zeros(6, 3);

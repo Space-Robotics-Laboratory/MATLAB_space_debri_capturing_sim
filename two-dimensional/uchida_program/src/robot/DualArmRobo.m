@@ -84,8 +84,8 @@ classdef DualArmRobo
             obj.SV.tau = JointTau;                  % 関節トルク代入．tau([4,8])は上書きされる．
 
             % 受動的な力
-%             obj.SV.tau([4, 8]) = -Parameters.WristDamp  * obj.SV.qd([4, 8]) ...      % 手首関節トルクをバネダンパ系で計算
-%                                  -Parameters.WristElast * obj.SV.q([4, 8]);          % 物理係数はパラメータで設定
+            obj.SV.tau([4, 8]) = -Parameters.WristDamp  * obj.SV.qd([4, 8]) ...      % 手首関節トルクをバネダンパ系で計算
+                                 -Parameters.WristElast * obj.SV.q([4, 8]);          % 物理係数はパラメータで設定
             obj.SV.F0 = ExtWrench(1:3, 1);          % ベース力
             obj.SV.T0 = ExtWrench(4:6, 1);          % ベーストルク
             obj.SV.Fe(:, 4) = ExtWrench(1:3, 2);    % 左手手先力

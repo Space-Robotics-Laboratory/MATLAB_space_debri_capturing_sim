@@ -110,8 +110,10 @@ function make_2dAnime(datfilename, paths, Parameters)
 
 
             % 図をpng形式で保存
-%             PictureName = sprintf('%s%d.png', pngfilename, index);              % png名定義
-%             saveas(figure(FigureNumber), [paths.pngfile, '/', PictureName]);    % png保存
+            if count == datanum(1)
+            PictureName = sprintf('%s%d.png', pngfilename, index);              % png名定義
+            saveas(figure(FigureNumber), [paths.pngfile, '/', PictureName]);    % png保存
+            end
 %             index = index + 1;
         end
     end
