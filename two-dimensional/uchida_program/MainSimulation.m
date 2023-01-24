@@ -50,13 +50,18 @@ RoboExtWrench  = zeros(6,3);                   % ロボ外力[ BaseForce    Left
                                                % 　　　　[ BaseTorque   LeftEdgeTorque  RightEdgeTorque ]
 TargetExtWrench= zeros(6,1);                   % タゲ外力[ BaseForce  ]
                                                % 　　　　[ BaseTorque ] 
+
+% ロボット初期位置
+StartPos = [[DualArmRobo_1.POS_e_L;DualArmRobo_1.ORI_e_L(3),] [DualArmRobo_1.POS_e_R; DualArmRobo_1.ORI_e_R(3)]]
+EndPos = [[-0.1 0.4 0]', [0.1 0.4 0]']
+
 % タイマースタート                                               
 StartCPUT = cputime;
 StartT = clock();
 
 % シミュレーションループスタート
 for time = minus_time : d_time : endtime 
-    clc
+    %clc
     time %#ok<NOPTS> 
 
     % データ書き出し
@@ -67,10 +72,9 @@ for time = minus_time : d_time : endtime
     DataOut(FileIDList(FileNameList=="Anime.txt"), dataAnime, Parameters.DataType, Parameters.Delimiter)
     
     % 目標手先速度計算
-    DesiredHandVel = calc_DesiredHandVelocity(time);   % [LeftVel; RoghtVel]
+    DesiredHandVel = calc_DesiredHandVelocity(time, 0, 2, StartPos, EndPos);   % [LeftVel; RoghtVel]
 
     % 手先外力センサー値計算
-    % currentry, not used
     RoboExtEst = zeros(6, 3);
 
     % 目標関節トルク計算
