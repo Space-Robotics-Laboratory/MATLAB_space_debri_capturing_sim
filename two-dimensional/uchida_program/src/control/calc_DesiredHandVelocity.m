@@ -4,8 +4,8 @@
 % 
 % 関節自由度が6なので，desiredVelocityも6次元
 %
-% input : Time scaler, Pos [[xL, yL, thetaL]', [xR, yR, thetaR]']
-% output: vel [[vxL, vyL, wzL]'; [vxR, vyR, wzR]']
+% input : Time scaler, Pos [xL, yL, thetaL, xR, yR, thetaR]'
+% output: vel [vxL, vyL, wzL, vxR, vyR, wzR]'
 % 
 
 function vel = calc_DesiredHandVelocity(CurrentTime, StartTime, DeltaTime, StartPos, EndPos)
@@ -13,15 +13,13 @@ function vel = calc_DesiredHandVelocity(CurrentTime, StartTime, DeltaTime, Start
 
     % 静止状態
     if s < 0 || s > 1
-        vel_L = zeros(3,1);
-        vel_R = zeros(3,1);
+        vel = zeros(6, 1);
 
     % 直線軌道
     % r = r0 + s・(rg - r0 ) 
     else
         drds = (EndPos - StartPos);     % dr/ds
         dsdt = 1 / DeltaTime;           % ds/dt
-        vel_L = drds * dsdt;            % dr/dt = dr/ds * ds/dt
+        vel = drds * dsdt;           % dr/dt = dr/ds * ds/dt
     end
-    vel = [vel_L; vel_R];
 end

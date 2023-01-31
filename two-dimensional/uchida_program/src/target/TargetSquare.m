@@ -1,5 +1,8 @@
 classdef TargetSquare
     properties
+        depth;   % ターゲット縦
+        width;   % ターゲット横
+        height;  % ターゲット高さ  
         LP;      % ターゲットリンクパラメータ
         SV;      % ターゲット状態パラメータ
     end
@@ -18,6 +21,10 @@ classdef TargetSquare
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%% 初期値設定 %%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            % 形状設定
+            obj.depth = Parameters.TargetDepth;
+            obj.width = Parameters.TargetWidth;
+            obj.height = Parameters.TargetHeight;
             
             %%%%%%%%%% ターゲット初期値設定 %%%%%%%%%%
            

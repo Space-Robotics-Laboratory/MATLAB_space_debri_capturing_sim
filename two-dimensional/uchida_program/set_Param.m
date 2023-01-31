@@ -1,10 +1,10 @@
-function Param = ParamSetting()
+function Param = set_Param()
 
 %%%%%%%%%%パラメータ設定%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 直方体ベース，左右対称の4つのリンクを持つ双腕ロボットを想定．
 % ベースに近いリンクからa,b,c,dとし，リンクdは刺股型のエンドエフェクタを持つ．
 % 左手リンクが[1,2,3,4], 右手リンクが[5,6,7,8]
-% ロボットモデルのそのものを変更する場合はリンクパラメータ自体を変更する -> DualArm_FourTips_LP_v3.m
+% ロボットモデルのそのものを変更する場合はリンクパラメータ自体を変更する -> DualArmRobo_LP_v3.m
 % パラメータ定義にParamのメンバーを利用している箇所は，基本的に変更しないが，構造を理解していれば変更しても良い
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -63,11 +63,11 @@ Param.LdInertia = [1e9   0 0;
 % animation用．ダイナミクス計算には直接関係ないが，初期のパラメータではベース重心から関節までの位置を定義するのに使用している．
 % 変更時，Param.BaseCenter2Jに注意
 % 二次元モデルではheight = 0
-Param.BaseDepth  = 0.22;
-Param.BaseWidth  = 0.32;
-Param.BaseHeight = 0;
+Param.BaseDepth  = 0.22;            % 縦（奥行き）
+Param.BaseWidth  = 0.32;            % 横
+Param.BaseHeight = 0;               % 高さ
 
-% ロボットベース幾何中心に対する質量重心の相対位置
+% ロボットベース質量重心に対する幾何中心の相対位置
 Param.BaseMCenter2GCenter = [0, 0, 0]';
 
 % ロボットリンク長さ及びエンドエフェクタ形状パラメータ[m]
@@ -166,7 +166,7 @@ Param.TargetInertia = [ 1e9     0   0;
 % ターゲットサイズ[m]
 % 二次元モデルではheight = 0
 Param.TargetDepth  = 0.16;
-Param.TaegetWidth  = 0.16;
+Param.TargetWidth  = 0.16;
 Param.TargetHeight = 0;
 
 % ターゲット幾何中心に対する質量重心の相対位置

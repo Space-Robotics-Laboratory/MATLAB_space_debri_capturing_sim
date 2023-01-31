@@ -6,7 +6,7 @@ function make_2dAnime(datfilename, paths, Parameters)
     BaseWidth = Parameters.BaseWidth;                               % 横長さ
     BaseDepth = Parameters.BaseDepth;                               % 縦長さ
     BaseMCenter2GCenter = Parameters.BaseMCenter2GCenter(1:2);      % 質量重心から幾何中心への相対位置ベクトル
-    TargetWidth = Parameters.TaegetWidth;                           % 横長さ
+    TargetWidth = Parameters.TargetWidth;                           % 横長さ
     TargetDepth = Parameters.TargetDepth;                           % 縦長さ
     TargetMCenter2GCenter = Parameters.TargetMCenter2GCenter(1:2);  % 質量重心から幾何中心への相対位置ベクトル
     LdGamma = Parameters.LdGamma;                                   % 阿部さん修論参照
