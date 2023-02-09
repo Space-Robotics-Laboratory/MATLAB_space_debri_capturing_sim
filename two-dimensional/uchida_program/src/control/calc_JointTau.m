@@ -18,6 +18,7 @@ global d_time
     SV = DualArmRobo.SV;
     num_eL = DualArmRobo.num_eL;
     num_eR = DualArmRobo.num_eR;
+    jointTrqLim = DualArmRobo.jointTrqLim;
 
 
     % 双腕ロボ一般化慣性行列，一般化速度非線形項計算
@@ -28,7 +29,7 @@ global d_time
     Hb = HH(1:6, 1:6);
 
     % 現時刻の運動量計算
-    % 現時刻でのロボット速度を使用している．想定される環境に注意
+    % 現時刻でのロボット速度を使用している．ロボット速度が既知かどうかに注意
     PL = HH(1:6, 1:6) * [SV.v0; SV.w0] + HH(1:6, 7:6+LP.num_q) * SV.qd;
 
     % 目標自由度削減 6*8
@@ -42,5 +43,6 @@ global d_time
     % 目標関節角速度計算
     qd_des = pinv(Jg_s) * (DesiredHandVel - Jb_s * (Hb\PL));                % 関節角速度．運動量変化について考える.
     qdd_des = (qd_des - SV.qd) / d_time;                                    % 関節角加速度
-    JointTau = H_asuta * qdd_des + C_asuta - Jg' * F_c;                     % 8関節トルク（set wrist active joint）
+    JointTauCal = H_asuta * qdd_des + C_asuta - Jg' * F_c;                  % 8関節トルク（set wrist active joint）
+    JointTau = min_abs(JointTauCal, jointTrqLim);                           % トルク限界値でフィルタ
 end

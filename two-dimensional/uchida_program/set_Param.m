@@ -59,6 +59,10 @@ Param.LdInertia = [1e9   0 0;
                      0 1e9 0;
                      0   0 0.000254];
 
+% ロボット関節条件
+Param.JointAngLim = repmat(pi-deg2rad(10), [8,1]);
+Param.JointTrqLim = repmat(0.5, [8,1]);
+
 % ロボットベース部分サイズ[m]
 % animation用．ダイナミクス計算には直接関係ないが，初期のパラメータではベース重心から関節までの位置を定義するのに使用している．
 % 変更時，Param.BaseCenter2Jに注意
@@ -76,8 +80,8 @@ Param.BaseMCenter2GCenter = [0, 0, 0]';
 Param.LaLength = 0.251;
 Param.LbLength = 0.181;
 Param.LcLength = 0.050;
-Param.LdH      = 0.05;
-Param.LdGamma  = deg2rad(36);
+Param.LdH      = sqrt(2) * .05;%0.05;
+Param.LdGamma  = pi * .25;%deg2rad(36);
 Param.LdD      = 0.02;
 
 % ベース重心から，ベースに直接結合しているリンク関節までの距離．直接結合していないリンクについては0.

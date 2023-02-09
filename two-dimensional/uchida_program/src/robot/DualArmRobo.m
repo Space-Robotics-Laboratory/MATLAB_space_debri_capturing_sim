@@ -15,6 +15,8 @@ classdef DualArmRobo
         height;             % ベース高さ
         wristElast;         % 手首弾性係数
         wristDamp;          % 手首減衰係数
+        jointAngLim;        % 関節可動範囲
+        jointTrqLim;        % モータトルク限界
         LP;                 % ロボットリンクパラメータ
         SV;                 % ロボット状態パラメータ
         num_eL;             % 左手手先の番号 1
@@ -57,6 +59,10 @@ classdef DualArmRobo
             obj.r = Parameters.LdD * .5;
             obj.wristElast = Parameters.WristElast;
             obj.wristDamp = Parameters.WristDamp;
+
+            % モータ限界値設定
+            obj.jointAngLim = Parameters.JointAngLim;
+            obj.jointTrqLim = Parameters.JointTrqLim;
 
             % ベースからnum_eで指定された手先までを結ぶ関節(リンク)を求める  1アーム多リンクなら1, リンクの数を表す
             obj.num_eL = 1;

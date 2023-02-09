@@ -44,11 +44,11 @@ dualArmRobo_1  = DualArmRobo(parameters);
 targetSquare_1 = TargetSquare(parameters);
 
 % シミュレーション準備
-endTime    = parameters.EndTime;               % 終了時間設定．ここで変更しない
-minusTime = parameters.MinusTime;             % マイナス時間設定．ここで変更しない
+endTime    = parameters.EndTime;               % 終了時間設定．
+minusTime = parameters.MinusTime;             % マイナス時間設定．
 
 % ロボット・ターゲット力初期化
-roboJointTau = zeros(8,1);                     % ロボ関節制御トルク．手首を除くことに注意
+roboJointTau = zeros(8,1);                     % ロボ関節制御トルク．手首は受動関節であることに注意
 roboExtWrench  = zeros(6,3);                   % ロボ外力[ BaseForce    LeftEdgeForce   RightEdgeForce  ]
                                                % 　　　　[ BaseTorque   LeftEdgeTorque  RightEdgeTorque ]
 targetExtWrench= zeros(6,1);                   % タゲ外力[ BaseForce  ] 
@@ -82,7 +82,8 @@ for time = minusTime : d_time : endTime
     desiredHandVel = calc_DesiredHandVelocity(time, 0, 1, startPos, endPos);   % [LeftVel; RoghtVel] 6*1
 
     % 手先外力センサー値計算
-    roboExtEst = zeros(6, 3);
+%     roboExtEst = zeros(6, 3);
+    roboExtEst = roboExtWrench;
 
     % 目標関節トルク計算
     roboJointTau = calc_JointTau(dualArmRobo_1, desiredHandVel, roboExtEst);

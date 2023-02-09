@@ -35,11 +35,9 @@ TargetExtWrench= zeros(6,1);                   % タゲ外力[ BaseTorque ]
 
 %シミュレーションループスタート
 for time = 1:20
-    % 目標手先速度計算
-    DesiredHandVel = calc_DesiredHandVelocity(TargetSquare_1, DualArmRobo_2);   % [LeftVel, RoghtVel]
-
-    % 目標関節トルク計算
-    RoboJointTau = calc_JointTau(DualArmRobo_2, DesiredHandVel, Parameters);
+    % 接触力計算
+    [RoboExtWrench(:, 2:3), TargetExtWrench] = calc_ContactForce(DualArmRobo_2, TargetSquare_1, Parameters.ContactElast, Parameters.ContactDamp);
+    
 
     % 運動状態更新
     DualArmRobo_2  = DualArmRobo_2.update(RoboJointTau, RoboExtWrench, Parameters);    % methodを呼び出した後自身に代入することを忘れない！
