@@ -12,5 +12,5 @@ if size(A) ~= size(B)
 end
 C = A;
 i = abs(A) > abs(B);
-C(i) = sign(A(i)) .* B(i);
+C(i) = sign(A(i)) .* abs(B(i));
 end

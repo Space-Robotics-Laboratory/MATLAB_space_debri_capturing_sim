@@ -31,8 +31,12 @@ classdef DualArmRobo
         POS_e_R;            % 右手先の位置 3*1
         ORI_e_L;            % 左手先の姿勢 3*3
         ORI_e_R;            % 右手先の姿勢 3*3
+        VEL_e_L;            % 左手先の速度 3*1
+        VEL_e_R;            % 右手先の速度 3*1
         POS_es_L;           % 左手先端級の位置 3*2
         POS_es_R;           % 右手先端球の位置 3*2
+        VEL_es_L;           % 右手先端球の速度 3*2
+        VEL_es_R;           % 右手先端球の速度 3*2
         DualArmRoboPrevious;% 1ステップ前のRoboclass
     end
     methods
@@ -95,13 +99,20 @@ classdef DualArmRobo
             obj.POS_es_L = calc_ArmTipsPos(obj.POS_e_L, obj.ORI_e_L, Parameters);    % 左手の先端球位置 3*2
             obj.POS_es_R = calc_ArmTipsPos(obj.POS_e_R, obj.ORI_e_R, Parameters);    % 右手の先端球位置 3*2
 
+            % 関節速度初期化
+            obj.SV = calc_vel(obj.LP, obj.SV);                                          % 全リンク重心の並進・回転速度計算
+            obj.VEL_e_L = calc_vel_e(obj.LP, obj.SV, obj.jointsL);                      % 左手先の並進速度計算
+            obj.VEL_e_R = calc_vel_e(obj.LP, obj.SV, obj.jointsR);                      % 右手先の並進速度計算
+            obj.VEL_es_L = calc_ArmTipsVel(obj.VEL_e_L, obj.ORI_e_L, obj.SV.ww(:, 4), Parameters);  % 左手先端球の並進速度計算
+            obj.VEL_es_R = calc_ArmTipsVel(obj.VEL_e_R, obj.ORI_e_R, obj.SV.ww(:, 8), Parameters);  % 右手先端球の並進速度計算
+
             % 前状態初期化
             obj.DualArmRoboPrevious = obj;                                           % 0時間では前状態と現状態が一致
         end
         
         % 動力学を計算し，単位時間でロボットの状態を更新する．実際のシミュレーションループでこれを回す．
         % Tauは関節制御トルク．手首の値(tau[4,8])は上書きされ使用されないことに注意（受動関節のため）．
-        % ExtWrenchは外力レンチ[[BaseForce; BaseTorque],[LeftEdgeForce; LeftEdgeTorque], [RightEdgeForce; RightEdgeTorque]]
+        % ExtWrenchは外力レンチ[[BaseForce; BaseTorque],[LeftEndEfecForce; LeftEndEfecTorque], [RightEndEfecForce; RightEndEfecTorque]]
         % SV.F0 ; [0, 0, 0]'
         % SV.Fe ; zeros(3, 8)
         function obj = update(obj, JointTau, ExtWrench, Parameters)
@@ -122,18 +133,25 @@ classdef DualArmRobo
             obj.SV.Te(:, 8) = ExtWrench(4:6, 3);    % 右手手先トルク
 
             % 順運動学によって関節位置，角度を計算
-            obj.SV = f_dyn_rk2(obj.LP, obj.SV);                                      % ロボットに関する順動力学
-            obj.SV = calc_aa(  obj.LP, obj.SV );                                     % 各リンクの座標返還行列(方向余弦行列)の計算(リンクi->慣性座標系)
-            obj.SV = calc_pos( obj.LP, obj.SV );                                     % 各リンク重心位置の計算
-            [ obj.POS_j_L, obj.ORI_j_L ] = f_kin_j( obj.LP, obj.SV, obj.jointsL );   % 左手 関節位置・姿勢　jointsLは左手の関節数
-            [ obj.POS_j_R, obj.ORI_j_R ] = f_kin_j( obj.LP, obj.SV, obj.jointsR );   % 右手 関節位置・姿勢　jointsRは右手の関節数
-            [ obj.POS_e_L, obj.ORI_e_L ] = f_kin_e( obj.LP, obj.SV, obj.jointsL );   % 左手先位置・姿勢（位置は２つの手先の中点）
-            [ obj.POS_e_R, obj.ORI_e_R ] = f_kin_e( obj.LP, obj.SV, obj.jointsR );   % 右手先位置・姿勢（位置は２つの手先の中点）
-            obj.SV.Q0 = dc2rpy( obj.SV.A0' );                                        % ベース角度のオイラー角表現
-            obj.SV.QeL= dc2rpy( obj.ORI_e_L' );                                      % 左端リンクのオイラー角表現
-            obj.SV.QeR= dc2rpy( obj.ORI_e_R' );                                      % 右端リンクのオイラー角表現
+            obj.SV = f_dyn_rk2(obj.LP, obj.SV);                                         % ロボットに関する順動力学
+            obj.SV = calc_aa(  obj.LP, obj.SV );                                        % 各リンクの座標返還行列(方向余弦行列)の計算(リンクi->慣性座標系)
+            obj.SV = calc_pos( obj.LP, obj.SV );                                        % 各リンク重心位置の計算
+            [ obj.POS_j_L, obj.ORI_j_L ] = f_kin_j( obj.LP, obj.SV, obj.jointsL );      % 左手 関節位置・姿勢　jointsLは左手の関節数
+            [ obj.POS_j_R, obj.ORI_j_R ] = f_kin_j( obj.LP, obj.SV, obj.jointsR );      % 右手 関節位置・姿勢　jointsRは右手の関節数
+            [ obj.POS_e_L, obj.ORI_e_L ] = f_kin_e( obj.LP, obj.SV, obj.jointsL );      % 左手先位置・姿勢（位置は２つの手先の中点）
+            [ obj.POS_e_R, obj.ORI_e_R ] = f_kin_e( obj.LP, obj.SV, obj.jointsR );      % 右手先位置・姿勢（位置は２つの手先の中点）
+            obj.SV.Q0 = dc2rpy( obj.SV.A0' );                                           % ベース角度のオイラー角表現
+            obj.SV.QeL= dc2rpy( obj.ORI_e_L' );                                         % 左端リンクのオイラー角表現
+            obj.SV.QeR= dc2rpy( obj.ORI_e_R' );                                         % 右端リンクのオイラー角表現
             obj.POS_es_L = calc_ArmTipsPos(obj.POS_e_L, obj.ORI_e_L, Parameters);       % 左手の先端球位置 3*2
             obj.POS_es_R = calc_ArmTipsPos(obj.POS_e_R, obj.ORI_e_R, Parameters);       % 右手の先端球位置 3*2
+
+            % 順運動学によって関節速度を計算
+            obj.SV = calc_vel(obj.LP, obj.SV);                                          % 全リンク重心の並進・回転速度計算
+            obj.VEL_e_L = calc_vel_e(obj.LP, obj.SV, obj.jointsL);                      % 左手先の並進速度計算 3*1
+            obj.VEL_e_R = calc_vel_e(obj.LP, obj.SV, obj.jointsR);                      % 右手先の並進速度計算 3*1
+            obj.VEL_es_L = calc_ArmTipsVel(obj.VEL_e_L, obj.ORI_e_L, obj.SV.ww(:, 4), Parameters);  % 左手先端球の並進速度計算 3*2
+            obj.VEL_es_R = calc_ArmTipsVel(obj.VEL_e_R, obj.ORI_e_R, obj.SV.ww(:, 8), Parameters);  % 右手先端球の並進速度計算 3*2
         end
     end
 end

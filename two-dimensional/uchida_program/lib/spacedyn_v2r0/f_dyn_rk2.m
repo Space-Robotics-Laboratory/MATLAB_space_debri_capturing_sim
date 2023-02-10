@@ -35,7 +35,6 @@ global Ez Gravity d_time
 
 % 1st Step
 SVt = f_dyn(LP,SV);
-
 k1_R0 = d_time * SV.v0;
 k1_A0 = aw( SV ) * SV.A0 - SV.A0;
 k1_v0 = d_time * SVt.vd0;
