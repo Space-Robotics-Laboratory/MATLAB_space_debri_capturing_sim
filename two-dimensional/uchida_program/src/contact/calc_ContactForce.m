@@ -3,7 +3,7 @@
 % 2023.1 uchida akiyoshi
 % 
 % input  :DualArmRobo class, Targer class, contactElast, contactDamp
-% output :[EdgeWrench[LeftWrench 6*1, RightWrnech 6*1], TagrgetWrench 6*1, contactState 1*4] ; Wrench = [Fource 3*1; Torque 3*1]
+% output :[roboEdgeWrench[LeftWrench 6*1, RightWrnech 6*1], TagrgetWrench 6*1, contactState 1*4] ; Wrench = [Fource 3*1; Torque 3*1]
 %
 % 接触している辺の判定は，のめり込み量が最も小さい辺を接触辺とする
 % ターゲット辺，エンドエフェクタを同時に扱うために多次元配列を用いて計算しており，
@@ -15,6 +15,7 @@
 function [edgeWrench, targetWrench, isContact] = calc_ContactForce(DualArmRobo, Target, contactElast, contactDamp, contactNu)
     tWidth = Target.width;                      % ターゲット横
     tDepth = Target.depth;                      % ターゲット縦
+    m2G  = Target.m2G(1:2);                     % ターゲット質量重心から幾何中心への相対位置ベクトル 2*1
     targetZ = repmat([0, 0, 1]', [1,4]);        % ターゲットz方向
 
     % ロボット末端位置代入（端球の中点） 
@@ -39,19 +40,19 @@ function [edgeWrench, targetWrench, isContact] = calc_ContactForce(DualArmRobo, 
     r = DualArmRobo.r;
 
     % ターゲット頂点計算
-    targetTipsPos_temp = calc_SquareTips(Target.SV.R0(1:2), tWidth, tDepth, Target.SV.Q0(3));   % 頂点計算 2*4
-    targetTipsPos_temp = [targetTipsPos_temp; zeros(1,4)];                                      % 外積計算のためにvec2からvec3に拡張3*4 後に再び使用
-    targetTipsPos = repmat(targetTipsPos_temp, [1, 1, 4]);                                      % 外積計算のために次元拡張 3*4*4
+    targetTipsPos_temp = calc_SquareTips(Target.SV.R0(1:2)+m2G, tWidth, tDepth, Target.SV.Q0(3));   % 頂点計算 2*4
+    targetTipsPos_temp = [targetTipsPos_temp; zeros(1,4)];                                          % 外積計算のためにvec2からvec3に拡張3*4 後に再び使用
+    targetTipsPos = repmat(targetTipsPos_temp, [1, 1, 4]);                                          % 外積計算のために次元拡張 3*4*4
 
-    % ロボアームエンドエフェクター中心からターゲット頂点までの位置ベクトル
-    endEffecCent2Tip = endEffecPos - targetTipsPos;        % dim1:[xyz], dim2:targetTip, dim3:roboArmEndEfector
+    % ターゲット頂点からロボアームエンドエフェクター中心までの位置ベクトル
+    tip2EndEffecCent = endEffecPos - targetTipsPos;        % dim1:[xyz], dim2:targetTip, dim3:roboArmEndEfector
 
     % ターゲット辺のベクトル計算
     targetSideVec = targetTipsPos(:, [2, 3, 4, 1], :) - targetTipsPos;      % 辺ベクトル計算
     targetSideDire = targetSideVec ./ [tDepth, tWidth, tDepth, tWidth];     % 辺ベクトル正規化
     
     % 外積計算により接触判定
-    side2endEffecCent = cross(endEffecCent2Tip, targetSideDire, 1);         % 端球中心と辺直線の距離計算 3*4*4 内向き
+    side2endEffecCent = cross(tip2EndEffecCent, targetSideDire, 1);         % 端球中心と辺直線の距離計算 3*4*4 内向き
     side2endEffecCircuit = side2endEffecCent(3, :, :) + r;                  % 端球の周と辺直線の距離計算 1*4*4 内向き
     isPenetSide = (side2endEffecCircuit > 0);                               % 端球の周の辺直線へのめり込み判定 1*4*4
     mayContact = all(isPenetSide, 2);                                       % 全ての辺直線に対して条件を満たしていたら接触可能性有　1*1*4
@@ -70,7 +71,7 @@ function [edgeWrench, targetWrench, isContact] = calc_ContactForce(DualArmRobo, 
     % mayContact False のendEfecに注意
     inSideArea = side2endEffecCent(3, :, :) < 0;                            % 端球中心がターゲット辺と並行な領域にあるか判定 1*4*4
     inEdgeArea = inSideArea & inSideArea(:, [4, 1, 2, 3], :);               % 端球中心がターゲット辺直線で作る格子の角領域にあるか判定 1*4*4
-    dEndEfecCent2Tip = vecnorm(endEffecCent2Tip);                           % 端球中心からターゲット頂点までの距離 1*4*4
+    dEndEfecCent2Tip = vecnorm(tip2EndEffecCent);                           % 端球中心からターゲット頂点までの距離 1*4*4
     isTipContact = any((dEndEfecCent2Tip < r) & inEdgeArea, 2);             % 頂点周りの半径rの円内で端球中心が接触か判定 1*1*4
     isSideContact = mayContact & ~any(inEdgeArea, 2);                       % 頂点まわり以外での接触か判定 1*1*4
     isContact = squeeze(isSideContact | isTipContact)';                     % 接触判定 1*4, isContact(:,:,i)はarmTip(i)の接触状況を示す.
@@ -93,22 +94,22 @@ function [edgeWrench, targetWrench, isContact] = calc_ContactForce(DualArmRobo, 
 
     % 接触相対位置計算
     targetSideNorm = cross(targetSideDire(:,:,1), targetZ);                 % ターゲット辺法線ベクトル，内向き 3*4
-    contactPos = endEffecPosLight + r * targetSideNorm(:, contactSide) ;    % 接触位置 3*4
-    target2ContactPos = contactPos - targetR0;                              % ターゲット重心からの相対位置 3*4 非接触点に注意
-    edge2ContactPos  =  contactPos - edgePos;                               % ロボ手先方の相対位置 3*4 非接触点に注意
+    contactPos = endEffecPosLight + r * targetSideNorm(:, contactSide) ;    % 各端球接触位置 3*4
+    target2ContactPos = contactPos - targetR0;                              % ターゲット重心から接触点への相対位置 3*4 非接触点は後に除く
+    edge2ContactPos  =  contactPos - edgePos;                               % ロボ手先からの相対位置 3*4 非接触点に注意
     
     % 弾性項計算
-    elasTargetForces = contactElast * dX;
+    elasTargetForces = contactElast * dX;                                   % 辺法線方向 1*4
 
     % 減衰項計算
     targetContactVel = targetV0 + cross(targetW0, target2ContactPos);       % ターゲット接触点速度 3*4
     velDiff = endeffecVel - targetContactVel;                               % 速度差計算 3*4
-    dV = dot(velDiff, targetSideNorm(:, contactSide));                      % 法線方向速度 1*4
+    dV = dot(velDiff, targetSideNorm(:, contactSide));                      % 法線方向のめり込み速さ 1*4
     dV(:, ~isContact) = 0;                                                  % 非接触点は０
-    dampTargetForces = contactDamp * dV;                                    % 減衰係数による力 3*4
+    dampTargetForces = contactDamp * dV;                                    % 減衰係数による力 1*4
 
     % 摩擦項計算
-    targetForcesN = elasTargetForces + dampTargetForces;                     % 法線方向成分力 1*4
+    targetForcesN = elasTargetForces + dampTargetForces;                    % 法線方向成分力 1*4
     dVH = dot(velDiff, targetSideDire(:, contactSide));                     % 接線方向速度 1*4
     velDiffSign = sign(dVH);                                                % 接線方向速度符号 1*4
     targetForcesM = contactNu * targetForcesN .* velDiffSign;               % 接線方向力

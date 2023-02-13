@@ -1,4 +1,4 @@
-% ターゲットのロボットの接触状況を判定する関数
+% ロボットによるターゲットの捕獲状況を判定する関数
 % 不完全で編集中．現時点では使用しない
 % ２次元でのみ機能する
 %
@@ -9,7 +9,7 @@
 %
 % 
 
-function isContact = judge_Contact(Target, DualArmRobo)
+function isContact = judge_Capture(Target, DualArmRobo)
     tWidth = Target.width;
     tDepth = Target.depth;
 

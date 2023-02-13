@@ -37,6 +37,7 @@ classdef DualArmRobo
         POS_es_R;           % 右手先端球の位置 3*2
         VEL_es_L;           % 右手先端球の速度 3*2
         VEL_es_R;           % 右手先端球の速度 3*2
+        PATHWAY_e;          % 手先の初期位置 3*2
         DualArmRoboPrevious;% 1ステップ前のRoboclass
     end
     methods
@@ -106,6 +107,10 @@ classdef DualArmRobo
             obj.VEL_es_L = calc_ArmTipsVel(obj.VEL_e_L, obj.ORI_e_L, obj.SV.ww(:, 4), Parameters);  % 左手先端球の並進速度計算
             obj.VEL_es_R = calc_ArmTipsVel(obj.VEL_e_R, obj.ORI_e_R, obj.SV.ww(:, 8), Parameters);  % 右手先端球の並進速度計算
 
+            % 手先位置初期値代入
+            obj.PATHWAY_e = [[obj.POS_e_L(1:2); obj.ORI_e_L(3); 0], ...
+                             [obj.POS_e_R(1:2); obj.ORI_e_R(3); 0]];
+
             % 前状態初期化
             obj.DualArmRoboPrevious = obj;                                           % 0時間では前状態と現状態が一致
         end
@@ -120,7 +125,7 @@ classdef DualArmRobo
             obj.DualArmRoboPrevious = obj;
 
             % 能動的な力
-            obj.SV.tau = JointTau;                  % 関節トルク代入．tau([4,8])は受動関節なので，上書きされる．
+            obj.SV.tau = min_abs(JointTau, obj.jointTrqLim);                  % トルク限界値でフィルタした関節トルク代入．tau([4,8])は受動関節なので，上書きされる．
 
             % 受動的な力
             obj.SV.tau([4, 8]) = -obj.wristDamp  * obj.SV.qd([4, 8]) ...      % 手首関節トルクをバネダンパ系で計算

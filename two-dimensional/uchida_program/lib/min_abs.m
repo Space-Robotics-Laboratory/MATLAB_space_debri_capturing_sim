@@ -8,7 +8,7 @@
 
 function C = min_abs(A, B)
 if size(A) ~= size(B)
-    error('A and B should have same size')
+    error('A and B should have the same size')
 end
 C = A;
 i = abs(A) > abs(B);

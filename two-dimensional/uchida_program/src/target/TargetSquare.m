@@ -3,6 +3,7 @@ classdef TargetSquare
         depth;   % ターゲット縦
         width;   % ターゲット横
         height;  % ターゲット高さ  
+        m2G;     % 質量中心から幾何中心への相対位置ベクトル
         LP;      % ターゲットリンクパラメータ
         SV;      % ターゲット状態パラメータ
     end
@@ -25,6 +26,7 @@ classdef TargetSquare
             obj.depth = Parameters.TargetDepth;
             obj.width = Parameters.TargetWidth;
             obj.height = Parameters.TargetHeight;
+            obj.m2G = Parameters.TargetMCenter2GCenter;
             
             %%%%%%%%%% ターゲット初期値設定 %%%%%%%%%%
            

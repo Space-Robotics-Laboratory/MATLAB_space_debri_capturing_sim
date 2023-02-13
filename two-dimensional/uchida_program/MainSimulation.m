@@ -55,12 +55,8 @@ roboExtWrench  = zeros(6,3);                   % ロボ外力[ BaseForce    Left
                                                % 　　　　[ BaseTorque   LeftEndEfecTorque  RightEndEfecTorque ]
 targetExtWrench= zeros(6,1);                   % タゲ外力[ BaseForce  ] 
                                                % 　　　　[ BaseTorque ] 
-% 接触判定初期化 1*1*4 
+% 接触判定初期化 1*4 
 isContact = zeros(1, 4);                       % isContact(1, i) はendEfec i（初期姿勢にて左から）のターゲットへの接触状態bool値
-
-% ロボット初期位置
-startPos = [[dualArmRobo_1.POS_e_L(1:2);dualArmRobo_1.ORI_e_L(3),]; [dualArmRobo_1.POS_e_R(1:2); dualArmRobo_1.ORI_e_R(3)]];
-endPos = [[-0.1 0.3 0]'; [0.1 0.3 0]'];
 
 % タイマースタート                                               
 startCPUT = cputime;
@@ -81,15 +77,12 @@ for time = minusTime : d_time : endTime
     % 接触判定及び接触力計算
     [roboExtWrench(:, 2:3), targetExtWrench, isContact] = calc_ContactForce(dualArmRobo_1, targetSquare_1, cElast, cDamp, cNu);
     
-    % 目標手先速度計算
-    desiredHandVel = calc_DesiredHandVelocity(time, 0, 1, startPos, endPos);   % [LeftVel; RoghtVel] 6*1
-
     % 手先外力センサー値計算
 %     roboExtEst = zeros(6, 3);
     roboExtEst = roboExtWrench;
 
     % 目標関節トルク計算
-    roboJointTau = calc_JointTau(dualArmRobo_1, desiredHandVel, roboExtEst);
+    roboJointTau = calc_JointTau(dualArmRobo_1, targetSquare_1, roboExtEst, 1, time);
     
     % 運動状態更新
     dualArmRobo_1  = dualArmRobo_1.update(roboJointTau, roboExtWrench, parameters);    % methodを呼び出した後自身に代入することを忘れない！
