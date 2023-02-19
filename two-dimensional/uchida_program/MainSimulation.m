@@ -6,10 +6,10 @@
 %
 
 clc
-clear all
+clear 
 close all
 
-%パラメータ設定
+% パラメータ設定
 % 基本的にパラメータはParamSetting内で変更する．
 % ループ内で用いるパラメータはここで呼び出すことによって時間短縮？
 parameters = set_Param();                   
@@ -57,6 +57,12 @@ targetExtWrench= zeros(6,1);                   % タゲ外力[ BaseForce  ]
                                                % 　　　　[ BaseTorque ] 
 % 接触判定初期化 1*4 
 isContact = zeros(1, 4);                       % isContact(1, i) はendEfec i（初期姿勢にて左から）のターゲットへの接触状態bool値
+wasContact = isContact;                        % 1step前のisContact
+
+% ロボット手先目標軌跡([pathwayLeft, pathwayRight]) 4*n*2初期化
+% pathwayは[x(t), y(t), theta(t), t]'の形で，時刻tにおける座標を示す．
+pathway(:, 1, 1) = [dualArmRobo_1.POS_e_L(1:2); dualArmRobo_1.ORI_e_L(3); 0];   % pathwayLeft
+pathway(:, 1, 2) = [dualArmRobo_1.POS_e_R(1:2); dualArmRobo_1.ORI_e_R(3); 0];   % pathwayRight
 
 % タイマースタート                                               
 startCPUT = cputime;
@@ -67,13 +73,14 @@ for time = minusTime : d_time : endTime
     clc
     time %#ok<NOPTS> 
 
-    % データ書き出し
+    %%% データ書き出し
     % Anime
     dataAnime = [dualArmRobo_1.SV.R0', dualArmRobo_1.SV.Q0', reshape(dualArmRobo_1.POS_j_L,[1,12]), reshape(dualArmRobo_1.POS_j_R,[1,12]),   ...
                      reshape(dualArmRobo_1.POS_es_L,[1,6]), reshape(dualArmRobo_1.POS_es_R,[1,6]), dualArmRobo_1.SV.QeL', dualArmRobo_1.SV.QeR', ...
                      targetSquare_1.SV.R0', targetSquare_1.SV.Q0'];   
     DataOut(fileIDList(fileNameList=="Anime.txt"), dataAnime, parameters.DataType, parameters.Delimiter)
 
+    %%% 推定フェーズ
     % 接触判定及び接触力計算
     [roboExtWrench(:, 2:3), targetExtWrench, isContact] = calc_ContactForce(dualArmRobo_1, targetSquare_1, cElast, cDamp, cNu);
     
@@ -81,13 +88,23 @@ for time = minusTime : d_time : endTime
 %     roboExtEst = zeros(6, 3);
     roboExtEst = roboExtWrench;
 
+    % ターゲット運動状態推定
+    estTarget = estimate_Target(targetSquare_1);
+
+    %%% コントロールフェーズ
+    % 目標手先位置計算
+    pathway = set_Pathway(pathway, estTarget, isContact, wasContact, time);
+
     % 目標関節トルク計算
-    roboJointTau = calc_JointTau(dualArmRobo_1, targetSquare_1, roboExtEst, 1, time);
+    roboJointTau = calc_TauByPath(dualArmRobo_1, pathway, roboExtEst, 2,time);
     
+    %%% 運動計算フェーズ
     % 運動状態更新
     dualArmRobo_1  = dualArmRobo_1.update(roboJointTau, roboExtWrench, parameters);    % methodを呼び出した後自身に代入することを忘れない！
-    targetSquare_1 = targetSquare_1.update(targetExtWrench);    
+    targetSquare_1 = targetSquare_1.update(targetExtWrench);  
 
+    % 1step前の接触データ更新
+    wasContact = isContact;
 end
 
 % アニメーション作成

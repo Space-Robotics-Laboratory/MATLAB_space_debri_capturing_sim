@@ -38,6 +38,7 @@ classdef TargetSquare
             obj.SV.w0 = Parameters.TargetAngVel0;         % 初期角速度
             obj.SV = calc_aa(  obj.LP, obj.SV );          % 各リンクの座標返還行列(方向余弦行列)の計算(リンクi->慣性座標系)
             obj.SV = calc_pos( obj.LP, obj.SV );          % 各リンク重心位置の計算
+            obj.m2G = obj.SV.A0 * obj.m2G;                % ターゲット質量中心に対する幾何中心位置ベクトル更新
         end
         
         % 動力学を計算し，単位時間でロボットの状態を更新する．実際のシミュレーションループでこれを回す．
@@ -52,8 +53,9 @@ classdef TargetSquare
 
 
             % 順運動学によって関節位置，角度を計算
-            obj.SV = f_dyn_rk2(obj.LP, obj.SV);                                      % ロボットに関する順動力学
-            obj.SV.Q0 = dc2rpy( obj.SV.A0' );                                        % ベース角度のオイラー角表現
+            obj.SV = f_dyn_rk2(obj.LP, obj.SV);     % ターゲットに関する順動力学
+            obj.SV.Q0 = dc2rpy( obj.SV.A0' );       % ベース角度のオイラー角表現
+            obj.m2G = obj.SV.A0 * obj.m2G;          % ターゲット質量中心に対する幾何中心位置ベクトル更新
         end
     end
 end
