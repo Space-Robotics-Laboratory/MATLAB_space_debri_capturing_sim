@@ -125,6 +125,8 @@ function [edgeWrench, targetWrench, isContact] = calc_ContactForce(DualArmRobo, 
     tageForce = sum(targetForces, 2);                                       % ターゲット合力 3*1
     tageTorque = sum(tageTorques, 2);                                       % ターゲット合トルク 3*1
     
-    edgeWrench = [roboForce; roboTorque];
-    targetWrench = [tageForce; tageTorque]; 
+    edgeWrench = [roboForce; roboTorque];                                   % ロボ手先レンチ 6*2
+    targetWrench = [tageForce; tageTorque];                                 % ターゲットレンチ 6*1
+%     edgeWrench = zeros(6,2);
+%     targetWrench = zeros(6,1);
 end

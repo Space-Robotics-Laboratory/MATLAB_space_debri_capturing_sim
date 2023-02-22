@@ -56,8 +56,12 @@ roboExtWrench  = zeros(6,3);                   % ロボ外力[ BaseForce    Left
 targetExtWrench= zeros(6,1);                   % タゲ外力[ BaseForce  ] 
                                                % 　　　　[ BaseTorque ] 
 % 接触判定初期化 1*4 
-isContact = zeros(1, 4);                       % isContact(1, i) はendEfec i（初期姿勢にて左から）のターゲットへの接触状態bool値
-wasContact = isContact;                        % 1step前のisContact
+state.isContact = false(1, 4);                 % isContact(1, i) はendEfec i（初期姿勢にて左から）のターゲットへの接触状態bool値
+state.wasContact = state.isContact;            % 1step前のisContact
+
+
+% 捕獲判定初期化 bool shcalar
+state.isCapture = false;
 
 % ロボット手先目標軌跡([pathwayLeft, pathwayRight]) 4*n*2初期化
 % pathwayは[x(t), y(t), theta(t), t]'の形で，時刻tにおける座標を示す．
@@ -82,29 +86,30 @@ for time = minusTime : d_time : endTime
 
     %%% 推定フェーズ
     % 接触判定及び接触力計算
-    [roboExtWrench(:, 2:3), targetExtWrench, isContact] = calc_ContactForce(dualArmRobo_1, targetSquare_1, cElast, cDamp, cNu);
+    [roboExtWrench(:, 2:3), targetExtWrench, state.isContact] = calc_ContactForce(dualArmRobo_1, targetSquare_1, cElast, cDamp, cNu);
     
     % 手先外力センサー値計算
-%     roboExtEst = zeros(6, 3);
-    roboExtEst = roboExtWrench;
+    roboExtEst = zeros(6, 3);
+%     roboExtEst = roboExtWrench;
 
     % ターゲット運動状態推定
     estTarget = estimate_Target(targetSquare_1);
 
-    %%% コントロールフェーズ
-    % 目標手先位置計算
-    pathway = set_Pathway(pathway, estTarget, isContact, wasContact, time);
+    % ターゲット捕獲状況判定
+    state.isCapture = judge_IsCapture(dualArmRobo_1, estTarget, parameters);
 
+    %%% コントロールフェーズ
+    % 手先目標位置計算
     % 目標関節トルク計算
-    roboJointTau = calc_TauByPath(dualArmRobo_1, pathway, roboExtEst, 2,time);
-    
+    [roboJointTau, pathway] = control_JointTau(dualArmRobo_1, targetSquare_1, pathway, roboExtEst, state, parameters,time);
+
     %%% 運動計算フェーズ
     % 運動状態更新
     dualArmRobo_1  = dualArmRobo_1.update(roboJointTau, roboExtWrench, parameters);    % methodを呼び出した後自身に代入することを忘れない！
     targetSquare_1 = targetSquare_1.update(targetExtWrench);  
 
     % 1step前の接触データ更新
-    wasContact = isContact;
+    state.wasContact = state.isContact;
 end
 
 % アニメーション作成

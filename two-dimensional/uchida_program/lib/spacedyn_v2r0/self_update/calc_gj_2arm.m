@@ -21,7 +21,7 @@
 %                      base-tip jacobian, Jb = [ Jb_L; Jb_R ]    ( 12*6 )
 %                      inertia matrix, HH                        (6+n * &+n)
 
-function [GJ2A, Jb, HH] = calc_gj_2arm( LP, SV, num_eL, num_eR )
+function [GJ2A, Jb, Jm, HH] = calc_gj_2arm( LP, SV, num_eL, num_eR )
 
 % Calculate inertia matrices, HH
 HH = calc_hh( LP, SV );
@@ -55,7 +55,10 @@ GJ2A = [ Jm_L - Jb_L*(Hb\Hbm_L), -Jb_L*(Hb\Hbm_R)       ;
 
 % base tip jacobian
 Jb = [Jb_L; Jb_R];
- 
+
+% joint tip jacobian
+Jm = [Jm_L,        zeros(6, 4);
+      zeros(6,4),  Jm_R];
 
 
 %%% EOF

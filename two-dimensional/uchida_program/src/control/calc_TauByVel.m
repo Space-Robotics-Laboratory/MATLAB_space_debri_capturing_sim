@@ -6,13 +6,12 @@
 % 先首関節はバネダンパ系の受動関節であるので，関節速度に制約が加わる
 % input : DualArmRobo class, DesierdHandVelocity 6*1, 
 %         RoboExtWrench 6*3(base, leftEdgem, rightEdge) 
-%         isBaseFrame 1*2 [left, right] is expressed in base fmare, or in
+%         inBaseFrame 1*2 [left, right] is expressed in base fmare, or in
 %         inertia frame
 % output: JointTorque 8*1, but only used 6*1
 %
-% ベースフレーム表現は不具合．要改善
 
-function JointTau = calc_TauByVel(DualArmRobo, Vel, RoboExtEst, isBaseFrame)
+function JointTau = calc_TauByVel(DualArmRobo, Vel, RoboExtEst, inBodyFrame)
 global d_time
     LP = DualArmRobo.LP;
     SV = DualArmRobo.SV;
@@ -27,7 +26,7 @@ global d_time
     [H_asuta, C_asuta] = calc_asuta_2arm(LP, SV, num_eL, num_eR);
 
     % 一般化ヤコビアン，ベース手先ヤコビアン，慣性行列計算
-    [Jg, Jb, HH] = calc_gj_2arm(LP, SV, 1, 2);
+    [Jg, Jb, Jm, HH] = calc_gj_2arm(LP, SV, 1, 2);
     Hb = HH(1:6, 1:6);
 
 
@@ -35,23 +34,25 @@ global d_time
     % 現時刻でのロボット速度を使用している．ロボット速度が既知かどうかに注意
     PL = HH(1:6, 1:6) * [SV.v0; SV.w0] + HH(1:6, 7:6+LP.num_q) * SV.qd;
 
-    % 目標自由度削減 6*8
+    % 目標自由度削減 12*8 -> 6*8
     Jg_s = Jg([1,2,6, 7,8,12], :);   
-    Jg_s(:, [4,8]) = 0;                         % jgr_sは目標速度の次元を削減し，受動関節角速度0を仮定したヤコビアン
+    Jg_s(:, [4,8]) = 0;                         % jg_sは目標速度の次元を削減し，受動関節角速度0を仮定したヤコビアン
     Jb_s = Jb([1,2,6, 7,8,12], :);              % ベース速度に対する手先ヤコビアン
+    Jm_s = Jm([1,2,6, 7,8,12], :);
+    Jm_s(:, [4,8]) = 0;
 
     % 手先にかかる外力の推定値を代入 
     F_c = reshape(RoboExtEst(:, 2:3), [12,1]);
 
-    % ベースフレーム表現の速度を慣性フレーム表現に変換
-    index = repmat(isBaseFrame, [3,1]);     % ベースフレーム表現であるか指標
-    index = reshape(index, [6,1]);          % 6*1に変換
-    vel = Vel;
-    VelInertia = Vel + Jb_s * [SV.v0; SV.w0];
-    vel(index) = VelInertia(index);
+    % inBodyFrameの速度の場合，ヤコビアンはJm
+    % inInertiaFrameの速度の場合，タコビアンはJg
+    index = repmat(inBodyFrame, [3,1]);
+    J = Jg_s;
+    J(index, :) = Jm_s(index, :);
 
     % 目標関節角速度計算
-    qd_des = pinv(Jg_s) * (vel - Jb_s * (Hb\PL));                           % 関節角速度．運動量変化について考える.
+    qd_des = pinv(J) * (Vel - Jb_s * (Hb\PL));                              % 関節角速度．運動量変化について考える.
     qdd_des = (qd_des - SV.qd) / d_time;                                    % 関節角加速度
-    JointTau = H_asuta * qdd_des + C_asuta - Jg' * F_c;                    % 8関節トルク（set wrist active joint）
+    JointTau = H_asuta * qdd_des + C_asuta - Jg' * F_c;                     % 8関節トルク（set wrist active joint）
+    
 end

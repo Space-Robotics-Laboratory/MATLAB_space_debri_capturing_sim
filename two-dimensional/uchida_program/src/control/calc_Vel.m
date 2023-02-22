@@ -19,31 +19,39 @@
 %        これは時間による積分を1にするためである．
 
 
-function vel = calc_Vel(pathWay, currentTime, mode)
+function vel = calc_Vel(pathWay, currentTime, velMode)
 
+% 経由地点の数
 [~, n] = size(pathWay);
+
 % 初期時刻以前，最終時刻以降は速度０
 if (currentTime < pathWay(4, 1)) || (currentTime >= pathWay(4, n))
     vel = zeros(3,1);
     return
 end
-switch mode
+
+dPathWay = pathWay(:, [2:n, 1]) - pathWay;                                      % 差分計算
+index = (pathWay(4, :) <= currentTime) & (pathWay(4, [2:n, 1]) > currentTime);  % 時刻をもとに経路のフェーズを判定
+% 時刻(pathway(4,:)が順番通りでない場合，エラーを排出する
+if sum(index) >= 2                                                           
+    error("you have to set pathway in order of time")
+end
+
+dP = dPathWay(1:3, index);      % 位置ベクトル差分
+dTime = dPathWay(4, index);     % 時刻差分       
+
+%%% modeによって手先起動・軌道追従の速さ分布を変更する
+switch velMode
     % 直線軌道・一定速度（時刻に対してステップ速度）
+    % 最も単純であるが，加速度が発散する危険が非常に高い．
     case 1
-    dPathWay = pathWay(:, [2:n, 1]) - pathWay;
-    index = (pathWay(4, :) <= currentTime) & (pathWay(4, [2:n, 1]) > currentTime);
-    dP = dPathWay(1:3, index);
-    dTime = dPathWay(4, index);
-    vel = dP ./ dTime;
+    gain = 1;
 
     % 直線軌道・山形速度（境界で加速度0の折れ曲がった直線）
+    % 時間に対して線形に速度が変化する
     case 2
-    dPathWay = pathWay(:, [2:n, 1]) - pathWay;
-    index = (pathWay(4, :) <= currentTime) & (pathWay(4, [2:n, 1]) > currentTime);
-    dP = dPathWay(1:3, index);
-    dTime = dPathWay(4, index);
     s = ( currentTime - pathWay(4, index) ) / dTime;
     gain = -abs(4*s - 2) + 2;
-    vel = dP * gain ./ dTime;
-
 end
+
+vel = dP ./ dTime * gain;
