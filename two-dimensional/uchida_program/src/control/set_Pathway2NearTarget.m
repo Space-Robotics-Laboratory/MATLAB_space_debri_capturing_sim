@@ -22,9 +22,10 @@ deltaT = deltaTime;
 targGoalPos = targPos + targV * deltaT;                                     % 接触時点のターゲット重心位置 2*1
 armSign = [-1, +1];                                                         % 左手なら負，右手なら正
 goalPathway = zeros(4, 1, 2);                                               % 目標手先位置初期化 4*1*2
-deltaX = targWidth ;                                                % 手先先端球がターゲットに触れる時の，ターゲット中心から手先までの距離
+deltaX = sqrt( (targWidth/sqrt(2) + param.LdD*.5)^2 ...
+              -(param.LdH * sin(param.LdGamma))^2   ) ;                     % 手先先端球がターゲットにギリギリ触れない，ターゲット中心から手先までの距離
 
-contactPosVec = [deltaX; 0]  .* armSign * .9;                               % 接触アーム目標位置の，ターゲット重心に対する相対位置ベクトル 2*2
+contactPosVec = [deltaX; 0]  .* armSign ;                               % 接触アーム目標位置の，ターゲット重心に対する相対位置ベクトル 2*2
 goalPathway(:, 1, 1) = [targGoalPos + contactPosVec(:,1); 0; deltaT + time];% 左アーム目標位置代入
 goalPathway(:, 1, 2) = [targGoalPos + contactPosVec(:,2); 0; deltaT + time];% 右アーム目標位置代入
 pathway = [prePathway, goalPathway];                                        % 現状のpathwayに新たな目標pathwayを追加

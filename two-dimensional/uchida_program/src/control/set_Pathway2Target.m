@@ -18,7 +18,8 @@ targW = target.SV.w0(3);
 targWidth = target.width;
 
 % 目標位置までに要する時間
-deltaT = (pi * .25 - rem( targOri, pi * .25 )) / abs(targW);                % ターゲット姿勢がpi/4の整数倍となり，対角線が水平になるまでの時間
+deltaT = pi * .25 / abs(targW) - rem( targOri, pi * .5 ) / targW;           % ターゲット姿勢がpi/4の整数倍となり，対角線が水平になるまでの時間
+                                                                            % 回転方向に注意
 while(deltaT < minDeltTime) % 速度が大きくなりすぎることを防ぐため，時間があまりに短いと伸ばす
     deltaT = deltaT + pi * .5 / abs(targW);
 end

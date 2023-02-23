@@ -11,7 +11,7 @@ function Param = set_Param()
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % シミュレーション条件
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Param.EndTime   = 2;%2;    %シミュレーション終了時間[s]
+Param.EndTime   = 3;%2;    %シミュレーション終了時間[s]
 Param.MinusTime = 0;      %シミュレーション開始からロボット制御開始までの時間[s]
 Param.DivTime   = 0.001;  %シミュレーション刻み時間[s]
 
@@ -184,7 +184,7 @@ Param.TargetMCenter2GCenter = [0, 0, 0]';
 Param.TargetPosition0     = [ 0 0.4 0]';             % 初期位置          ;SV.R0
 Param.TargetOrientation0  = [ 0 0 deg2rad( 0 ) ]';   % 初期姿勢  ラジアン ;SV.Q0
 Param.TargetVelocity0     = [ 0 0 0 ]';              % 初期並進速度 ;SV.v0
-Param.TargetAngVel0       = [ 0 0 -2 ]';              % 初期角速度 ;SV.w0
+Param.TargetAngVel0       = [ 0 0 4 ]';              % 初期角速度 ;SV.w0
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
