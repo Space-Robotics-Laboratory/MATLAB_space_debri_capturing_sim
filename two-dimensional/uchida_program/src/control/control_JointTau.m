@@ -27,17 +27,12 @@ switch controlMode
         % ターゲットに接近するフェーズ
         if time == 0
             % start phase 1
-            pathway = set_Pathway2NearTarget(prePathway, target, param, time, 1); % ターゲットに近づける 4*2*2
+            pathway = set_Pathway2NearTarget(prePathway, target, param, time, 3); % ターゲットに近づける 4*2*2
         
-        % 接近が終了したら，ターゲット角がある値になるまで待機 -> pi/4付近
+        % 接近が終了したら，ターゲット頂点がendEffecの間に入る時刻まで待機
         elseif phase == 1 && phaseEnding
             % start phase 2
-            if target.SV.w0(3) >= 0     % 回転方向によって待機角度を変える
-                alpha = pi * .25 * .9;
-            else
-                alpha = pi * .25 * 1.1;
-            end
-            pathway = set_Pathway2WaitTarget(prePathway, target, alpha); % 4*3*2
+            pathway = set_Pathway2WaitTarget(prePathway, target, param); % 4*3*2
         
         % 待機終了後，捕獲開始
         elseif phase == 2 && phaseEnding

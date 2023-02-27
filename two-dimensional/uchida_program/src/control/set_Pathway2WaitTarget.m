@@ -9,9 +9,14 @@
 %
 % pathwayが満たされる前に次のが計算されるバグあり．
 
-function pathway = set_Pathway2WaitTarget(prePathway, target, desTargOri)
+function pathway = set_Pathway2WaitTarget(prePathway, target, param)
 targW = target.SV.w0(3);
+targWidth = target.width;
 targOri = target.SV.Q0(3);
+
+% 運動開始時のターゲット角度計算
+alpha = asin(param.LdH * sin(param.LdGamma) / (targWidth/sqrt(2) + param.LdD * .5));
+desTargOri = pi * .25 - sign(targW) * alpha;
 
 % 待機時間計算
 deltTime = rem(desTargOri - targOri, pi * .5) / targW ;
