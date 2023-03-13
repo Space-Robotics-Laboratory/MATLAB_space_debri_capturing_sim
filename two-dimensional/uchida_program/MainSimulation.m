@@ -9,7 +9,9 @@ clc
 clear 
 close all
 
-% パラメータ設定
+%%%%% シミュレーション準備
+
+%%% パラメータ設定
 % 基本的にパラメータはParamSetting内で変更する．
 % ループ内で用いるパラメータはここで呼び出すことによって時間短縮？
 param  = set_Param();                   
@@ -17,11 +19,7 @@ cElast = param.ContactElast;     % 接触弾性係数
 cDamp  = param.ContactDamp;      % 接触減衰係数
 cNu    = param.ContactNu;        % 接触摩擦係数
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%% global 変数の定義 %%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% global 変数の定義 
 % 全ての関数及びメインルーチン内で共通で使用される変数
 global d_time
 global Gravity
@@ -29,7 +27,6 @@ global Ez
 Ez = [ 0 0 1 ]';
 d_time = param.DivTime; % シミュレーション1step当たりの時間
 Gravity = [ 0 0 0 ]'; % 重力（地球重力は Gravity = [0 0 -9.8]）
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % パス設定
 paths = make_DataFolder(param);              % 保存先フォルダ作成．パスはParamSettingで設定
@@ -39,10 +36,10 @@ dualArmRobo  = DualArmRobo(param);
 % ターゲットインスタンス作成
 targetSquare = TargetSquare(param);
 
-% シミュレーション準備
-endTime    = param.EndTime;               % 終了時間設定．
-minusTime = param.MinusTime;             % マイナス時間設定．
-datIndex = 1;
+% シミュレーション時間
+endTime    = param.EndTime;                 % 終了時間設定．
+minusTime = param.MinusTime;                % マイナス時間設定．
+datIndex = 1;                               % データ保存用インデックス
 
 % ロボット・ターゲット力初期化
 roboJointTau = zeros(8,1);                     % ロボ関節制御トルク．手首は受動関節であることに注意
@@ -70,7 +67,8 @@ datSaver = DataSaver(paths, param);
 startCPUT = cputime;
 startT = clock();
 
-% シミュレーションループスタート
+
+%%% シミュレーションループスタート
 for time = minusTime : d_time : endTime 
     clc
     time %#ok<NOPTS> 
@@ -106,9 +104,12 @@ for time = minusTime : d_time : endTime
     state.wasContact = state.isContact;
     datIndex = datIndex + 1;
 end
+%%% ループ終了
+
 
 %%% データ保存
 datSaver.write()
+
 
 %%% 結果表示
 % アニメーション作成
@@ -122,9 +123,9 @@ make_Graph(datSaver.datStruct, paths)
 % ファイルクローズ
 fclose('all');
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%% シミュレーション時間の計測と表示 %%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% シミュレーション時間の計測と表示 
+
 % シミュレーション全体時間 単位:秒
 ntime = cputime - startCPUT;
 
