@@ -27,7 +27,7 @@ switch controlMode
         % ターゲットに接近するフェーズ
         if time == 0
             % start phase 1
-            pathway = set_Pathway2NearTarget(prePathway, target, param, time, 3); % ターゲットに近づける 4*2*2
+            pathway = set_Pathway2NearTarget(prePathway, target, param, time, 1); % ターゲットに近づける 4*2*2
         
         % 接近が終了したら，ターゲット頂点がendEffecの間に入る時刻まで待機
         elseif phase == 1 && phaseEnding

@@ -13,6 +13,10 @@
 
 function JointTau = calc_TauByVel(DualArmRobo, Vel, RoboExtEst, inBodyFrame)
 global d_time
+    % ゲイン設定
+    Ck = [5, 5, 5, 5, 5, 5, 5, 5]';
+    Cd = [5, 5, 5, 5, 5, 5, 5, 5]';
+
     LP = DualArmRobo.LP;
     SV = DualArmRobo.SV;
     num_eL = DualArmRobo.num_eL;
@@ -54,5 +58,6 @@ global d_time
     qd_des = pinv(J) * (Vel - Jb_s * (Hb\PL));                              % 関節角速度．運動量変化について考える.
     qdd_des = (qd_des - SV.qd) / d_time;                                    % 関節角加速度
     JointTau = H_asuta * qdd_des + C_asuta - Jg' * F_c;                     % 8関節トルク（set wrist active joint）
+    %JointTau = Ck .* (qd_des - SV.qd) + Cd .* (qdd_des - SV.qdd)
     
 end

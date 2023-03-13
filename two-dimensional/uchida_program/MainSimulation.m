@@ -32,13 +32,7 @@ Gravity = [ 0 0 0 ]'; % 重力（地球重力は Gravity = [0 0 -9.8]）
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % パス設定
-fileNameList = ["Anime.txt"];                     % 保存するデータファイル名
 paths = make_DataFolder(param);              % 保存先フォルダ作成．パスはParamSettingで設定
-fileIDList = FilesOpen(paths, fileNameList);      % ファイルを開き，ファイルIDを配列に格納．現状意味ないかも
-
-% 保存用データ見出し
-animeTitle = set_AnimeTitleHeader();
-DataOut(fileIDList(fileNameList=="Anime.txt"), animeTitle,  param.StringType, param.Delimiter)   % アニメデータファイルの見出しを書き出し
 
 % 双腕ロボインスタンス作成
 dualArmRobo  = DualArmRobo(param);
@@ -48,7 +42,7 @@ targetSquare = TargetSquare(param);
 % シミュレーション準備
 endTime    = param.EndTime;               % 終了時間設定．
 minusTime = param.MinusTime;             % マイナス時間設定．
-index = 1;
+datIndex = 1;
 
 % ロボット・ターゲット力初期化
 roboJointTau = zeros(8,1);                     % ロボ関節制御トルク．手首は受動関節であることに注意
@@ -61,7 +55,7 @@ state.isContact = false(1, 4);                 % isContact(1, i) はendEfec i（
 state.wasContact = state.isContact;            % 1step前のisContact
 
 
-% 捕獲判定初期化 bool shcalar
+% 捕獲判定初期化 bool schalar
 state.isCapture = false;
 
 % ロボット手先目標軌跡([pathwayLeft, pathwayRight]) 4*n*2初期化
@@ -82,12 +76,7 @@ for time = minusTime : d_time : endTime
     time %#ok<NOPTS> 
 
     %%% データ更新
-    % Anime
-    dataAnime = [dualArmRobo.SV.R0', dualArmRobo.SV.Q0', reshape(dualArmRobo.POS_j_L,[1,12]), reshape(dualArmRobo.POS_j_R,[1,12]),   ...
-                     reshape(dualArmRobo.POS_es_L,[1,6]), reshape(dualArmRobo.POS_es_R,[1,6]), dualArmRobo.SV.QeL', dualArmRobo.SV.QeR', ...
-                     targetSquare.SV.R0', targetSquare.SV.Q0'];   
-    datSaver = datSaver.update(dualArmRobo, targetSquare, time, index);
-    DataOut(fileIDList(fileNameList=="Anime.txt"), dataAnime, param.DataType, param.Delimiter)
+    datSaver = datSaver.update(dualArmRobo, targetSquare, time, datIndex);
 
     %%% 推定フェーズ
     % 接触判定及び接触力計算
@@ -115,7 +104,7 @@ for time = minusTime : d_time : endTime
 
     % 1step前の接触データ更新
     state.wasContact = state.isContact;
-    index = index + 1;
+    datIndex = datIndex + 1;
 end
 
 %%% データ保存
@@ -125,7 +114,7 @@ datSaver.write()
 % アニメーション作成
 % movfileにaviファイル保存
 % pngfileにpngファイル保存
-make_2dAnime("Anime.txt", paths, param)
+make_2dAnime(datSaver, paths, param)
 
 % グラフ作成
 make_Graph(datSaver.datStruct, paths)
