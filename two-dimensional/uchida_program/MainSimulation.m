@@ -35,6 +35,8 @@ paths = make_DataFolder(param);              % 保存先フォルダ作成．パ
 dualArmRobo  = DualArmRobo(param);
 % ターゲットインスタンス作成
 targetSquare = TargetSquare(param);
+% コントローラーインスタンス作成
+controller = Controller(dualArmRobo, 0, 1);
 
 % シミュレーション時間
 endTime    = param.EndTime;                 % 終了時間設定．
@@ -42,7 +44,6 @@ minusTime = param.MinusTime;                % マイナス時間設定．
 datIndex = 1;                               % データ保存用インデックス
 
 % ロボット・ターゲット力初期化
-roboJointTau = zeros(8,1);                     % ロボ関節制御トルク．手首は受動関節であることに注意
 roboExtWrench  = zeros(6,3);                   % ロボ外力[ BaseForce    LeftEndEfecForce   RightEndEfecForce  ]
                                                % 　　　　[ BaseTorque   LeftEndEfecTorque  RightEndEfecTorque ]
 targetExtWrench= zeros(6,1);                   % タゲ外力[ BaseForce  ] 
@@ -54,11 +55,6 @@ state.wasContact = state.isContact;            % 1step前のisContact
 
 % 捕獲判定初期化 bool schalar
 state.isCapture = false;
-
-% ロボット手先目標軌跡([pathwayLeft, pathwayRight]) 4*n*2初期化
-% pathwayは[x(t), y(t), theta(t), t]'の形で，時刻tにおける座標を示す．
-pathway(:, 1, 1) = [dualArmRobo.POS_e_L(1:2); dualArmRobo.ORI_e_L(3); 0];   % pathwayLeft
-pathway(:, 1, 2) = [dualArmRobo.POS_e_R(1:2); dualArmRobo.ORI_e_R(3); 0];   % pathwayRight
 
 % データ保存用インスタンス作成
 datSaver = DataSaver(paths, param);
@@ -92,12 +88,12 @@ for time = minusTime : d_time : endTime
 
     %%% コントロールフェーズ
     % 手先目標位置計算
-    % 目標関節トルク計算
-    [roboJointTau, pathway] = control_JointTau(dualArmRobo, targetSquare, pathway, roboExtEst, state, param,time);
+    % 目標関節トルク計算 要素であるtauをロボクラスに代入することで操作
+    controller = controller.control(dualArmRobo, targetSquare, roboExtEst, time, param);
 
     %%% 運動計算フェーズ
     % 運動状態更新
-    dualArmRobo  = dualArmRobo.update(roboJointTau, roboExtWrench, param);    % methodを呼び出した後自身に代入することを忘れない！
+    dualArmRobo  = dualArmRobo.update(controller.tau, roboExtWrench, param);    % methodを呼び出した後自身に代入することを忘れない！
     targetSquare = targetSquare.update(targetExtWrench);  
 
     % 1step前の接触データ更新

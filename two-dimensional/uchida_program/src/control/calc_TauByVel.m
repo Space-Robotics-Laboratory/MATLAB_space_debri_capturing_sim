@@ -36,7 +36,7 @@ global d_time
 
     % 現時刻の運動量計算
     % 現時刻でのロボット速度を使用している．ロボット速度が既知かどうかに注意
-    PL = HH(1:6, 1:6) * [SV.v0; SV.w0] + HH(1:6, 7:6+LP.num_q) * SV.qd;
+    PL = calc_momentum(LP, SV);
 
     % 目標自由度削減 12*8 -> 6*8
     Jg_s = Jg([1,2,6, 7,8,12], :);   
@@ -50,12 +50,16 @@ global d_time
 
     % inBodyFrameの速度の場合，ヤコビアンはJm
     % inInertiaFrameの速度の場合，タコビアンはJg
+    % inBodyFrameの場合，ボディ系で速度を定義するため，運動量による速度は考慮しない．よってVelbyPl = 0
     index = repmat(inBodyFrame, [3,1]);
     J = Jg_s;
     J(index, :) = Jm_s(index, :);
+    VelbyPL = zeros(6, 1);
+    temp = Jb_s * (Hb\PL);
+    VelbyPL(~index) =  temp(~index);                                        % 運動量変化による見かけの速度
 
     % 目標関節角速度計算
-    qd_des = pinv(J) * (Vel - Jb_s * (Hb\PL));                              % 関節角速度．運動量変化について考える.
+    qd_des = pinv(J) * (Vel - VelbyPL);                                     % 関節角速度．運動量変化について考える.
     qdd_des = (qd_des - SV.qd) / d_time;                                    % 関節角加速度
     JointTau = H_asuta * qdd_des + C_asuta - Jg' * F_c;                     % 8関節トルク（set wrist active joint）
     %JointTau = Ck .* (qd_des - SV.qd) + Cd .* (qdd_des - SV.qdd)

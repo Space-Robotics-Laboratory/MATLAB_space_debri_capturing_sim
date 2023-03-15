@@ -6,7 +6,7 @@
 % output: velocity [vx, vy, w]
 %
 % pathwayは目標位置，その時の絶対時刻を合わせた行列．列0には初期位置，初期時刻を代入する.
-% pathWay(1:3, n+1) -> pathWay(1:3, n) の移動を，pathWay(4, n+1) -> pathWay(4,
+% pathWay(1:3, n-1) -> pathWay(1:3, n) の移動を，pathWay(4, n-1) -> pathWay(4,
 % n)秒で達成する.これをn-1回繰り返すことにより，経由地点を経た軌道を達成する．
 % 
 % index : 現在時刻においてpathWayのどの過程にいるか示す 
@@ -52,6 +52,9 @@ switch velMode
     case 2
     s = ( currentTime - pathWay(4, index) ) / dTime;
     gain = -abs(4*s - 2) + 2;
+
+    % pathwayの始点と終点のみ一定時間一定加速度で加速し，移動中は一定速度
+    % 速度グラフは台形状になる．経由点で大きく速度が変化する場合，
 end
 
 vel = dP ./ dTime * gain;

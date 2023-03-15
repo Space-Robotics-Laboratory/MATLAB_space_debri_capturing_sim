@@ -13,8 +13,8 @@ function vis_DualArmRobot(roboR0, roboQ0, jointPos, endEffecPos, endEffecOri, pa
     
     cornerRotMatL = rpy2dc(endEffecOri(:, 1));
     cornerRotMatR = rpy2dc(endEffecOri(:, 2));
-    cornerVecL = cornerRotMatL * [0, param.LdH * cos(param.LdGamma), 0]';
-    cornerVecR = cornerRotMatR * [0, param.LdH * cos(param.LdGamma), 0]';
+    cornerVecL = cornerRotMatL' * [0, -param.LdH * cos(param.LdGamma), 0]';
+    cornerVecR = cornerRotMatR' * [0, -param.LdH * cos(param.LdGamma), 0]';
 
     % ロボベース描画
     baseTips = calc_SquareTips(basePos(1:2,1), baseWidth, baseDepth, roboQ0(3));    % ベース頂点計算

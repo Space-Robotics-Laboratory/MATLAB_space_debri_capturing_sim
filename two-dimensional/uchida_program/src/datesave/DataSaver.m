@@ -45,6 +45,9 @@ classdef DataSaver
             
             % ロボ関節トルク
             obj.datStruct.jointTorque = zeros(row, 8);
+
+            % 運動量
+            obj.datStruct.PLsum = zeros(row, 2);
         end
         % 保存するデータを更新
         function obj = update(obj, robo, target, time, index)
@@ -76,6 +79,9 @@ classdef DataSaver
             % ロボ関節トルク
             obj.datStruct.jointTorque(index, :) = robo.SV.tau';
 
+            % 運動量
+            dat = calc_momentum(robo.LP, robo.SV) + calc_momentum(target.LP, target.SV);
+            obj.datStruct.PLsum(index, :) = [vecnorm(dat(1:3,1)), vecnorm(dat(4:6,1))];
             %%% Velocity information
         end
         
