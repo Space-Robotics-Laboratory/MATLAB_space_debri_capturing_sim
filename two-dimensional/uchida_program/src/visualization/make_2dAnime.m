@@ -6,6 +6,9 @@ function make_2dAnime(datSaver, paths, param)
     mov_dtime = param.MovDivTime;                              % 動画刻み時間
     dataStruct = datSaver.datStruct;
     
+    % force vector scale
+    scale = .01;
+
     % 図定義
     FigureNumber = 101;     % 図番号設定
     figure(FigureNumber);   % 図定義
@@ -43,6 +46,11 @@ function make_2dAnime(datSaver, paths, param)
             targR0 = dataStruct.targR0(count, :)';
             targQ0 = dataStruct.targQ0(count, :)';
 
+            % force
+            roboFL = dataStruct.endEffecLForce(count, :)';
+            roboFR = dataStruct.endEffecRForce(count, :)';
+            targF = dataStruct.targForce(count, :)';
+
             %%% 描画
             % ロボ描画
             vis_DualArmRobot(roboR0, roboQ0, jointPos, endEffecPos, endEffecOri, param)
@@ -50,6 +58,12 @@ function make_2dAnime(datSaver, paths, param)
 
             % ターゲット描画
             vis_Target(targR0, targQ0, param)
+
+            % ロボ外力描画
+            vis_roboForce(endEffecPos, roboFL, roboFR, scale)
+
+            % ターゲット外力描画
+            vis_TargetForce(targR0, targF, scale)
             
             hold off
 
@@ -59,7 +73,7 @@ function make_2dAnime(datSaver, paths, param)
 
 
             % 図をpng形式で保存
-            if rem(count, 2000) == 0
+            if rem(count, 500) == 0
                 pictureName = sprintf('%s%d.png', pngfilename, picNum);              % png名定義
                 saveas(figure(FigureNumber), [paths.pngfile, '/', pictureName]);     % png保存
                 picNum = picNum + 1;

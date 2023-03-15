@@ -46,6 +46,9 @@ classdef DataSaver
             % ロボ関節トルク
             obj.datStruct.jointTorque = zeros(row, 8);
 
+            % ターゲット外力
+            obj.datStruct.targForce = zeros(row, 3);
+
             % 運動量
             obj.datStruct.PLsum = zeros(row, 2);
         end
@@ -78,6 +81,9 @@ classdef DataSaver
             
             % ロボ関節トルク
             obj.datStruct.jointTorque(index, :) = robo.SV.tau';
+
+            % ターゲット外力
+            obj.datStruct.targForce(index, :) = target.SV.F0';
 
             % 運動量
             dat = calc_momentum(robo.LP, robo.SV) + calc_momentum(target.LP, target.SV);

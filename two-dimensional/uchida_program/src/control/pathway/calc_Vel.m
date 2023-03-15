@@ -33,7 +33,7 @@ end
 dPathWay = pathWay(:, [2:n, 1]) - pathWay;                                      % 差分計算
 index = (pathWay(4, :) <= currentTime) & (pathWay(4, [2:n, 1]) > currentTime);  % 時刻をもとに経路のフェーズを判定
 % 時刻(pathway(4,:)が順番通りでない場合，エラーを排出する
-if sum(index) >= 2                                                           
+if sum(index) >= 2  
     error("you have to set pathway in order of time")
 end
 

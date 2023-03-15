@@ -181,17 +181,17 @@ Param.TargetMCenter2GCenter = [0, 0, 0]';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ターゲットの初期位置・姿勢・速度・角速度
-Param.TargetPosition0     = [ 0 0.4 0]';             % 初期位置          ;SV.R0
-Param.TargetOrientation0  = [ 0 0 deg2rad( 44 ) ]';   % 初期姿勢  ラジアン ;SV.Q0
-Param.TargetVelocity0     = [ .02 -.01 0 ]';              % 初期並進速度 ;SV.v0
-Param.TargetAngVel0       = [ 0 0 8 ]';              % 初期角速度 ;SV.w0
+Param.TargetPosition0     = [ 0 0.35 0]';             % 初期位置          ;SV.R0
+Param.TargetOrientation0  = [ 0 0 deg2rad( 0 ) ]';   % 初期姿勢  ラジアン ;SV.Q0
+Param.TargetVelocity0     = [ .02 .01 0 ]';              % 初期並進速度 ;SV.v0
+Param.TargetAngVel0       = [ 0 0 -5 ]';              % 初期角速度 ;SV.w0
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 物理係数設定
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Param.ContactDamp  = 8;         % 接触力減衰係数
-Param.ContactElast = 90000;      % 接触力弾性係数
+Param.ContactElast = 9000;      % 接触力弾性係数
 Param.ContactNu    = 0.3;       % 接触力摩擦係数
 Param.WristDamp    = 0.3;       % 手首関節減衰係数
 Param.WristElast   = 0.1;       % 手首関節弾性係数
@@ -201,8 +201,4 @@ Param.WristElast   = 0.1;       % 手首関節弾性係数
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Param.DateSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/two-dimensional/uchida_program/dat';
 Param.FileName     = [num2str(Param.ContactDamp),'_' ,num2str(Param.ContactElast)]; 
-Param.Delimiter    = '\t';
-Param.StringType   = '%10s';
-Param.DataType     = '%10f';
-%EOF
 end

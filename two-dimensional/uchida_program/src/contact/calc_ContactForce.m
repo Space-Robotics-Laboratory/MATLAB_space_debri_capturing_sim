@@ -115,7 +115,7 @@ function [edgeWrench, targetWrench, isContact] = calc_ContactForce(DualArmRobo, 
     targetForcesM = contactNu * targetForcesN .* velDiffSign;               % 接線方向力
 
     targetForces = targetForcesN .* targetSideNorm(:, contactSide) ...
-                 + targetForcesM .* targetSideDire(:, contactSide);          % 各種力合算 3*4
+                 + targetForcesM .* targetSideDire(:, contactSide);         % 各種力合算 3*4
 
     roboTorques = cross(edge2ContactPos, -targetForces);                    % ロボトルク 3*4
     tageTorques = cross(target2ContactPos, targetForces);                   % ターゲットトルク 3*4

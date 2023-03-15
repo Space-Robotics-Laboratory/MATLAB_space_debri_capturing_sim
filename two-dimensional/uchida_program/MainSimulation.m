@@ -51,6 +51,7 @@ targetExtWrench= zeros(6,1);                   % タゲ外力[ BaseForce  ]
 % 接触判定初期化 1*4 
 state.isContact = false(1, 4);                 % isContact(1, i) はendEfec i（初期姿勢にて左から）のターゲットへの接触状態bool値
 state.wasContact = state.isContact;            % 1step前のisContact
+state.newContact = ~state.wasContact & state.isContact;
 
 
 % 捕獲判定初期化 bool schalar
@@ -89,14 +90,15 @@ for time = minusTime : d_time : endTime
     %%% コントロールフェーズ
     % 手先目標位置計算
     % 目標関節トルク計算 要素であるtauをロボクラスに代入することで操作
-    controller = controller.control(dualArmRobo, targetSquare, roboExtEst, time, param);
+    controller = controller.control(dualArmRobo, targetSquare, roboExtEst, time, state, param);
 
     %%% 運動計算フェーズ
     % 運動状態更新
     dualArmRobo  = dualArmRobo.update(controller.tau, roboExtWrench, param);    % methodを呼び出した後自身に代入することを忘れない！
     targetSquare = targetSquare.update(targetExtWrench);  
 
-    % 1step前の接触データ更新
+    % 接触データ更新
+    state.newContact = ~state.wasContact & state.isContact;
     state.wasContact = state.isContact;
     datIndex = datIndex + 1;
 end

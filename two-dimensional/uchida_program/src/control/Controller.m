@@ -9,7 +9,7 @@ classdef Controller
         desVel
         tau
         controlMode
-        pathUpFlag
+        pathUpdateFlag
     end
     methods
         % constructor 
@@ -19,27 +19,33 @@ classdef Controller
             obj.tau = zeros(8, 1);
             obj.phase = 0;
             obj.desVel = zeros(6, 1);
-            obj.pathUpFlag = false;
+            obj.pathUpdateFlag = false;
         end
 
 
         %%% コントロール関数
-        function obj = control(obj, robo, targ, roboExtEst, time, param)
+        function obj = control(obj, robo, targ, roboExtEst, time, state, param)
             switch obj.controlMode
                 % 直接捕獲するケース
                 case 1
-                    obj.pathUpFlag = time == 0;
+                    obj.pathUpdateFlag = time == 0;
                     obj = obj.directCapture(robo, targ, roboExtEst, time, param);
                 % 複数回接触によって減衰させてから捕獲するケース
                 case 2
+                    obj.pathUpdateFlag = (time == 0) || any(state.newContact);
+                    obj =  obj.contactDampen(robo, targ, roboExtEst, time, param);
             end
         end
+
+
+
+
 
         %%% 以下，制御で用いる関数
         % 並進するターゲットを直接捕獲する制御
         function obj = directCapture(obj, robo, targ, roboExtEst, time, param)
             % フラグがたった時刻のみでpathwayを更新
-            if obj.pathUpFlag
+            if obj.pathUpdateFlag
                 goalPathway = obj.pathway.directCapture(targ, time, param);     % 目標位置時刻計算
                 obj.pathway = obj.pathway.overWrite(robo, goalPathway, time);   % pathway更新
             end
@@ -55,7 +61,17 @@ classdef Controller
         % 並進するターゲットに移動している方向の手を当てる制御
         function obj = contactDampen(obj, robo, targ, roboExtEst, time, param)
             % フラグがたった時刻のみでpathwayを更新
-            
+            if obj.pathUpdateFlag
+                goalPathway = obj.pathway.contactDampen(robo, targ, time, param);
+                obj.pathway = obj.pathway.overWrite(robo, goalPathway, time);   % pathway更新
+            end
+            obj.desVel = obj.pathway.vel(time, 1);
+            if obj.phase == -10
+                obj.tau = calc_TauByVel(robo, zeros(6,1), roboExtEst, [true, true]);
+            else
+                obj.tau = calc_TauByVel(robo, obj.desVel, roboExtEst, [false, false]);
+            end
+            obj.phase = obj.pathway.phase(time, param);
         end
     end
 end
