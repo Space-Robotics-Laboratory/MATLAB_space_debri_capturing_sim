@@ -1,6 +1,8 @@
 % 双腕ロボ手先球と四角形ターゲットの接触力計算関数
 % 
 % 2023.1 uchida akiyoshi
+% 2023.3 ロボットトルクの計算で, torque[1, 3] + torque[2, 4]とすべきところを
+%        torque[1, 3] + torque[1, 3]としていた．改善済み．
 % 
 % input  :DualArmRobo class, Targer class, contactElast, contactDamp
 % output :[roboEdgeWrench[LeftWrench 6*1, RightWrnech 6*1], TagrgetWrench 6*1, contactState 1*4] ; Wrench = [Fource 3*1; Torque 3*1]
@@ -121,7 +123,7 @@ function [edgeWrench, targetWrench, isContact] = calc_ContactForce(DualArmRobo, 
     tageTorques = cross(target2ContactPos, targetForces);                   % ターゲットトルク 3*4
 
     roboForce = -targetForces(:, [1, 3]) - targetForces(:, [2, 4]);         % 手先合力 3*2
-    roboTorque = roboTorques(:, [1, 3]) + roboTorques(:, [1, 3]);           % 手先合トルク 3*2
+    roboTorque = roboTorques(:, [1, 3]) + roboTorques(:, [2, 4]);           % 手先合トルク 3*2
     tageForce = sum(targetForces, 2);                                       % ターゲット合力 3*1
     tageTorque = sum(tageTorques, 2);                                       % ターゲット合トルク 3*1
     
