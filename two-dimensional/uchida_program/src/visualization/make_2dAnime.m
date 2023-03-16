@@ -51,6 +51,10 @@ function make_2dAnime(datSaver, paths, param)
             roboFR = dataStruct.endEffecRForce(count, :)';
             targF = dataStruct.targForce(count, :)';
 
+            % 手先目標位置
+            desHandPos = reshape(dataStruct.desHandPos(count, :), [3, 2]);
+
+
             %%% 描画
             % ロボ描画
             vis_DualArmRobot(roboR0, roboQ0, jointPos, endEffecPos, endEffecOri, param)
@@ -64,9 +68,14 @@ function make_2dAnime(datSaver, paths, param)
 
             % ターゲット外力描画
             vis_TargetForce(targR0, targF, scale)
+
+            % 手先目標位置描画
+            vis_DesiredPos(desHandPos)
             
             hold off
 
+            
+            %%% 結果保存
             % 図をVideoWriteに保存
             frame = getframe(figure(FigureNumber));
             writeVideo(video, frame);

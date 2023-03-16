@@ -51,9 +51,12 @@ classdef DataSaver
 
             % 運動量
             obj.datStruct.PLsum = zeros(row, 2);
+
+            % 目標手先位置
+            obj.datStruct.desHandPos = zeros(row, 6);
         end
         % 保存するデータを更新
-        function obj = update(obj, robo, target, time, index)
+        function obj = update(obj, robo, target, controller, time, index, param)
             % 時刻
             obj.datStruct.time(index, :) = time;
             
@@ -88,6 +91,10 @@ classdef DataSaver
             % 運動量
             dat = calc_momentum(robo.LP, robo.SV) + calc_momentum(target.LP, target.SV);
             obj.datStruct.PLsum(index, :) = [vecnorm(dat(1:3,1)), vecnorm(dat(4:6,1))];
+
+            % 目標手先位置
+            desPathway = controller.pathway.goingTo(time, param);
+            obj.datStruct.desHandPos(index, :) = reshape(desPathway(1:3, :), [1 ,6]);
             %%% Velocity information
         end
         
