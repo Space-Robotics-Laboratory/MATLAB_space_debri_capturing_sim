@@ -2,7 +2,8 @@
 %
 % 2023.2 akiyoshi uchida
 %
-% input : pathWay 4*n [x, y, theta, t]' , currentTime
+% input : pathWay 4*n [x, y, theta, t]' , currentTime, robo:class,
+% gain:struct, isLeftArm:bool schalar
 % output: velocity [vx, vy, w]
 %
 % pathwayは目標位置，その時の絶対時刻を合わせた行列．列0には初期位置，初期時刻を代入する.
@@ -17,9 +18,10 @@
 % mode1: 直線軌道・ステップ速度．加速度発散の危険性大 gain = 1/dTime (not related to s)
 % mode2: 直線軌道・三角速度．gain = 4s (s < .5), -4s + 4 ( s> .5)．max(gain) = 2であり，
 %        これは時間による積分を1にするためである．
+% mode3: 目標位置からのずれに対して，PT制御によって目標速度を求める．ゲイン調整が重要
 
 
-function vel = calc_Vel(pathWay, currentTime, velMode)
+function vel = calc_Vel(pathWay, currentTime, robo, gain, isLeftArm, velMode)
 
 % 経由地点の数
 [~, n] = size(pathWay);
@@ -46,15 +48,29 @@ switch velMode
     % 最も単純であるが，加速度が発散する危険が非常に高い．
     case 1
     gain = 1;
+    vel = dP ./ dTime * gain;
 
     % 直線軌道・山形速度（境界で加速度0の折れ曲がった直線）
     % 時間に対して線形に速度が変化する
     case 2
     s = ( currentTime - pathWay(4, index) ) / dTime;
     gain = -abs(4*s - 2) + 2;
+    vel = dP ./ dTime * gain;
 
-    % pathwayの始点と終点のみ一定時間一定加速度で加速し，移動中は一定速度
-    % 速度グラフは台形状になる．経由点で大きく速度が変化する場合，
+    % フィードバックによって位置制御を行うための速度
+    case 3
+    findex = [false, index];
+    armSign = [isLeftArm, ~isLeftArm];
+    Ck = gain.Ck;
+    Cd = gain.Cd;
+    nowPos(:, 1, 1) = [robo.POS_e_L(1:2); robo.SV.QeL(3)];  % enEffPosLeft  3*1*2
+    nowPos(:, 1, 2) = [robo.POS_e_R(1:2); robo.SV.QeR(3)];  % enEffPosRight 3*1*2
+    dnowPos(:, 1, 1) = [robo.VEL_e_L(1:2); robo.SV.ww(3, 4)];
+    dnowPos(:, 1, 2) = [robo.VEL_e_R(1:2); robo.SV.ww(3, 8)];
+    deltP = pathWay(1:3, findex) - nowPos(:, 1, armSign);   % 位置差分
+    deltD = -dnowPos(:, 1, armSign);                        % 速度差分
+    vel = Ck .* deltP + Cd .* deltD;                        % PD制御
+    return
 end
 
-vel = dP ./ dTime * gain;
+

@@ -6,8 +6,8 @@
 
 classdef DataSaver
     properties
+        paramStruct;
         datStruct;
-        datTable;
         filePath;
         datNum;
     end
@@ -17,6 +17,9 @@ classdef DataSaver
             obj.filePath = [paths.datfile, '/savedDat.csv'];
             row = (param.EndTime + param.MinusTime) / param.DivTime;
             obj.datNum = row;
+
+            % パラメータ保存
+%             obj.paramStruct.linkLength = 
             
             % 時刻
             obj.datStruct.time = zeros(row, 1);
@@ -31,6 +34,7 @@ classdef DataSaver
             obj.datStruct.roboEndEffecRPos = zeros(row, 6);                  % 右手手先球位置
             obj.datStruct.roboEndEffecLOri = zeros(row, 3);                  % 左手手先オイラー角
             obj.datStruct.roboEndEffecROri = zeros(row, 3);                  % 右手手先オイラー角
+            obj.datStruct.jointAng = zeros(row, 8);                          % 関節角度
 
             % target 
             obj.datStruct.targR0 = zeros(row, 3);
@@ -54,6 +58,13 @@ classdef DataSaver
 
             % 目標手先位置
             obj.datStruct.desHandPos = zeros(row, 6);
+
+            %%% velocity information
+            % ターゲット並進速度
+            obj.datStruct.targetV = zeros(row, 3);
+
+            % ターゲット角速度
+            obj.datStruct.targetW = zeros(row, 3);
         end
         % 保存するデータを更新
         function obj = update(obj, robo, target, controller, time, index, param)
@@ -70,6 +81,7 @@ classdef DataSaver
             obj.datStruct.roboEndEffecRPos(index, :) = reshape(robo.POS_es_R,[1, 6]);% 右手手先位置
             obj.datStruct.roboEndEffecLOri(index, :) = robo.SV.QeL';                 % 左手手先オイラー角
             obj.datStruct.roboEndEffecROri(index, :) = robo.SV.QeR';                 % 右手手先オイラー角
+            obj.datStruct.jointAng(index, :) = robo.SV.q';                           % 関節角度
 
             % target 
             obj.datStruct.targR0(index, :) = target.SV.R0';
@@ -95,7 +107,13 @@ classdef DataSaver
             % 目標手先位置
             desPathway = controller.pathway.goingTo(time, param);
             obj.datStruct.desHandPos(index, :) = reshape(desPathway(1:3, :), [1 ,6]);
+
             %%% Velocity information
+            % ターゲット並進速度
+            obj.datStruct.targetV(index, :) = target.SV.v0';
+
+            % ターゲット角速度
+            obj.datStruct.targetW(index, :) = target.SV.w0';
         end
         
         % ファイルに書き出し

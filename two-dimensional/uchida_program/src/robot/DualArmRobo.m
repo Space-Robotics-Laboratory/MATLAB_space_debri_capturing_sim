@@ -117,7 +117,7 @@ classdef DualArmRobo
         % SV.Fe ; zeros(3, 8)
         function obj = update(obj, JointTau, ExtWrench, Parameters)
             % 前時間の自身クラスを保存, 必要か？
-            obj.DualArmRoboPrevious = obj;
+%             obj.DualArmRoboPrevious = obj;
 
             % 能動的な力
             obj.SV.tau = min_abs(JointTau, obj.jointTrqLim);                  % トルク限界値でフィルタした関節トルク代入．tau([4,8])は受動関節なので，上書きされる．

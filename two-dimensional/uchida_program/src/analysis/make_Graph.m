@@ -67,4 +67,17 @@ hold off
 figName = 'jointTorque.png';                                  % png名定義
 saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % png保存
 
+%%% make target angular velocity graph
+targW = datStruct.targetW(:, 3);
+
+figureNumber = 105;     % 図番号設定
+figure(figureNumber);   % 図定義
+
+plot(time, targW)
+title("Target Angular Velocity")
+ylabel("Angular Velocity [rad/sec]")
+xlabel("time [sec]")
+
+figName = 'targetAngVel.png';                                  % png名定義
+saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % png保存
 

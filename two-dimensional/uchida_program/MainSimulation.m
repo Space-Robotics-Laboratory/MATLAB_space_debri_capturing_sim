@@ -8,16 +8,12 @@
 clc
 clear 
 close all
-
+  
 %%%%% シミュレーション準備
 
 %%% パラメータ設定
 % 基本的にパラメータはParamSetting内で変更する．
-% ループ内で用いるパラメータはここで呼び出すことによって時間短縮？
 param  = set_Param();                   
-cElast = param.ContactElast;     % 接触弾性係数
-cDamp  = param.ContactDamp;      % 接触減衰係数
-cNu    = param.ContactNu;        % 接触摩擦係数
 
 %%% global 変数の定義 
 % 全ての関数及びメインルーチン内で共通で使用される変数
@@ -36,7 +32,7 @@ dualArmRobo  = DualArmRobo(param);
 % ターゲットインスタンス作成
 targetSquare = TargetSquare(param);
 % コントローラーインスタンス作成
-controller = Controller(dualArmRobo, 0, 2);
+controller = Controller(dualArmRobo, 0, 2  );
 
 % シミュレーション時間
 endTime    = param.EndTime;                 % 終了時間設定．
@@ -52,6 +48,8 @@ targetExtWrench= zeros(6,1);                   % タゲ外力[ BaseForce  ]
 state.isContact = false(1, 4);                 % isContact(1, i) はendEfec i（初期姿勢にて左から）のターゲットへの接触状態bool値
 state.wasContact = state.isContact;            % 1step前のisContact
 state.newContact = ~state.wasContact & state.isContact;
+state.endContact = state.wasContact & ~state.isContact;
+state.time.lastContact = inf;
 
 
 % 捕獲判定初期化 bool schalar
@@ -71,11 +69,11 @@ for time = minusTime : d_time : endTime
     time %#ok<NOPTS> 
 
     %%% データ更新
-    datSaver = datSaver.update(dualArmRobo, targetSquare, time, datIndex);
+    datSaver = datSaver.update(dualArmRobo, targetSquare, controller, time, datIndex, param);
 
     %%% 推定フェーズ
     % 接触判定及び接触力計算
-    [roboExtWrench(:, 2:3), targetExtWrench, state.isContact] = calc_ContactForce(dualArmRobo, targetSquare, cElast, cDamp, cNu);
+    [roboExtWrench(:, 2:3), targetExtWrench, state.isContact] = calc_ContactForce(dualArmRobo, targetSquare, param);
     
     % 手先外力センサー値計算
 %     roboExtEst = zeros(6, 3);
@@ -98,7 +96,11 @@ for time = minusTime : d_time : endTime
     targetSquare = targetSquare.update(targetExtWrench);  
 
     % 接触データ更新
+    if any(state.isContact)
+        state.time.lastContact = time;
+    end
     state.newContact = ~state.wasContact & state.isContact;
+    state.endContact = state.wasContact & ~state.isContact;
     state.wasContact = state.isContact;
     datIndex = datIndex + 1;
 end

@@ -11,6 +11,7 @@
 % 
 % 2023.3 akiyoshi uchida
 % 制御パラメータが散逸しているため，改善したい
+% ターゲットのベースに対する相対速度で制御する方法に変更．
 % 
 
 classdef Pathway
@@ -27,7 +28,7 @@ classdef Pathway
             % 制御パラメータ
             obj.timeParam.move2targ = 1;    % directCapで，初めにターゲットに接触するまでの最小時間
             obj.timeParam.cap = .1;         % directCapで，接近後ターゲットを把持するのに要する時間
-            obj.timeParam.contDmp = .5;     % contDampeで，ターゲットに接触するもでの時間
+            obj.timeParam.contDmp = .0;     % contDampeで，ターゲットに接触するもでの時間
         end
 
         % pathwayをリセットする関数
@@ -84,18 +85,29 @@ classdef Pathway
                           (obj.pathway(4, phase + 1, 1) - time) > 0; % おそらく余分
         end
 
+        % 現在時刻から，次の目標位置を返す関数
+        function nextPathway = goingTo(obj, time, param)
+            phase = obj.phase(time, param);
+            index = phase + 1;
+            if index == 0
+                nextPathway = nan(4,2);
+                return 
+            end
+            nextPathway = obj.pathway(:, index, :);
+        end
+
         % pathwayから速度計算
-        function desiredVel = vel(obj, time, mode)
-            desiredVel(1:3, 1) = calc_Vel(obj.pathway(:, :, 1), time, mode);
-            desiredVel(4:6, 1) = calc_Vel(obj.pathway(:, :, 2), time, mode);
+        function desiredVel = vel(obj, time, robo, gain, mode)
+            desiredVel(1:3, 1) = calc_Vel(obj.pathway(:, :, 1), time, robo, gain, true, mode);    % left
+            desiredVel(4:6, 1) = calc_Vel(obj.pathway(:, :, 2), time, robo, gain, false, mode);   % right
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%
 
         %%%%% pathway計算関数 %%%%%
         %%% 呼び出された時刻から並進するターゲットに非接触を保ち，その後把持する位置と時刻を設定
         % ターゲットの頂点が如何なる角度においても手先に接触しない(ちょうど触れる)
-        function goalPathway = directCapture(obj, targ, time, param)
-            % ターゲット情報代入
+        function pathway = directCapture(obj, robo, targ, time, param)
+            % ターゲット相対情報代入
             targPos = targ.SV.R0(1:2, :);
             targV = targ.SV.v0(1:2, :);
             targW = targ.SV.w0(3);
@@ -117,25 +129,26 @@ classdef Pathway
             % ターゲット頂点に接触しないギリギリの時刻・位置を追従するフェーズ
             targGoalPos = targPos + targV * deltTime;                                           % 接触時点のターゲット重心位置 2*1
             armSign = [-1, +1];                                                                 % 左手なら負，右手なら正
-            goalPathway = zeros(4, 1, 2);                                                       % 目標手先位置初期化 4*1*2
+            pathway = zeros(4, 1, 2);                                                       % 目標手先位置初期化 4*1*2
             dX_close = sqrt( (targWidth/sqrt(2) + param.LdD*.5)^2 ...
                           -(param.LdH * sin(param.LdGamma))^2   ) ;                             % 手先先端球がターゲットにギリギリ触れない，ターゲット中心から手先までの距離
-            dX_capture = 1.05 * (targWidth + param.LdD)/sqrt(2) - param.LdH * sin(param.LdGamma);% 手先先端球がターゲットに触れる時の，ターゲット中心から手先までの距離.サバよみ
+            dX_capture = 1.03 * (targWidth + param.LdD)/sqrt(2) - param.LdH * sin(param.LdGamma);     % 手先先端球がターゲットに触れる時の，ターゲット中心から手先までの距離.サバよみ
 
 
             contactPosVecClose = [dX_close; 0]  .* armSign ;                                    % 接触アーム目標位置の，ターゲット重心に対する相対位置ベクトル 2*2
             contactPosVecCapt  = [dX_capture; 0] .* armSign;
-            goalPathway(:, 1, 1) = [targGoalPos + contactPosVecClose(:,1);-pi/2; deltTime + time]; % 左アーム目標位置代入
-            goalPathway(:, 2, 1) = [targGoalPos + contactPosVecCapt(:,1) ;-pi/2; deltTime + time + obj.timeParam.cap];
-            goalPathway(:, 1, 2) = [targGoalPos + contactPosVecClose(:,2); pi/2; deltTime + time]; % 右アーム目標位置代入
-            goalPathway(:, 2, 2) = [targGoalPos + contactPosVecCapt(:,2) ; pi/2; deltTime + time + obj.timeParam.cap];
+            pathway(:, 1, 1) = [targGoalPos + contactPosVecClose(:,1);-pi/2; deltTime + time]; % 左アーム目標位置代入
+            pathway(:, 2, 1) = [targGoalPos + contactPosVecCapt(:,1) ;-pi/2; deltTime + time + obj.timeParam.cap];
+            pathway(:, 1, 2) = [targGoalPos + contactPosVecClose(:,2); pi/2; deltTime + time]; % 右アーム目標位置代入
+            pathway(:, 2, 2) = [targGoalPos + contactPosVecCapt(:,2) ; pi/2; deltTime + time + obj.timeParam.cap];
         end
 
         %%% ターゲットが並進してきている方向の手先を接触させることによりターゲット角速度を減衰させる
-        function goalPathway = contactDampen(obj, robo, targ, time, param)
-            contPosRate = .2;
-            contAng = 0;                    % 接触する時のターゲット角度．おおむね30ど以内にする
-            evadeAng = deg2rad(10);          % 接触する時のエンドエフェクター角度．おおむね10ど以内にする
+        % 左手接触にバグあり
+        function pathway = contactDampen(obj, robo, targ, time, param)
+            contPosRate = 0.5;              % 接触する位置の辺に対する割合．１で頂点．０で中心
+            contAng = deg2rad(0);              % 接触する時のターゲット角度．おおむね30ど以内にする
+            evadeAng = deg2rad(20);          % 接触する時のエンドエフェクター角度．おおむね10ど以内にする
 
             % ターゲット情報代入
             targPos = targ.SV.R0(1:2, :);
@@ -144,54 +157,69 @@ classdef Pathway
             targWidth = targ.width;
             targOri = targ.SV.Q0(3);
             gamma = param.LdGamma;
+            r = param.LdD * .5;
 
             % 接触パターン設定
             % 回転の向き，並進方向から判別
-            contSign = -sign2( targV(1)*targW );
-            armSign = [targV(1)<0, targV(1)>=0];
+            armSign = sign2( targV(1) );        % 左手接触なら負，右手接触なら正
+            rotSign = sign2(targW);
+            contSign = -armSign * rotSign;      % 回転を抑制するための接触位置は，接触速度の方向と回転方向によって決まる
+            contArm = [targV(1)<0, targV(1)>=0];
 
-            % ターゲット頂点がロボットエンドエフェクタの間から出る角度
-            h = param.LdH * sin(gamma) * 2 - targWidth * .5 * contPosRate;
-            beta = asin(h / (targWidth/sqrt(2) + param.LdD * .5));
-            desTargOri = pi * .25 + sign(targW) * beta;
+            % 回転行列作成
+            contAngMat = vec2dc([0;0;contAng*rotSign]);             % 3*3
+            evadeAngMat = vec2dc([0; 0; -rotSign*evadeAng]);        % 3*3
+
+            % 接触時点のエンドエフェクターのターゲット重心への相対位置ベクトル計算
+            targ2ContPos0 = targWidth * .5 * [armSign; contSign * contPosRate];         % 2*1
+            targ2ContPos = contAngMat(1:2, 1:2) * targ2ContPos0;                        % 2*1
+            contPos2tip = contAngMat(1:2, 1:2) * [armSign*r; 0];                        % 2*1
+            tip2EE = evadeAngMat(1:2, 1:2) * [0; -param.LdH * sin(gamma) * contSign];   % 2*1
+            targ2Tip = targ2ContPos + contPos2tip;                                      % 2*1
+            targ2EECont  = targ2Tip + tip2EE;                                           % 2*1
             
-            % 待機時間計算
-            dtWait = rem(desTargOri - targOri, pi * .5) / targW;
-            while(dtWait < obj.timeParam.contDmp) % 時間が小さすぎる場合，回転対称性から時刻を伸ばす
-                dtWait = dtWait + pi * .5 / abs(targW);
+            % 接触点以前で接触しないための条件設定
+            % ターゲット頂点がロボットエンドエフェクタ（接触する方）と接触する角度
+            alpha = asin(targ2Tip(2) / (targWidth/sqrt(2)+r)) * armSign;          % 対角線の水平面との成す角．-pi/2 ~ pi/2
+            waitOri = pi * .25 + alpha ;
+
+            % 待機位置までの所要時間計算
+            dtApproach = rem(waitOri - targOri, pi * .5) / targW;
+            while(dtApproach < obj.timeParam.contDmp) % 時間が小さすぎる場合，回転対称性から時刻を伸ばす
+                dtApproach = dtApproach + pi * .5 / abs(targW);
             end
 
+            % 待機位置計算
+            targ2EEWait(1,1) = (targWidth/sqrt(2)+r) * cos(alpha) * armSign + tip2EE(1);    % 2*1
+            targ2EEWait(2,1) = targ2EECont(2);                                              % 2*1
+  
             % 接触に要する時間
-            dtCont = (pi * .25 - beta) / abs(targW);
+            % わずかに早く目標位置を達成するように設定
+            dtCont = (contAng + pi*.25 - alpha) / abs(targW) * .8;
 
             %%% 目標手先位置代入
-            targWaitPos = targPos + targV * dtWait;                                             % 非接触時点のターゲット重心位置 2*1
+            targWaitPos = targPos + targV * dtApproach;                                             % 非接触時点のターゲット重心位置 2*1
             targGoalPos = targWaitPos + targV * dtCont;                                         % 接触時のターゲット重心位置 2*1
-
-            % ターゲット頂点に接触しないギリギリの時刻・位置を追従するフェーズ
-            dX_close = (targWidth/sqrt(2) + param.LdD * .5) * cos(beta) * sign2(targV(1));       % 手先先端球がターゲットにギリギリ触れない，ターゲット中心から手先までの距離
-            dY_close = (contPosRate * targWidth * .5 - param.LdH * sin(gamma)) * contSign;
-            contactPosVecClose = [dX_close; dY_close] ;                                         % 非接触条件の，ターゲット重心に対する相対位置ベクトル 2*1
-
-            % 接触するフェーズ
-            contOri = vec2dc([0, 0, contAng]');
-            contPos_ = contOri * targWidth * .5 * [sign2(targV(1)); contPosRate * contSign; 0];               % 接触点の座標 3*1
-            contPos = contPos_ + [param.LdD * .5; 0; 0];
-            theta = [0; 0; evadeAng] * -sign(targW);
-            cont2endEff = vec2dc(theta) * [0; -param.LdH * sin(gamma); 0] * contSign;     % 接触点からエンドエフェクタまでの相対位置ベクトル
-            contactPosVecCont  = contPos(1:2, 1) + cont2endEff(1:2, 1);                                     % 接触条件の，ターゲット重心に対する相対位置ベクトル 2*1
 
             % 計算結果をpwathwayに代入．接触しないアームは現状の位置を保持
             tempObj = obj.reset(robo, time);
-            goalPathway = repmat(tempObj.pathway, [1, 2]);
-            desEffAngWait = pi * .5 * sign2(targV(1));
-            desEffAngGoal = -evadeAng * sign(targW) + desEffAngWait;                   % 左手か右手かによって初期状態の手先角度が異なる
+            pathway = repmat(tempObj.pathway, [1, 2]);
+            effAngInit = pi * .5 * armSign;
+            desEffAngGoal = -evadeAng * rotSign + effAngInit;                   % 左手か右手かによって初期状態の手先角度が異なる
             
-            goalPathway(1:3, 1, armSign) = [targWaitPos + contactPosVecClose;desEffAngWait];    % 非接触待機位置代入
-            goalPathway(1:3, 2, armSign) = [targGoalPos + contactPosVecCont ;desEffAngGoal];    % 接触時位置代入  
-            goalPathway(4, 1, :) = dtWait + time;
-            goalPathway(4, 2, :) = dtWait + time + dtCont;
+            pathway(1:3, 1, contArm) = [targWaitPos + targ2EEWait;desEffAngGoal];    % 非接触待機位置代入
+            pathway(1:3, 2, contArm) = [targGoalPos + targ2EECont ;desEffAngGoal];    % 接触時位置代入  
+            pathway(4, 1, :) = dtApproach + time;
+            pathway(4, 2, :) = dtApproach + time + dtCont;
         end
-
+        
+        %%% 設定した時間現在位置を保持するpathway設定
+        function pathway = stop(obj, robo, currentTime, deltTime)
+            tempObj = obj.reset(robo, currentTime);
+            p1 = tempObj.pathway;
+            pathway(:, 1, :) = p1;
+            p1(4, :, :) = p1(4, :, :) + deltTime;
+            pathway(:, 2, :) = p1;
+        end
     end
 end

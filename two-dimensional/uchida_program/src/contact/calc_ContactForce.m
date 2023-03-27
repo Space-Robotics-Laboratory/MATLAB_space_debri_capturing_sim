@@ -14,7 +14,10 @@
 % 多次元配列は，dim1:xyz , dim2:targetTip , dim3:roboArmEndEfectorとして定義
 %
 
-function [edgeWrench, targetWrench, isContact] = calc_ContactForce(DualArmRobo, Target, contactElast, contactDamp, contactNu)
+function [edgeWrench, targetWrench, isContact] = calc_ContactForce(DualArmRobo, Target, param)
+    contactElast = param.ContactElast;          % 弾性係数
+    contactDamp = param.ContactDamp;            % 減衰係数
+    contactNu = param.ContactNu;                % 摩擦係数
     tWidth = Target.width;                      % ターゲット横
     tDepth = Target.depth;                      % ターゲット縦
     m2G  = Target.m2G(1:2);                     % ターゲット質量重心から幾何中心への相対位置ベクトル 2*1
@@ -112,6 +115,7 @@ function [edgeWrench, targetWrench, isContact] = calc_ContactForce(DualArmRobo, 
 
     % 摩擦項計算
     targetForcesN = elasTargetForces + dampTargetForces;                    % 法線方向成分力 1*4
+    targetForcesN(targetForcesN<0) = 0;                                     % 引き付ける力は発生させない
     dVH = dot(velDiff, targetSideDire(:, contactSide));                     % 接線方向速度 1*4
     velDiffSign = sign(dVH);                                                % 接線方向速度符号 1*4
     targetForcesM = contactNu * targetForcesN .* velDiffSign;               % 接線方向力

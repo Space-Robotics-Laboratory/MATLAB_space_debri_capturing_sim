@@ -11,7 +11,7 @@ function Param = set_Param()
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % シミュレーション条件
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Param.EndTime   = 3;%2;    %シミュレーション終了時間[s]
+Param.EndTime   = 10;%2;    %シミュレーション終了時間[s]
 Param.MinusTime = 0;      %シミュレーション開始からロボット制御開始までの時間[s]
 Param.DivTime   = 0.001;  %シミュレーション刻み時間[s]
 
@@ -29,12 +29,12 @@ Param.MovDivTime = 0.01;  % アニメーション刻み時間
 
 % ロボットベース部分質量[kg]
 % 変更時，慣性行列に注意
-Param.BaseMass = 7.70;
+Param.BaseMass = 1e9;%7.70;
 
 %ロボットベース部分慣性行列[m^2kg]
 Param.BaseInertia = [ 1e9     0   0;   % 0の部分がカップリング項(慣性乗積?)
                         0   1e9   0;   % 慣性乗積が0ということは、固定軸の周りを回転するということ
-                        0     0   0.09783069148];
+                        0     0   1e9];%0.09783069148];
 
 % ロボットリンク部分質量[kg]
 % 変更時，慣性行列に注意
@@ -67,8 +67,8 @@ Param.JointTrqLim = repmat(10, [8,1]);
 % animation用．ダイナミクス計算には直接関係ないが，初期のパラメータではベース重心から関節までの位置を定義するのに使用している．
 % 変更時，Param.BaseCenter2Jに注意
 % 二次元モデルではheight = 0
-Param.BaseDepth  = 0.22;            % 縦（奥行き）
-Param.BaseWidth  = 0.32;            % 横
+Param.BaseDepth  = .22;%.16;%0.22;            % 縦（奥行き）
+Param.BaseWidth  = .314;%0.32;            % 横
 Param.BaseHeight = 0;               % 高さ
 
 % ロボットベース質量重心に対する幾何中心の相対位置
@@ -77,9 +77,9 @@ Param.BaseMCenter2GCenter = [0, 0, 0]';
 % ロボットリンク長さ及びエンドエフェクタ形状パラメータ[m]
 % ベースに近い方からa, b, c, d 左右対称モデル
 % Ldについては単純長さではなく，関節から刺股状のエンドエフェクタ先端までの距離H, 成す角gamma[rad]エンドエフェクタ先端球直径Dであることに注意
-Param.LaLength = 0.251;
-Param.LbLength = 0.181;
-Param.LcLength = 0.050;
+Param.LaLength = .235;%0.251;
+Param.LbLength = .16;%0.181;
+Param.LcLength = .075;%0.050;
 Param.LdH      = 0.05;
 Param.LdGamma  = deg2rad(36);
 Param.LdD      = 0.02;
@@ -94,15 +94,6 @@ Param.BaseCenter2J5 = [ Param.BaseWidth/2,  Param.BaseDepth/2, 0]';
 
 % リンクi重心から関節jまでの距離をParam.Center2Joint(:,i,j)で表現する．座標系はリンク根元座標で表現 ;LP.cc
 % 論文に記述がない可能性あり．-> DualArm_FourTips_LP_v3.m, 81行目参照
-%hase_programでは，
-%LP_d.cc(:,5,5) = [ 0 -0.24641 0 ]';
-%LP_d.cc(:,5,6) = [ 0  0.00459 0 ]';
-%LP_d.cc(:,6,6) = [ 0 -0.17641 0 ]';
-%LP_d.cc(:,6,7) = [ 0  0.00459 0 ]';
-%LP_d.cc(:,7,7) = [ 0 -0.03    0 ]';
-%LP_d.cc(:,7,8) = [ 0  0.02    0 ]';
-%LP_d.cc(:,8,8) = [ 0 -0.03    0 ]';
-%ってなってるけど，間違いでは？全部逆向きでは？->逆にして確かめる．->逆じゃなかった！->yやん
 
 Param.Center2Joint    = zeros(3,8,8);           % 初期化   ;LP.cc
 Param.Center2JointEnd = zeros(3,8);             % 初期化   ;LP.ce
@@ -170,7 +161,7 @@ Param.TargetInertia = [ 1e9     0   0;
 % ターゲットサイズ[m]
 % 二次元モデルではheight = 0
 Param.TargetDepth  = 0.16;
-Param.TargetWidth  = 0.16;
+Param.TargetWidth  = 0.16;%0.16;
 Param.TargetHeight = 0;
 
 % ターゲット幾何中心に対する質量重心の相対位置
@@ -183,18 +174,18 @@ Param.TargetMCenter2GCenter = [0, 0, 0]';
 % ターゲットの初期位置・姿勢・速度・角速度
 Param.TargetPosition0     = [ 0 0.35 0]';             % 初期位置          ;SV.R0
 Param.TargetOrientation0  = [ 0 0 deg2rad( 0 ) ]';   % 初期姿勢  ラジアン ;SV.Q0
-Param.TargetVelocity0     = [ .0 .0 0 ]';              % 初期並進速度 ;SV.v0
-Param.TargetAngVel0       = [ 0 0 -5 ]';              % 初期角速度 ;SV.w0
+Param.TargetVelocity0     = [ -.01 -.0 0 ]';              % 初期並進速度 ;SV.v0
+Param.TargetAngVel0       = [ 0 0 5 ]';              % 初期角速度 ;SV.w0
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 物理係数設定
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Param.ContactDamp  = 8;         % 接触力減衰係数
-Param.ContactElast = 9000;      % 接触力弾性係数
+Param.ContactDamp  = 20;         % 接触力減衰係数
+Param.ContactElast = 1000;      % 接触力弾性係数
 Param.ContactNu    = 0.3;       % 接触力摩擦係数
-Param.WristDamp    = 0.3;       % 手首関節減衰係数
-Param.WristElast   = 0.1;       % 手首関節弾性係数
+Param.WristDamp    = 0.4;       % 手首関節減衰係数
+Param.WristElast   = 0.8;       % 手首関節弾性係数
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ファイル設定
