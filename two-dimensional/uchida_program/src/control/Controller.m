@@ -33,7 +33,7 @@ classdef Controller
             obj.gain.Ck = [0, 0, 0]';%[.01, .01, .01]'; % 目標位置に関するPD制御比例ゲイン
             obj.gain.Cd = [0, 0, 0]';%[.1, .1, .1]';    % 目標位置に関するPD制御微分ゲイン
             obj.gain.Cf = [.1, .1, 0]';                % 手先外力に対する目標速度ゲイン（インピーダンス制御）
-            obj.waitT = .05;
+            obj.waitT = .1;
         end
 
 
@@ -50,13 +50,13 @@ classdef Controller
                 % 複数回接触によって減衰させてから捕獲するケース
                 case 2
                     % 角速度がしきい値より小さくなったら直接捕獲に移行
-                    if abs(targ.SV.w0(3) ) < 0 && abs(targ.SV.R0(1)) < .2
+                    if abs(targ.SV.w0(3) ) < 2 && abs(targ.SV.R0(1)) < .2
                         obj.pathUpdateFlag = true;
                         obj = obj.directCapture(robo, targ, roboExtEst, time, param);
                         return
                     end
                     % 初期時刻及び接触後待機時間経過後にフラグ立て
-                    obj.pathUpdateFlag = time == 0 || time == (state.time.lastContact + obj.waitT) ;
+                    obj.pathUpdateFlag = time == 0 || equal_time(time, state.time.lastContact + obj.waitT, param.DivTime); %time == state.time.lastContact + obj.waitT;;
                     obj =  obj.contactDampen(robo, targ, roboExtEst, state, time, param);
             end
         end
@@ -75,7 +75,7 @@ classdef Controller
             if obj.pathUpdateFlag
                 obj.pathUpdateFlag = false;
                 goalPathway = obj.pathway.directCapture(robo, targ, time, param);     % 目標位置時刻計算
-                obj.pathway = obj.pathway.overWrite(robo, goalPathway, time);   % pathway更新
+                obj.pathway = obj.pathway.overWriteGoal(robo, goalPathway, time);   % pathway更新
             end
             obj.desVel = obj.pathway.vel(time, robo, obj.gain, 2);
             if obj.phase == -1 
@@ -94,7 +94,7 @@ classdef Controller
             if obj.pathUpdateFlag
                 obj.pathUpdateFlag = false;
                 goalPathway = obj.pathway.contactDampen(robo, targ, time, param);
-                obj.pathway = obj.pathway.overWrite(robo, goalPathway, time);   % pathway更新
+                obj.pathway = obj.pathway.overWriteGoal(robo, goalPathway, time);   % pathway更新
             end
             if any(state.newContact)
                 % 接触時，初めの手先力に比例した速度で離れることによってインピーダンス制御を行う

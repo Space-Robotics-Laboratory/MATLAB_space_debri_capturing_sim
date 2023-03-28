@@ -29,12 +29,12 @@ Param.MovDivTime = 0.01;  % アニメーション刻み時間
 
 % ロボットベース部分質量[kg]
 % 変更時，慣性行列に注意
-Param.BaseMass = 1e9;%7.70;
+Param.BaseMass = 7.70;
 
 %ロボットベース部分慣性行列[m^2kg]
 Param.BaseInertia = [ 1e9     0   0;   % 0の部分がカップリング項(慣性乗積?)
                         0   1e9   0;   % 慣性乗積が0ということは、固定軸の周りを回転するということ
-                        0     0   1e9];%0.09783069148];
+                        0     0   0.09783069148];
 
 % ロボットリンク部分質量[kg]
 % 変更時，慣性行列に注意
@@ -174,8 +174,8 @@ Param.TargetMCenter2GCenter = [0, 0, 0]';
 % ターゲットの初期位置・姿勢・速度・角速度
 Param.TargetPosition0     = [ 0 0.35 0]';             % 初期位置          ;SV.R0
 Param.TargetOrientation0  = [ 0 0 deg2rad( 0 ) ]';   % 初期姿勢  ラジアン ;SV.Q0
-Param.TargetVelocity0     = [ -.01 -.0 0 ]';              % 初期並進速度 ;SV.v0
-Param.TargetAngVel0       = [ 0 0 5 ]';              % 初期角速度 ;SV.w0
+Param.TargetVelocity0     = [ -.0 -.0 0 ]';              % 初期並進速度 ;SV.v0
+Param.TargetAngVel0       = [ 0 0 5]';              % 初期角速度 ;SV.w0
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

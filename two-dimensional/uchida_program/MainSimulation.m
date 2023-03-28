@@ -32,7 +32,7 @@ dualArmRobo  = DualArmRobo(param);
 % ターゲットインスタンス作成
 targetSquare = TargetSquare(param);
 % コントローラーインスタンス作成
-controller = Controller(dualArmRobo, 0, 2  );
+controller = Controller(dualArmRobo, 0, 2);
 
 % シミュレーション時間
 endTime    = param.EndTime;                 % 終了時間設定．
@@ -63,7 +63,7 @@ startCPUT = cputime;
 startT = clock();
 
 
-%%% シミュレーションループスタート
+%% シミュレーションループスタート
 for time = minusTime : d_time : endTime 
     clc
     time %#ok<NOPTS> 
@@ -111,7 +111,7 @@ end
 datSaver.write()
 
 
-%%% 結果表示
+%% 結果表示
 % アニメーション作成
 % movfileにaviファイル保存
 % pngfileにpngファイル保存
