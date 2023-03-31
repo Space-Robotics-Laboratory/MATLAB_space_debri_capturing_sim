@@ -1,5 +1,5 @@
-# This is blender python script to apply the motion of dualArm capturing simulation
-# csv data calculated by MatLab uchida_program
+# This is a blender python script to apply the motion of dualArm capturing simulation
+# csv data calculated by MatLab uchida_program.
 #
 # 2023.3 Akiyoshi Uchida
 #
