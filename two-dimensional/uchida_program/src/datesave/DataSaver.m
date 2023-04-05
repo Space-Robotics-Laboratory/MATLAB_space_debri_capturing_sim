@@ -65,6 +65,9 @@ classdef DataSaver
 
             % ターゲット角速度
             obj.datStruct.targetW = zeros(row, 3);
+
+            %%% error log
+%             obj.datStruct.error = zeros(row, 1);
         end
         % 保存するデータを更新
         function obj = update(obj, robo, target, controller, time, index, param)

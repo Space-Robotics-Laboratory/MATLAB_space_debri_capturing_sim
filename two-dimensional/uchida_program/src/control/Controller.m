@@ -1,5 +1,8 @@
 % ロボット制御用クラス
 % 
+% 目標速度，目標関節トルク，目標位置等を保持し，ロボットに目標関節トルクを与える．
+% 目標位置の計算に関しては，幾何的で煩雑な式となることからPathwayクラスを要素として持ち，その内部で行う．
+% 
 % 2023.3 akiyoshi uchida
 % 
 classdef Controller
@@ -32,7 +35,7 @@ classdef Controller
             % パラメータ設定
             obj.gain.Ck = [0, 0, 0]';%[.01, .01, .01]'; % 目標位置に関するPD制御比例ゲイン
             obj.gain.Cd = [0, 0, 0]';%[.1, .1, .1]';    % 目標位置に関するPD制御微分ゲイン
-            obj.gain.Cf = [.1, .1, 0]';                % 手先外力に対する目標速度ゲイン（インピーダンス制御）
+            obj.gain.Cf = [0.04, 0.04, 0.0]';%[.1, .1, 0.1]';                % 手先外力に対する目標速度ゲイン（インピーダンス制御）
             obj.waitT = .1;
         end
 
@@ -50,13 +53,14 @@ classdef Controller
                 % 複数回接触によって減衰させてから捕獲するケース
                 case 2
                     % 角速度がしきい値より小さくなったら直接捕獲に移行
-                    if abs(targ.SV.w0(3) ) < 2 && abs(targ.SV.R0(1)) < .2
+                    if abs(targ.SV.w0(3) ) < 0 && abs(targ.SV.R0(1)) < .2
                         obj.pathUpdateFlag = true;
                         obj = obj.directCapture(robo, targ, roboExtEst, time, param);
                         return
                     end
                     % 初期時刻及び接触後待機時間経過後にフラグ立て
-                    obj.pathUpdateFlag = time == 0 || equal_time(time, state.time.lastContact + obj.waitT, param.DivTime); %time == state.time.lastContact + obj.waitT;;
+                    flagAfterContact = equal_time(time, state.time.lastContact + obj.waitT, param.DivTime) && obj.phase == -1;
+                    obj.pathUpdateFlag = time == 0 || flagAfterContact; %time == state.time.lastContact + obj.waitT;;
                     obj =  obj.contactDampen(robo, targ, roboExtEst, state, time, param);
             end
         end
@@ -68,7 +72,7 @@ classdef Controller
         %%% 以下，制御で用いる関数
         % 関節トルクを計算する
 
-        % 並進するターゲットを直接捕獲する制御
+        %% 並進するターゲットを直接捕獲する制御
         function obj = directCapture(obj, robo, targ, roboExtEst, time, param)
             % フラグがたった時刻のみでpathwayを更新
             % 直接捕獲のための目標位置を設定する
@@ -88,7 +92,7 @@ classdef Controller
             obj.phase = obj.pathway.phase(time, param);
         end
 
-        % 並進するターゲットに移動している方向の手を当てる制御
+        %% 並進するターゲットに移動している方向の手を当てる制御
         function obj = contactDampen(obj, robo, targ, roboExtEst, state, time, param)
             % フラグがたった時刻のみでpathwayを更新
             if obj.pathUpdateFlag
@@ -98,16 +102,21 @@ classdef Controller
             end
             if any(state.newContact)
                 % 接触時，初めの手先力に比例した速度で離れることによってインピーダンス制御を行う
-                % 目標位置追従が完了していることを想定
-                fource = [roboExtEst(1:2, 2); roboExtEst(3, 2); roboExtEst(1:2, 3); roboExtEst(6, 3)];
+                % 目標位置追従が完了していることを想定．このネスト内でphase~=-1の場合，想定していない接触．
+                fource = [roboExtEst(1:2, 2); roboExtEst(3, 2); roboExtEst(1:2, 3); roboExtEst(6, 3)]; % 6*1
                 obj.desVel = repmat(obj.gain.Cf, [2,1]) .* fource;
             elseif obj.phase ~= -1
                 % 目標位置追従の途中
                 % pahse==-1の時，目標手先位置はないので目標速度の更新はない
                 obj.desVel = obj.pathway.vel(time, robo, obj.gain, 1);
             elseif obj.phase == -1 && time > state.time.lastContact + obj.waitT*.8
-                % 次にフラグが立つ前に速度０を代入
+                % 手先を逃して接触力を低減したのち，次にフラグが立つ前に速度０を代入
                 obj.desVel = zeros(6,1);
+            elseif obj.phase == -1 && time <= state.time.lastContact + obj.waitT*.8
+                % 接触直後，フォローリリース的な動き
+%                 obj.desVel = zeros(6,1);
+            else
+                error('Not Considered state')
             end
             obj.tau = calc_TauByVel(robo, obj.desVel, roboExtEst, [false, false]);
             obj.phase = obj.pathway.phase(time, param);

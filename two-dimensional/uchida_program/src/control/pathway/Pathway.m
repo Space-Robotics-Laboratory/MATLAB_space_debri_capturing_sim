@@ -11,7 +11,7 @@
 % 
 % 2023.3 akiyoshi uchida
 % 制御パラメータが散逸しているため，改善したい
-% ターゲットのベースに対する相対速度で制御する方法に変更．
+% ターゲットのベースに対する相対速度で制御する方法に変更すべき？
 % 
 
 classdef Pathway
@@ -53,6 +53,7 @@ classdef Pathway
         end
 
         % pathwayのどのフェーズにいるか計算
+        % フェーズの立ち上がりと立ち下がりをdtimeをもとに計算
         function [phase, phaseStarting, phaseEnding] = phase(obj, time, param)
             [~, n, ~] = size(obj.pathway);
             index = (obj.pathway(4, :, 1) <= time) & (obj.pathway(4, [2:n, 1], 1) > time);  % 時刻をもとに経路のフェーズを判定
@@ -116,11 +117,18 @@ classdef Pathway
             targW = targ.SV.w0(3);
             targWidth = targ.width;
             targOri = targ.SV.Q0(3);
-            captureDeltAng = 0;
+            captureDeltAng = deg2rad(0);            % 捕獲時のターゲットの45度姿勢からの角度変化．-pi/4~pi/4
+
+
+            % 捕獲時のターゲット角度決定
+            if targW == 0
+                captureDeltAng =  rem(targOri - pi * .25, pi * .5);
+            end
 
             % ターゲット頂点がロボットエンドエフェクタの間に入る角度
             alpha = asin(param.LdH * sin(param.LdGamma) / (targWidth/sqrt(2) + param.LdD * .5));
-            desTargOri = pi * .25 - sign(targW) * alpha;
+            desTargOri = pi * .25 + captureDeltAng - sign2(targW) * alpha;
+
             
             % 待機時間計算
             deltTime = rem(desTargOri - targOri, pi * .5) / targW;
@@ -156,16 +164,16 @@ classdef Pathway
             
             contactPosVecClose = captureDeltAngMat(1:2,1:2) * [dX_close; 0]  .* armSign;     % 接触アーム目標位置の，ターゲット重心に対する相対位置ベクトル 2*2
             contactPosVecCapt  = captureDeltAngMat(1:2,1:2) * [dX_capture; 0] .* armSign;
-            pathway(:, 1, 1) = [targGoalPos + contactPosVecClose(:,1);-pi/2-captureDeltAng; deltTime + time]; % 左アーム目標位置代入
-            pathway(:, 2, 1) = [targGoalPos + contactPosVecCapt(:,1) ;-pi/2-captureDeltAng; deltTime + time + obj.timeParam.cap];
+            pathway(:, 1, 1) = [targGoalPos + contactPosVecClose(:,1);-pi/2+captureDeltAng; deltTime + time]; % 左アーム目標位置代入
+            pathway(:, 2, 1) = [targGoalPos + contactPosVecCapt(:,1) ;-pi/2+captureDeltAng; deltTime + time + obj.timeParam.cap];
             pathway(:, 1, 2) = [targGoalPos + contactPosVecClose(:,2); pi/2+captureDeltAng; deltTime + time]; % 右アーム目標位置代入
             pathway(:, 2, 2) = [targGoalPos + contactPosVecCapt(:,2) ; pi/2+captureDeltAng; deltTime + time + obj.timeParam.cap];
         end
 
         %%% ターゲットが並進してきている方向の手先を接触させることによりターゲット角速度を減衰させる
         function pathway = contactDampen(obj, robo, targ, time, param)
-            contPosRate = 0.5;              % 接触する位置の辺に対する割合．１で頂点．０で中心
-            contAng = deg2rad(0);              % 接触する時のターゲット角度．おおむね30ど以内にする
+            contPosRate = 0.8;              % 接触する位置の辺に対する割合．１で頂点．０で中心
+            contAng = deg2rad(10);              % 接触する時のターゲット角度．おおむね30ど以内にする
             evadeAng = deg2rad(20);          % 接触する時のエンドエフェクター角度．おおむね10ど以内にする
 
             % ターゲット情報代入

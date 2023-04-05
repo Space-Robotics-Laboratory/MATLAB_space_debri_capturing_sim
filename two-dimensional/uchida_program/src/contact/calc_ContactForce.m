@@ -3,6 +3,7 @@
 % 2023.1 uchida akiyoshi
 % 2023.3 ロボットトルクの計算で, torque[1, 3] + torque[2, 4]とすべきところを
 %        torque[1, 3] + torque[1, 3]としていた．改善済み．
+% 2023.3 回転角速度が大きい場合，計算誤差が大きくなることに注意．
 % 
 % input  :DualArmRobo class, Targer class, contactElast, contactDamp
 % output :[roboEdgeWrench[LeftWrench 6*1, RightWrnech 6*1], TagrgetWrench 6*1, contactState 1*4] ; Wrench = [Fource 3*1; Torque 3*1]
