@@ -56,6 +56,7 @@ classdef Controller
                     if equal_time(state.time.comeTargetSlow + obj.waitT, time, param.DivTime)
                         obj.pathUpdateFlag = true;
                         obj = obj.directCapture(robo, targ, roboExtEst, time, param);
+                        obj.controlMode = 1;        % 速度制御の手法が変わる場合に注意．                 
                         return
                     end
                     % 初期時刻及び接触後待機時間経過後にフラグ立て
@@ -81,7 +82,7 @@ classdef Controller
                 goalPathway = obj.pathway.directCapture(targ, time, param);     % 目標位置時刻計算
                 obj.pathway = obj.pathway.overWriteGoal(robo, goalPathway, time);   % pathway更新
             end
-            obj.desVel = obj.pathway.vel(time, robo, obj.gain, 2);
+            obj.desVel = obj.pathway.vel(time, robo, obj.gain, 1);
             if obj.phase == -1 
                 % 目標時間の後，手先を相対停止
                 obj.tau = calc_TauByVel(robo, zeros(6,1), roboExtEst, [true, true]);
