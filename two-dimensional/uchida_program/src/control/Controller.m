@@ -41,7 +41,7 @@ classdef Controller
 
 
         %%% コントロール関数
-        % mainの制御はここでおこなっている
+        % 目標位置更新のフラグたてを行う．モードによって制御が異なる．
         function obj = control(obj, robo, targ, roboExtEst, time, state, param)
             switch obj.controlMode
                 % 直接捕獲するケース
@@ -53,7 +53,7 @@ classdef Controller
                 % 複数回接触によって減衰させてから捕獲するケース
                 case 2
                     % 角速度がしきい値より小さくなったら直接捕獲に移行
-                    if abs(targ.SV.w0(3) ) < 0 && abs(targ.SV.R0(1)) < .2
+                    if equal_time(state.time.comeTargetSlow + obj.waitT, time, param.DivTime)
                         obj.pathUpdateFlag = true;
                         obj = obj.directCapture(robo, targ, roboExtEst, time, param);
                         return
@@ -78,7 +78,7 @@ classdef Controller
             % 直接捕獲のための目標位置を設定する
             if obj.pathUpdateFlag
                 obj.pathUpdateFlag = false;
-                goalPathway = obj.pathway.directCapture(robo, targ, time, param);     % 目標位置時刻計算
+                goalPathway = obj.pathway.directCapture(targ, time, param);     % 目標位置時刻計算
                 obj.pathway = obj.pathway.overWriteGoal(robo, goalPathway, time);   % pathway更新
             end
             obj.desVel = obj.pathway.vel(time, robo, obj.gain, 2);

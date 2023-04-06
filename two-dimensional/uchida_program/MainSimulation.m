@@ -49,7 +49,9 @@ state.isContact = false(1, 4);                 % isContact(1, i) はendEfec i（
 state.wasContact = state.isContact;            % 1step前のisContact
 state.newContact = ~state.wasContact & state.isContact;
 state.endContact = state.wasContact & ~state.isContact;
+state.targetSlow = false;
 state.time.lastContact = inf;
+state.time.comeTargetSlow = inf;
 
 
 % 捕獲判定初期化 bool schalar
@@ -82,8 +84,12 @@ for time = minusTime : d_time : endTime
     % ターゲット運動状態推定
     estTarget = estimate_Target(targetSquare);
 
-    % ターゲット捕獲状況判定
+    % ターゲット状況判定
     state.isCapture = judge_IsCapture(dualArmRobo, estTarget, param);
+    if ~state.targetSlow && (abs(targetSquare.SV.w0(3)) <= param.AngularVelBorder)
+        state.time.comeTargetSlow = time;
+    end
+    state.targetSlow = abs(targetSquare.SV.w0(3)) <= param.AngularVelBorder;
 
     %%% コントロールフェーズ
     % 手先目標位置計算

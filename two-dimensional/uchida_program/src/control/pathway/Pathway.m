@@ -29,7 +29,7 @@ classdef Pathway
             obj.timeParam.move2targ = 1;    % directCapで，初めにターゲットに接触するまでの最小時間
             obj.timeParam.cap = .1;         % directCapで，接近後ターゲットを把持するのに要する時間
             obj.timeParam.contDmp = .1;     % contDampeで，ターゲットに接触するまでの時間
-            obj.timeParam.maxWait = 3;
+            obj.timeParam.maxWait = 1;      % directCapでの最大待ち時間
         end
 
         % pathwayをリセットする関数
@@ -109,48 +109,38 @@ classdef Pathway
         %%% 呼び出された時刻から並進するターゲットに非接触を保ち，その後把持する位置と時刻を設定
         % ターゲットの頂点が如何なる角度においても手先に接触しない(ちょうど触れる)位置を経由することで意図しない接触を避ける
         % 基本targOri = pi/4 で捕獲するが，角速度が小さすぎる場合はその限りではない．
-        % W = 0にバグ
-        function pathway = directCapture(obj, robo, targ, time, param)
+        % captureDeltAng : 捕獲時のターゲットの45度姿勢からの角度変化．-pi/4~pi/4
+        function pathway = directCapture(obj, targ, time, param)
             % ターゲット相対情報代入
             targPos = targ.SV.R0(1:2, :);
             targV = targ.SV.v0(1:2, :);
             targW = targ.SV.w0(3);
             targWidth = targ.width;
             targOri = targ.SV.Q0(3);
-            captureDeltAng = deg2rad(0);            % 捕獲時のターゲットの45度姿勢からの角度変化．-pi/4~pi/4
-
-
-            % 捕獲時のターゲット角度決定
-            if targW == 0
-                captureDeltAng =  rem(targOri - pi * .25, pi * .5);
-            end
+            captureDeltAng = 0;
 
             % ターゲット頂点がロボットエンドエフェクタの間に入る角度
             alpha = asin(param.LdH * sin(param.LdGamma) / (targWidth/sqrt(2) + param.LdD * .5));
-            desTargOri = pi * .25 + captureDeltAng - sign2(targW) * alpha;
 
-            
-            % 待機時間計算
-            deltTime = rem(desTargOri - targOri, pi * .5) / targW;
-            while(deltTime < obj.timeParam.move2targ) % 時間が小さすぎる場合，回転対称性から時刻を伸ばす
-                deltTime = deltTime + pi * .5 / abs(targW);
+            % 捕獲時のターゲット角度，待機時間決定
+            % 角速度０の場合は任意の時間．その他はターゲットの頂点が手先刺股の間に入るまで待機
+            if targW == 0
+                captureDeltAng =  rem(targOri - pi * .25, pi * .5);
+                deltTime = obj.timeParam.move2targ;
+            elseif targW <= .3
+                deltTime = obj.timeParam.maxWait;
+                desTargOri = targOri + targW * deltTime;
+                captureDeltAng = rem(desTargOri - pi * .25, pi * .5);
+            else
+                % 頂点が刺股に入る角度
+                desTargOri = pi * .25 - sign2(targW) * alpha;
+                % 待機時間計算
+                deltTime = rem(desTargOri - targOri, pi * .5) / targW;
+                while(deltTime < obj.timeParam.move2targ) % 時間が小さすぎる場合，回転対称性から時刻を伸ばす
+                    deltTime = deltTime + pi * .5 / abs(targW);
+                end
             end
-
-            % 待機時間が長すぎる（角速度が十分小さい）とき，迎えに行く
-%             for i = 1:50
-%                 if(deltTime < obj.timeParam.maxWait)
-%                     break
-%                 end
-%                 captureDeltAng = captureDeltAng + pi/100;
-%                 deltTime = rem(desTargOri+captureDeltAng - targOri, pi * .5) / targW;
-%             end
-%             if i == 50 % 角速度0とみなす
-%                 captureDeltAng = rem(targOri+pi*.25, pi * .5);
-%                 if captureDeltAng > pi*.25
-%                     captureDeltAng = pi*.5 - captureDeltAng;
-%                 end
-%                 deltTime=0;
-%             end
+            
             captureDeltAngMat = vec2dc([0;0;captureDeltAng]);
 
             %%% 目標手先位置代入
@@ -216,7 +206,8 @@ classdef Pathway
             end
 
             % 待機位置計算
-            targ2EEWait(1,1) = (targWidth/sqrt(2)+r) * cos(alpha) * armSign + tip2EE(1);    % 2*1
+            % わずかに余裕を持たせる
+            targ2EEWait(1,1) = (targWidth/sqrt(2)+r) * cos(alpha) * armSign * 1.05 + tip2EE(1);    % 2*1
             targ2EEWait(2,1) = targ2EECont(2);                                              % 2*1
 
             % 非接触手先位置計算
