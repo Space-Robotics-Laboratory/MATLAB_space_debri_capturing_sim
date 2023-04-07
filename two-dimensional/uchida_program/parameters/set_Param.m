@@ -174,7 +174,7 @@ Param.TargetMCenter2GCenter = [0, 0, 0]';
 % ターゲットの初期位置・姿勢・速度・角速度
 Param.TargetPosition0     = [ 0 0.35 0]';             % 初期位置          ;SV.R0
 Param.TargetOrientation0  = [ 0 0 deg2rad( 0 ) ]';   % 初期姿勢  ラジアン ;SV.Q0
-Param.TargetVelocity0     = [ .0000 -.0 0 ]';              % 初期並進速度 ;SV.v0
+Param.TargetVelocity0     = [ .00 -.0 0 ]';              % 初期並進速度 ;SV.v0
 Param.TargetAngVel0       = [ 0 0 5]';              % 初期角速度 ;SV.w0
 
 

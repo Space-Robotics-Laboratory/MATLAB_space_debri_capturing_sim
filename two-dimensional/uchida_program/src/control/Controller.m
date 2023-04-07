@@ -12,15 +12,15 @@ classdef Controller
         waitT           % contactDompen内で接触後待機する時間
 
         % 制御目標パラメータ
-        pathway
-        desVel
-        tau
+        pathway         % Pathway class: 目標位置を扱うクラス
+        desVel          % 目標速度 6*1
+        tau             % 目標関節トルク 8*1 (ただし，受動関節はのちにバネモデルによって上書きされる)
 
         % 状態パラメータ
-        controlMode
-        phase
-        phaseStarting
-        pathUpdateFlag
+        controlMode     % 制御モード
+        phase           % int  pathwayのどの段階にいるかの指標．現在向かっている目標が保存された目標位置の何番目の経由地かを示す．目標地点がない場合-1を持つ．
+        phaseStarting   % bool pathwayのphaseの切り替えを示す．経由地点を初めて達成した時刻でtrue．
+        pathUpdateFlag  % bool
     end
     methods
         % constructor 
@@ -36,7 +36,7 @@ classdef Controller
             obj.gain.Ck = [0, 0, 0]';%[.01, .01, .01]'; % 目標位置に関するPD制御比例ゲイン
             obj.gain.Cd = [0, 0, 0]';%[.1, .1, .1]';    % 目標位置に関するPD制御微分ゲイン
             obj.gain.Cf = [0.04, 0.04, 0.0]';%[.1, .1, 0.1]';                % 手先外力に対する目標速度ゲイン（インピーダンス制御）
-            obj.waitT = .1;
+            obj.waitT = 10;
         end
 
 
@@ -74,6 +74,7 @@ classdef Controller
         % 関節トルクを計算する
 
         %% 並進するターゲットを直接捕獲する制御
+        % obj.tauを更新する
         function obj = directCapture(obj, robo, targ, roboExtEst, time, param)
             % フラグがたった時刻のみでpathwayを更新
             % 直接捕獲のための目標位置を設定する
@@ -94,6 +95,7 @@ classdef Controller
         end
 
         %% 並進するターゲットに移動している方向の手を当てる制御
+        % obj.tauを更新する
         function obj = contactDampen(obj, robo, targ, roboExtEst, state, time, param)
             % フラグがたった時刻のみでpathwayを更新
             if obj.pathUpdateFlag
@@ -109,13 +111,15 @@ classdef Controller
             elseif obj.phase ~= -1
                 % 目標位置追従の途中
                 % pahse==-1の時，目標手先位置はないので目標速度の更新はない
-                obj.desVel = obj.pathway.vel(time, robo, obj.gain, 1);
+                obj.desVel = obj.pathway.vel(time, robo, obj.gain, 2);
+            elseif obj.phase == -1 && time <= state.time.lastContact + obj.waitT*.8
+                % 接触直後，フォローリリース的な動き
+                obj.desVel = zeros(6,1);
+                obj.tau = calc_TauByVel(robo, obj.desVel, roboExtEst, [true, true]);
+                return
             elseif obj.phase == -1 && time > state.time.lastContact + obj.waitT*.8
                 % 手先を逃して接触力を低減したのち，次にフラグが立つ前に速度０を代入
                 obj.desVel = zeros(6,1);
-            elseif obj.phase == -1 && time <= state.time.lastContact + obj.waitT*.8
-                % 接触直後，フォローリリース的な動き
-%                 obj.desVel = zeros(6,1);
             else
                 error('Not Considered state')
             end

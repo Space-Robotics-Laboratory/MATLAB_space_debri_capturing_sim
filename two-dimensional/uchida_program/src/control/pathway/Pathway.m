@@ -106,7 +106,7 @@ classdef Pathway
         %%%%%%%%%%%%%%%%%%%%%%%%%%
 
         %%%%% pathway計算関数 %%%%%
-        %%% 呼び出された時刻から並進するターゲットに非接触を保ち，その後把持する位置と時刻を設定
+        %%% 呼び出された時刻から並進するターゲットに非接触を保ち，その後把持するためのpathwayメソッドを返す．
         % ターゲットの頂点が如何なる角度においても手先に接触しない(ちょうど触れる)位置を経由することで意図しない接触を避ける
         % 基本targOri = pi/4 で捕獲するが，角速度が小さすぎる場合はその限りではない．
         % captureDeltAng : 捕獲時のターゲットの45度姿勢からの角度変化．-pi/4~pi/4
@@ -161,6 +161,7 @@ classdef Pathway
         end
 
         %%% ターゲットが並進してきている方向の手先を接触させることによりターゲット角速度を減衰させる
+        % pathwayメソッドをリターン
         function pathway = contactDampen(obj, robo, targ, time, param)
             contPosRate = 0.8;              % 接触する位置の辺に対する割合．１で頂点．０で中心
             contAng = deg2rad(10);              % 接触する時のターゲット角度．おおむね30ど以内にする
@@ -184,13 +185,13 @@ classdef Pathway
 
             % 回転行列作成
             contAngMat = vec2dc([0;0;contAng*rotSign]);             % 3*3
-            evadeAngMat = vec2dc([0; 0; -rotSign*evadeAng]);        % 3*3
+            evadeAngMat = vec2dc([0; 0; rotSign*evadeAng]);        % 3*3
 
             % 接触時点のエンドエフェクターのターゲット重心への相対位置ベクトル計算
             targ2ContPos0 = targWidth * .5 * [armSign; contSign * contPosRate];         % 2*1
             targ2ContPos = contAngMat(1:2, 1:2) * targ2ContPos0;                        % 2*1
             contPos2tip = contAngMat(1:2, 1:2) * [armSign*r; 0];                        % 2*1
-            tip2EE = evadeAngMat(1:2, 1:2) * [0; -param.LdH * sin(gamma) * contSign];   % 2*1
+            tip2EE = evadeAngMat(1:2, 1:2) * [0;  param.LdH * sin(gamma) * contSign];   % 2*1
             targ2Tip = targ2ContPos + contPos2tip;                                      % 2*1
             targ2EECont  = targ2Tip + tip2EE;                                           % 2*1
             
@@ -226,7 +227,7 @@ classdef Pathway
             tempObj = obj.reset(robo, time);
             pathway = repmat(tempObj.pathway, [1, 2]);
             effAngInit = pi * .5 * armSign;
-            desEffAngGoal = -evadeAng * rotSign + effAngInit;                   % 左手か右手かによって初期状態の手先角度が異なる
+            desEffAngGoal = evadeAng * rotSign + effAngInit;                   % 左手か右手かによって初期状態の手先角度が異なる
             
             pathway(1:3, 1, contArm) = [targWaitPos + targ2EEWait;desEffAngGoal];   % 非接触待機位置代入
             pathway(1:3, 2, contArm) = [targGoalPos + targ2EECont ;desEffAngGoal];  % 接触時位置代入  
