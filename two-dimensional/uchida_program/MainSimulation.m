@@ -26,6 +26,8 @@ Gravity = [ 0 0 0 ]'; % 重力（地球重力は Gravity = [0 0 -9.8]）
 
 % パス設定
 paths = make_DataFolder(param);              % 保存先フォルダ作成．パスはParamSettingで設定
+% パラメータ変数保存
+save([paths.datfile, '/parameters.m'], "param", '-mat')
 
 % 双腕ロボインスタンス作成
 dualArmRobo  = DualArmRobo(param);
@@ -40,8 +42,8 @@ minusTime = param.MinusTime;                % マイナス時間設定．
 datIndex = 1;                               % データ保存用インデックス
 
 % ロボット・ターゲット力初期化
-roboExtWrench  = zeros(6,3);                   % ロボ外力[ BaseForce    LeftEndEfecForce   RightEndEfecForce  ]
-                                               % 　　　　[ BaseTorque   LeftEndEfecTorque  RightEndEfecTorque ]
+roboExtWrench  = zeros(6,5);                   % ロボ外力[ BaseForce    LeftTip1Force   LeftTip2Force   RightTip1Force  RightTip2Force]
+                                               % 　　　　[ BaseTorque   LeftTip1Torque  LeftTip2Torque  RightTip1Torque RightTip2Torque]
 targetExtWrench= zeros(6,1);                   % タゲ外力[ BaseForce  ] 
                                                % 　　　　[ BaseTorque ] 
 % 接触判定初期化 1*4 
@@ -75,11 +77,10 @@ for time = minusTime : d_time : endTime
 
     %%% 推定フェーズ
     % 接触判定及び接触力計算
-    [roboExtWrench(:, 2:3), targetExtWrench, state.isContact] = calc_ContactForce(dualArmRobo, targetSquare, param);
+    [roboExtWrench(:, 2:5), targetExtWrench, state.isContact] = calc_ContactForce(dualArmRobo, targetSquare, param);
     
     % 手先外力センサー値計算
-%     roboExtEst = zeros(6, 3);
-    roboExtEst = roboExtWrench;
+    roboFTsensor = roboExtWrench(:,[2,4])+roboExtWrench(:,[3,5]); % 手先の球にかかる力を足して左右のエンドエフェクタにかかる力にする 6*4->6*2
 
     % ターゲット運動状態推定
     estTarget = estimate_Target(targetSquare);
@@ -94,7 +95,7 @@ for time = minusTime : d_time : endTime
     %%% コントロールフェーズ
     % 手先目標位置計算
     % 目標関節トルク計算 要素であるtauをロボクラスに代入することで操作
-    controller = controller.control(dualArmRobo, targetSquare, roboExtEst, time, state, param);
+    controller = controller.control(dualArmRobo, targetSquare, roboFTsensor, time, state, param);
 
     %%% 運動計算フェーズ
     % 運動状態更新
