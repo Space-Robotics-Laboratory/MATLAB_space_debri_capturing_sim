@@ -27,8 +27,8 @@ classdef Pathway
 
             % 制御パラメータ
             obj.timeParam.move2targ = 1;    % directCapで，初めにターゲットに接触するまでの最小時間
-            obj.timeParam.cap = .1;         % directCapで，接近後ターゲットを把持するのに要する時間
-            obj.timeParam.contDmp = .1;     % contDampeで，ターゲットに接触するまでの時間
+            obj.timeParam.cap = .3;         % directCapで，接近後ターゲットを把持するのに要する時間
+            obj.timeParam.contDmp = .5;     % contDampeで，ターゲットに接触するまでの時間
             obj.timeParam.maxWait = 1;      % directCapでの最大待ち時間
         end
 
@@ -127,7 +127,7 @@ classdef Pathway
             if targW == 0
                 captureDeltAng =  rem(targOri - pi * .25, pi * .5);
                 deltTime = obj.timeParam.move2targ;
-            elseif targW <= .3
+            elseif abs(targW) <= .3
                 deltTime = obj.timeParam.maxWait;
                 desTargOri = targOri + targW * deltTime;
                 captureDeltAng = rem(desTargOri - pi * .25, pi * .5);
@@ -148,8 +148,8 @@ classdef Pathway
             targGoalPos = targPos + targV * deltTime;                                           % 接触時点のターゲット重心位置 2*1
             armSign = [-1, +1];                                                                 % 左手なら負，右手なら正
             pathway = zeros(4, 1, 2);                                                       % 目標手先位置初期化 4*1*2
-            dX_close = sqrt( (targWidth/sqrt(2) + param.LdD*.5)^2 ...
-                          -(param.LdH * sin(param.LdGamma))^2   ) ;                             % 手先先端球がターゲットにギリギリ触れない，ターゲット中心から手先までの距離
+            dX_close = 1.1*sqrt( (targWidth/sqrt(2) + param.LdD*.5)^2 ...              
+                          -(param.LdH * sin(param.LdGamma))^2   ) ;                             % 手先先端球がターゲットにギリギリ触れない，ターゲット中心から手先までの距離.許容誤差.03
             dX_capture = 1.03 * (targWidth + param.LdD)/sqrt(2) - param.LdH * sin(param.LdGamma);     % 手先先端球がターゲットに触れる時の，ターゲット中心から手先までの距離.サバよみ
             
             contactPosVecClose = captureDeltAngMat(1:2,1:2) * [dX_close; 0]  .* armSign;     % 接触アーム目標位置の，ターゲット重心に対する相対位置ベクトル 2*2
@@ -211,9 +211,6 @@ classdef Pathway
             targ2EEWait(1,1) = (targWidth/sqrt(2)+r) * cos(alpha) * armSign * 1.05 + tip2EE(1);    % 2*1
             targ2EEWait(2,1) = targ2EECont(2);                                              % 2*1
 
-            % 非接触手先位置計算
-            targ2EEFree(1,1) = (targWidth/sqrt(2) + r) * 1.5 * -armSign;            % 2*1
-            targ2EEFree(2,1) = targ2EEWait(2);                                      % 2*1
   
             % 接触に要する時間
             % わずかに早く目標位置を達成するように設定
@@ -222,6 +219,10 @@ classdef Pathway
             %%% 目標手先位置代入
             targWaitPos = targPos + targV * dtApproach;                     % 非接触時点のターゲット重心位置 2*1
             targGoalPos = targWaitPos + targV * dtCont;                     % 接触時のターゲット重心位置 2*1
+
+            % 非接触手先位置計算
+            targ2EEFree(1,1) = (targWidth/sqrt(2) + r) * 1.5 * -armSign;            % 2*1
+            targ2EEFree(2,1) = robo.SV.R0(2)+.25-targWaitPos(2);                    % 2*1
 
             % 計算結果をpwathwayに代入．接触しないアームは現状の位置を保持
             tempObj = obj.reset(robo, time);

@@ -11,7 +11,7 @@
 % output: JointTorque 8*1, but only used 6*1
 %
 
-function JointTau = calc_TauByVel(DualArmRobo, Vel, RoboExtEst, inBodyFrame)
+function JointTau = calc_TauByVel(DualArmRobo, Vel, RoboFTsensor, inBodyFrame)
 global d_time
     % ゲイン設定
     Ck = [5, 5, 5, 5, 5, 5, 5, 5]';
@@ -48,7 +48,7 @@ global d_time
     Jm_s(:, [4,8]) = 0;
 
     % 手先にかかる外力の推定値を代入 
-    F_c = reshape(RoboExtEst(:, 2:3), [12,1]);
+    F_c = reshape(RoboFTsensor, [12,1]);
 
     % inBodyFrameの速度の場合，ヤコビアンはJm
     % inInertiaFrameの速度の場合，タコビアンはJg

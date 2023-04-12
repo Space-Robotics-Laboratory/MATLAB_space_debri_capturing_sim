@@ -3,6 +3,7 @@
 % initialization of state valuables.
 %
 % 2002.3.1   Hiroshi Hamano
+% 2023.4.12  Akiyoshi Uchida added SV.Fes, SV.Tes
 %
 
 function SV = init_SV( LP )
@@ -33,5 +34,8 @@ SV.Fe = zeros(3,LP.num_q);
 SV.Te = zeros(3,LP.num_q);
 SV.tau = zeros(LP.num_q,1);
 
+% from here, they are just for dualArmSimulation
+SV.Fes = zeros(3, 4);
+SV.Tes = zeros(3, 4);
 
 %%% EOF

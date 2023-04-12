@@ -37,7 +37,7 @@ classdef DualArmRobo
         POS_es_R;           % 右手先端球の位置 3*2
         VEL_es_L;           % 右手先端球の速度 3*2
         VEL_es_R;           % 右手先端球の速度 3*2
-        DualArmRoboPrevious;% 1ステップ前のRoboclass
+%         DualArmRoboPrevious;% 1ステップ前のRoboclass
     end
     methods
         % constructor
@@ -107,7 +107,7 @@ classdef DualArmRobo
             obj.VEL_es_R = calc_ArmTipsVel(obj.VEL_e_R, obj.ORI_e_R, obj.SV.ww(:, 8), Parameters);  % 右手先端球の並進速度計算
 
             % 前状態初期化
-            obj.DualArmRoboPrevious = obj;                                           % 0時間では前状態と現状態が一致
+%             obj.DualArmRoboPrevious = obj;                                           % 0時間では前状態と現状態が一致
         end
         
         % 動力学を計算し，単位時間でロボットの状態を更新する．実際のシミュレーションループでこれを回す．
@@ -125,12 +125,14 @@ classdef DualArmRobo
             % 受動的な力
             obj.SV.tau([4, 8]) = -obj.wristDamp  * obj.SV.qd([4, 8]) ...      % 手首関節トルクをバネダンパ系で計算
                                  -obj.wristElast * obj.SV.q([4, 8]);          % 物理係数はパラメータで設定
-            obj.SV.F0 = ExtWrench(1:3, 1);          % ベース力
-            obj.SV.T0 = ExtWrench(4:6, 1);          % ベーストルク
-            obj.SV.Fe(:, 4) = ExtWrench(1:3, 2);    % 左手手先力
-            obj.SV.Te(:, 4) = ExtWrench(4:6, 2);    % 左手手先トルク
-            obj.SV.Fe(:, 8) = ExtWrench(1:3, 3);    % 右手手先力
-            obj.SV.Te(:, 8) = ExtWrench(4:6, 3);    % 右手手先トルク
+            obj.SV.Fes = ExtWrench(1:3, 2:5);                       % 手先球にかかる力
+            obj.SV.Tes = ExtWrench(4:6, 2:5);                       % 手先球にかかるトルク
+            obj.SV.F0 = ExtWrench(1:3, 1);                          % ベース力
+            obj.SV.T0 = ExtWrench(4:6, 1);                          % ベーストルク
+            obj.SV.Fe(:, 4) = ExtWrench(1:3, 2)+ExtWrench(1:3, 3);  % 左手手先力
+            obj.SV.Te(:, 4) = ExtWrench(4:6, 2)+ExtWrench(4:6, 3);  % 左手手先トルク
+            obj.SV.Fe(:, 8) = ExtWrench(1:3, 4)+ExtWrench(1:3, 5);  % 右手手先力
+            obj.SV.Te(:, 8) = ExtWrench(4:6, 4)+ExtWrench(4:6, 5);  % 右手手先トルク
 
             % 順運動学によって関節位置，角度を計算
             obj.SV = f_dyn_rk2(obj.LP, obj.SV);                                         % ロボットに関する順動力学

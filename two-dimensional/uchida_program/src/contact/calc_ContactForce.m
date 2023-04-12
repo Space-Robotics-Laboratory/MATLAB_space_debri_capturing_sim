@@ -6,7 +6,7 @@
 % 2023.3 回転角速度が大きい場合，計算誤差が大きくなることに注意．
 % 
 % input  :DualArmRobo class, Targer class, contactElast, contactDamp
-% output :[roboEdgeWrench[LeftWrench 6*1, RightWrnech 6*1], TagrgetWrench 6*1, contactState 1*4] ; Wrench = [Fource 3*1; Torque 3*1]
+% output :[roboEdgeWrench[LeftWrench 6*2, RightWrnech 6*2], TagrgetWrench 6*1, contactState 1*4] ; Wrench = [Fource 3*1; Torque 3*1]
 %
 % 接触している辺の判定は，のめり込み量が最も小さい辺を接触辺とする
 % ターゲット辺，エンドエフェクタを同時に扱うために多次元配列を用いて計算しており，
@@ -68,7 +68,7 @@ function [edgeWrench, targetWrench, isContact] = calc_ContactForce(DualArmRobo, 
     % 接触可能性がない場合，後の計算をスキップ
     if ~any(mayContact) 
         isContact = zeros(1, 4);            % 非接触
-        edgeWrench = zeros(6,2);            % robo外力０
+        edgeWrench = zeros(6,4);            % robo外力０
         targetWrench = zeros(6,1);          % ターゲット外力０
         return
     end
@@ -85,7 +85,7 @@ function [edgeWrench, targetWrench, isContact] = calc_ContactForce(DualArmRobo, 
     
     % 全ての球が非接触．mayContactで判定しなかった頂点付近接触を判定
     if ~any(isContact)
-        edgeWrench = zeros(6,2);
+        edgeWrench = zeros(6,4);
         targetWrench = zeros(6,1);
         return
     end
@@ -124,6 +124,7 @@ function [edgeWrench, targetWrench, isContact] = calc_ContactForce(DualArmRobo, 
     targetForces = targetForcesN .* targetSideNorm(:, contactSide) ...
                  + targetForcesM .* targetSideDire(:, contactSide);         % 各種力合算 3*4
 
+    roboForces  = -targetForces;                                            % ロボット手先力 3*4
     roboTorques = cross(edge2ContactPos, -targetForces);                    % ロボトルク 3*4
     tageTorques = cross(target2ContactPos, targetForces);                   % ターゲットトルク 3*4
 
@@ -132,7 +133,7 @@ function [edgeWrench, targetWrench, isContact] = calc_ContactForce(DualArmRobo, 
     tageForce = sum(targetForces, 2);                                       % ターゲット合力 3*1
     tageTorque = sum(tageTorques, 2);                                       % ターゲット合トルク 3*1
     
-    edgeWrench = [roboForce; roboTorque];                                   % ロボ手先レンチ 6*2
+    edgeWrench = [roboForces; roboTorques];                                 % ロボ手先レンチ 6*4
     targetWrench = [tageForce; tageTorque];                                 % ターゲットレンチ 6*1
 %     edgeWrench = zeros(6,2);
 %     targetWrench = zeros(6,1);

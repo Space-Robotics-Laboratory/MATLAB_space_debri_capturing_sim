@@ -42,10 +42,15 @@ classdef DataSaver
                 
             %%% Force and Torque information
             % ロボット手先力
-            obj.datStruct.endEffecLForce = zeros(row, 3);
-            obj.datStruct.endEffecRForce = zeros(row, 3);
-            obj.datStruct.endEffecLTorque = zeros(row, 3);
-            obj.datStruct.endEffecRTorque = zeros(row, 3);
+            obj.datStruct.endTipL1Force = zeros(row, 3);
+            obj.datStruct.endTipL2Force = zeros(row, 3);
+            obj.datStruct.endTipR1Force = zeros(row, 3);
+            obj.datStruct.endTipR2Force = zeros(row, 3);
+
+            obj.datStruct.endTipL1Torque = zeros(row, 3);
+            obj.datStruct.endTipL2Torque = zeros(row, 3);
+            obj.datStruct.endTipR1Torque = zeros(row, 3);
+            obj.datStruct.endTipR2Torque = zeros(row, 3);
             
             % ロボ関節トルク
             obj.datStruct.jointTorque = zeros(row, 8);
@@ -92,10 +97,15 @@ classdef DataSaver
 
             %%% Force and Torque information
             % ロボット手先力
-            obj.datStruct.endEffecLForce(index, :) = robo.SV.Fe(:, 4)';
-            obj.datStruct.endEffecRForce(index, :) = robo.SV.Fe(:, 8)';
-            obj.datStruct.endEffecLTorque(index, :) = robo.SV.Te(:, 4)';
-            obj.datStruct.endEffecRTorque(index, :) = robo.SV.Te(:, 8)';
+            obj.datStruct.endTipL1Force(index, :) = robo.SV.Fes(:, 1)';
+            obj.datStruct.endTipL2Force(index, :) = robo.SV.Fes(:, 2)';
+            obj.datStruct.endTipR1Force(index, :) = robo.SV.Fes(:, 3)';
+            obj.datStruct.endTipR2Force(index, :) = robo.SV.Fes(:, 4)';
+
+            obj.datStruct.endTipL1Torque(index, :) = robo.SV.Tes(:, 1)';
+            obj.datStruct.endTipL2Torque(index, :) = robo.SV.Tes(:, 2)';
+            obj.datStruct.endTipR1Torque(index, :) = robo.SV.Tes(:, 3)';
+            obj.datStruct.endTipR2Torque(index, :) = robo.SV.Tes(:, 4)';
             
             % ロボ関節トルク
             obj.datStruct.jointTorque(index, :) = robo.SV.tau';

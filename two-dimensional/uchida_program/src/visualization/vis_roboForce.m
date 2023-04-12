@@ -6,7 +6,7 @@
 
 
 function vis_roboForce(endEffecPos, roboFL, roboFR, scale)
-vecStart = (endEffecPos(:, [1,3]) + endEffecPos(:, [2,4]))* .5; % 3*2
-vecSize = [roboFL, roboFR] * scale;
+vecStart = endEffecPos; % 3*4
+vecSize = [roboFL, roboFR] * scale; % 3*4
 
 quiver(vecStart(1, :), vecStart(2, :), vecSize(1, :), vecSize(2, :), 0, LineWidth=3)
