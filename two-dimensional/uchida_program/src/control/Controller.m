@@ -35,8 +35,8 @@ classdef Controller
             % パラメータ設定
             obj.gain.Ck = [0, 0, 0]';%[.01, .01, .01]'; % 目標位置に関するPD制御比例ゲイン
             obj.gain.Cd = [0, 0, 0]';%[.1, .1, .1]';    % 目標位置に関するPD制御微分ゲイン
-            obj.gain.Cf = [0.04, 0.04, 0.0]';%[.1, .1, 0.1]';                % 手先外力に対する目標速度ゲイン（インピーダンス制御）
-            obj.waitT = .10;
+            obj.gain.Cf = [0.04, 0.04, 0.001]';%[.1, .1, 0.1]';                % 手先外力に対する目標速度ゲイン（インピーダンス制御）
+            obj.waitT = .2;
         end
 
 
@@ -115,8 +115,9 @@ classdef Controller
             elseif obj.phase == -1 && time <= state.time.lastContact + obj.waitT*.8
                 % 接触直後，フォローリリース的な動き
 %                 obj.desVel = zeros(6,1);
-%                 obj.tau = calc_TauByVel(robo, obj.desVel, roboExtEst, [true, true]);
+%                 obj.tau = calc_TauByVel(robo, obj.desVel, roboFTsensor, [true, true]);
 %                 obj.phase = obj.pathway.phase(time, param);
+%                 obj.tau = zeros(8,1);
 %                 return
             elseif obj.phase == -1 && time > state.time.lastContact + obj.waitT*.8
                 % 手先を逃して接触力を低減したのち，次にフラグが立つ前に速度０を代入

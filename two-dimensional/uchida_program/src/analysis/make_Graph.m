@@ -5,21 +5,22 @@
 
 function make_Graph(datStruct, paths)
 time = datStruct.time;
+startFigNum = 102;
 
 %%% make endEffector FT graph
 % ベクトルの大きさで評価
 endTipL1F = vecnorm(datStruct.endTipL1Force, 2, 2);
 endTipL2F = vecnorm(datStruct.endTipL2Force, 2, 2);
-endTipR1F = vecnorm(datStruct.endTipL1Force, 2, 2);
-endTipR2F = vecnorm(datStruct.endTipL2Force, 2, 2);
+endTipR1F = vecnorm(datStruct.endTipR1Force, 2, 2);
+endTipR2F = vecnorm(datStruct.endTipR2Force, 2, 2);
 
 endTipL1T = vecnorm(datStruct.endTipL1Torque, 2, 2);
 endTipL2T = vecnorm(datStruct.endTipL2Torque, 2, 2);
-endTipR1T = vecnorm(datStruct.endTipL1Torque, 2, 2);
-endTipR2T = vecnorm(datStruct.endTipL2Torque, 2, 2);
+endTipR1T = vecnorm(datStruct.endTipR1Torque, 2, 2);
+endTipR2T = vecnorm(datStruct.endTipR2Torque, 2, 2);
 
 % force
-figureNumber = 102;     % 図番号設定
+figureNumber = startFigNum;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, endTipL1F )
@@ -38,7 +39,7 @@ figName = 'endEffecForce.png';                                  % png名定義
 saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % png保存
 
 % torque
-figureNumber = 103;     % 図番号設定
+figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, endTipL1T )
@@ -57,25 +58,39 @@ figName = 'endEffecTorque.png';                                  % png名定義
 saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % png保存
 
 %%% make joint torque graph
+% active joints
 jointsTorque = datStruct.jointTorque';
 
-figureNumber = 104;     % 図番号設定
+figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
-plot(time, jointsTorque)
-title("Joint Torque Value")
-legend('MotorJ1', 'MotorJ2', 'MotorJ3', 'LeftWrist', 'MotorJ5', 'MotorJ6', 'MotorJ7', 'RightWrist')
+plot(time, jointsTorque([1:3,5:7], :))
+title("Active Joint Torque")
+legend('MotorJ1', 'MotorJ2', 'MotorJ3', 'MotorJ5', 'MotorJ6', 'MotorJ7')
 ylabel("Torque [Nm]")
 xlabel("time [sec]")
-hold off
 
-figName = 'jointTorque.png';                                  % png名定義
+figName = 'motorTorque.png';                                  % png名定義
 saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % png保存
+
+% passive joints
+figureNumber = figureNumber+1;     % 図番号設定
+figure(figureNumber);   % 図定義
+
+plot(time, jointsTorque(4:8, :))
+title("Passive Joint Torque")
+legend('LeftWrist', 'RightWrist')
+ylabel("Torque [Nm]")
+xlabel("time [sec]")
+
+figName = 'wristTorque.png';                                  % png名定義
+saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % png保存
+
 
 %%% make target angular velocity graph
 targW = datStruct.targetW(:, 3);
 
-figureNumber = 105;     % 図番号設定
+figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, targW)

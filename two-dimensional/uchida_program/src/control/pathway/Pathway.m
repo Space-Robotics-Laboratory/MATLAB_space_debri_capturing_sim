@@ -27,7 +27,7 @@ classdef Pathway
 
             % 制御パラメータ
             obj.timeParam.move2targ = 1;    % directCapで，初めにターゲットに接触するまでの最小時間
-            obj.timeParam.cap = .3;         % directCapで，接近後ターゲットを把持するのに要する時間
+            obj.timeParam.cap = .15;         % directCapで，接近後ターゲットを把持するのに要する時間
             obj.timeParam.contDmp = .5;     % contDampeで，ターゲットに接触するまでの時間
             obj.timeParam.maxWait = 1;      % directCapでの最大待ち時間
         end

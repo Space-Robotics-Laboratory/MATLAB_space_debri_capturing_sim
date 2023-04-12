@@ -11,7 +11,7 @@ function Param = set_Param()
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % シミュレーション条件
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Param.EndTime   = 5;%2;    %シミュレーション終了時間[s]
+Param.EndTime   = 15;%2;    %シミュレーション終了時間[s]
 Param.MinusTime = 0;      %シミュレーション開始からロボット制御開始までの時間[s]
 Param.DivTime   = 0.001;  %シミュレーション刻み時間[s]
 
@@ -34,7 +34,7 @@ Param.BaseMass = 7.70;
 %ロボットベース部分慣性行列[m^2kg]
 Param.BaseInertia = [ 1e9     0   0;   % 0の部分がカップリング項(慣性乗積?)
                         0   1e9   0;   % 慣性乗積が0ということは、固定軸の周りを回転するということ
-                        0     0   0.09783069148];
+                        0     0   .5];%0.09783069148];
 
 % ロボットリンク部分質量[kg]
 % 変更時，慣性行列に注意
@@ -150,8 +150,8 @@ Param.LinkAngRight = -[pi/3 -pi*4/9 -pi*7/18 0]';  % 右手の関節角度，ベ
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ターゲットサイズ[m]
 % 二次元モデルではheight = 0
-Param.TargetDepth  = 0.2;
-Param.TargetWidth  = 0.2;%0.16;
+Param.TargetDepth  = 0.16;
+Param.TargetWidth  = 0.16;%0.16;
 Param.TargetHeight = 0;
 
 % ターゲット幾何中心に対する質量重心の相対位置
@@ -180,8 +180,8 @@ Param.TargetAngVel0       = [ 0 0 5]';              % 初期角速度 ;SV.w0
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 物理係数設定
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Param.ContactDamp  = 8;%8;%20;         % 接触力減衰係数
-Param.ContactElast = 9000;%9000;%1000;      % 接触力弾性係数
+Param.ContactDamp  = 20;%8;%8;%20;         % 接触力減衰係数
+Param.ContactElast = 1000;%9000;%9000;%1000;      % 接触力弾性係数
 Param.ContactNu    = .1;%0.3;       % 接触力摩擦係数
 Param.WristDamp    = .3;%0.4;       % 手首関節減衰係数
 Param.WristElast   = .4;%0.8;       % 手首関節弾性係数
@@ -192,11 +192,11 @@ Param.WristElast   = .4;%0.8;       % 手首関節弾性係数
 Param.GainCk = [0, 0, 0]';
 Param.GainCd = [0, 0, 0]';
 Param.GainCf = [.1, .1, .1]';
-Param.AngularVelBorder = 2;
+Param.AngularVelBorder = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ファイル設定
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Param.DateSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/two-dimensional/uchida_program/dat';
-Param.FileName     = [num2str(Param.ContactDamp),'_' ,num2str(Param.ContactElast)]; 
+Param.DataSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/two-dimensional/uchida_program/dat';
+Param.FileName     = [num2str(Param.ContactDamp),'_' ,num2str(Param.ContactElast)];
 end
