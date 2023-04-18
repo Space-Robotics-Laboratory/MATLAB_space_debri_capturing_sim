@@ -10,6 +10,7 @@ classdef DataSaver
         datStruct;
         filePath;
         datNum;
+        index;
     end
     methods
         % constructor インスタンス作成時に呼び出し
@@ -17,6 +18,7 @@ classdef DataSaver
             obj.filePath = [paths.datfile, '/savedDat.csv'];
             row = (param.EndTime + param.MinusTime) / param.DivTime;
             obj.datNum = row;
+            obj.index = 1;
 
             % パラメータ保存
 %             obj.paramStruct.linkLength = 
@@ -75,58 +77,62 @@ classdef DataSaver
 %             obj.datStruct.error = zeros(row, 1);
         end
         % 保存するデータを更新
-        function obj = update(obj, robo, target, controller, time, index, param)
+        function obj = update(obj, robo, target, controller, time, param)
             % 時刻
-            obj.datStruct.time(index, :) = time;
+            obj.datStruct.time(obj.index, :) = time;
             
             %%% Anime information
             % robot
-            obj.datStruct.roboR0(index, :) = robo.SV.R0';                            % ベース重心位置
-            obj.datStruct.roboQ0(index, :) = robo.SV.Q0';                            % ベースオイラー角
-            obj.datStruct.roboJointLPos(index, :) = reshape(robo.POS_j_L, [1, 12]);  % 左手関節位置
-            obj.datStruct.roboJointRPos(index, :) = reshape(robo.POS_j_R, [1, 12]);  % 右手関節位置
-            obj.datStruct.roboEndEffecLPos(index, :) = reshape(robo.POS_es_L,[1, 6]);% 左手手先位置
-            obj.datStruct.roboEndEffecRPos(index, :) = reshape(robo.POS_es_R,[1, 6]);% 右手手先位置
-            obj.datStruct.roboEndEffecLOri(index, :) = robo.SV.QeL';                 % 左手手先オイラー角
-            obj.datStruct.roboEndEffecROri(index, :) = robo.SV.QeR';                 % 右手手先オイラー角
-            obj.datStruct.jointAng(index, :) = robo.SV.q';                           % 関節角度
+            obj.datStruct.roboR0(obj.index, :) = robo.SV.R0';                            % ベース重心位置
+            obj.datStruct.roboQ0(obj.index, :) = robo.SV.Q0';                            % ベースオイラー角
+            obj.datStruct.roboJointLPos(obj.index, :) = reshape(robo.POS_j_L, [1, 12]);  % 左手関節位置
+            obj.datStruct.roboJointRPos(obj.index, :) = reshape(robo.POS_j_R, [1, 12]);  % 右手関節位置
+            obj.datStruct.roboEndEffecLPos(obj.index, :) = reshape(robo.POS_es_L,[1, 6]);% 左手手先位置
+            obj.datStruct.roboEndEffecRPos(obj.index, :) = reshape(robo.POS_es_R,[1, 6]);% 右手手先位置
+            obj.datStruct.roboEndEffecLOri(obj.index, :) = robo.SV.QeL';                 % 左手手先オイラー角
+            obj.datStruct.roboEndEffecROri(obj.index, :) = robo.SV.QeR';                 % 右手手先オイラー角
+            obj.datStruct.jointAng(obj.index, :) = robo.SV.q';                           % 関節角度
 
             % target 
-            obj.datStruct.targR0(index, :) = target.SV.R0';
-            obj.datStruct.targQ0(index, :) = target.SV.Q0';
+            obj.datStruct.targR0(obj.index, :) = target.SV.R0';
+            obj.datStruct.targQ0(obj.index, :) = target.SV.Q0';
 
             %%% Force and Torque information
             % ロボット手先力
-            obj.datStruct.endTipL1Force(index, :) = robo.SV.Fes(:, 1)';
-            obj.datStruct.endTipL2Force(index, :) = robo.SV.Fes(:, 2)';
-            obj.datStruct.endTipR1Force(index, :) = robo.SV.Fes(:, 3)';
-            obj.datStruct.endTipR2Force(index, :) = robo.SV.Fes(:, 4)';
+            obj.datStruct.endTipL1Force(obj.index, :) = robo.SV.Fes(:, 1)';
+            obj.datStruct.endTipL2Force(obj.index, :) = robo.SV.Fes(:, 2)';
+            obj.datStruct.endTipR1Force(obj.index, :) = robo.SV.Fes(:, 3)';
+            obj.datStruct.endTipR2Force(obj.index, :) = robo.SV.Fes(:, 4)';
 
-            obj.datStruct.endTipL1Torque(index, :) = robo.SV.Tes(:, 1)';
-            obj.datStruct.endTipL2Torque(index, :) = robo.SV.Tes(:, 2)';
-            obj.datStruct.endTipR1Torque(index, :) = robo.SV.Tes(:, 3)';
-            obj.datStruct.endTipR2Torque(index, :) = robo.SV.Tes(:, 4)';
+            obj.datStruct.endTipL1Torque(obj.index, :) = robo.SV.Tes(:, 1)';
+            obj.datStruct.endTipL2Torque(obj.index, :) = robo.SV.Tes(:, 2)';
+            obj.datStruct.endTipR1Torque(obj.index, :) = robo.SV.Tes(:, 3)';
+            obj.datStruct.endTipR2Torque(obj.index, :) = robo.SV.Tes(:, 4)';
             
             % ロボ関節トルク
-            obj.datStruct.jointTorque(index, :) = robo.SV.tau';
+            obj.datStruct.jointTorque(obj.index, :) = robo.SV.tau';
 
             % ターゲット外力
-            obj.datStruct.targForce(index, :) = target.SV.F0';
+            obj.datStruct.targForce(obj.index, :) = target.SV.F0';
 
             % 運動量
             dat = calc_momentum(robo.LP, robo.SV) + calc_momentum(target.LP, target.SV);
-            obj.datStruct.PLsum(index, :) = [vecnorm(dat(1:3,1)), vecnorm(dat(4:6,1))];
+            obj.datStruct.PLsum(obj.index, :) = [vecnorm(dat(1:3,1)), vecnorm(dat(4:6,1))];
 
             % 目標手先位置
             desPathway = controller.pathway.goingTo(time, param);
-            obj.datStruct.desHandPos(index, :) = reshape(desPathway(1:3, :), [1 ,6]);
+            obj.datStruct.desHandPos(obj.index, :) = reshape(desPathway(1:3, :), [1 ,6]);
 
             %%% Velocity information
             % ターゲット並進速度
-            obj.datStruct.targetV(index, :) = target.SV.v0';
+            obj.datStruct.targetV(obj.index, :) = target.SV.v0';
 
             % ターゲット角速度
-            obj.datStruct.targetW(index, :) = target.SV.w0';
+            obj.datStruct.targetW(obj.index, :) = target.SV.w0';
+            
+            %%%%%%%%%%%%%%%%%%%%%%%%
+            % インデックス更新
+            obj.index = obj.index +1;
         end
         
         % ファイルに書き出し

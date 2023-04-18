@@ -43,13 +43,13 @@ function make_2dAnime(datSaver, paths, param)
             endEffecOri(:, 2) = dataStruct.roboEndEffecROri(count, :)';
 
             % target 
-            targR0 = dataStruct.targR0(count, :)';
-            targQ0 = dataStruct.targQ0(count, :)';
+            targetR0 = dataStruct.targR0(count, :)';
+            targetQ0 = dataStruct.targQ0(count, :)';
 
             % force
-            roboFL = dataStruct.endEffecLForce(count, :)';
-            roboFR = dataStruct.endEffecRForce(count, :)';
-            targF = dataStruct.targForce(count, :)';
+            roboForceLeft  = [dataStruct.endTipL1Force(count, :)', dataStruct.endTipL2Force(count, :)'];
+            roboForceRight = [dataStruct.endTipR1Force(count, :)', dataStruct.endTipR2Force(count, :)'];
+            targetForce = dataStruct.targForce(count, :)';
 
             % 手先目標位置
             desHandPos = reshape(dataStruct.desHandPos(count, :), [3, 2]);
@@ -61,13 +61,13 @@ function make_2dAnime(datSaver, paths, param)
             hold on
 
             % ターゲット描画
-            vis_Target(targR0, targQ0, param)
+            vis_Target(targetR0, targetQ0, param)
 
             % ロボ外力描画
-            vis_roboForce(endEffecPos, roboFL, roboFR, scale)
+            vis_roboForce(endEffecPos, roboForceLeft, roboForceRight, scale)
 
             % ターゲット外力描画
-            vis_TargetForce(targR0, targF, scale)
+            vis_TargetForce(targetR0, targetForce, scale)
 
             % 手先目標位置描画
             vis_DesiredPos(desHandPos)

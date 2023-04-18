@@ -34,30 +34,19 @@ dualArmRobo  = DualArmRobo(param);
 % ターゲットインスタンス作成
 targetSquare = TargetSquare(param);
 % コントローラーインスタンス作成
-controller = Controller(dualArmRobo, 0, 2);
+controller = Controller(dualArmRobo, 0, 'DIRECT');
 
 % シミュレーション時間
 endTime    = param.EndTime;                 % 終了時間設定．
 minusTime = param.MinusTime;                % マイナス時間設定．
-datIndex = 1;                               % データ保存用インデックス
 
 % ロボット・ターゲット力初期化
 roboExtWrench  = zeros(6,5);                   % ロボ外力[ BaseForce    LeftTip1Force   LeftTip2Force   RightTip1Force  RightTip2Force]
                                                % 　　　　[ BaseTorque   LeftTip1Torque  LeftTip2Torque  RightTip1Torque RightTip2Torque]
 targetExtWrench= zeros(6,1);                   % タゲ外力[ BaseForce  ] 
                                                % 　　　　[ BaseTorque ] 
-% 接触判定初期化 1*4 
-state.isContact = false(1, 4);                 % isContact(1, i) はendEfec i（初期姿勢にて左から）のターゲットへの接触状態bool値
-state.wasContact = state.isContact;            % 1step前のisContact
-state.newContact = ~state.wasContact & state.isContact;
-state.endContact = state.wasContact & ~state.isContact;
-state.targetSlow = false;
-state.time.lastContact = inf;
-state.time.comeTargetSlow = inf;
-
-
-% 捕獲判定初期化 bool schalar
-state.isCapture = false;
+% 状態判定用インスタンス初期化
+state = State();
 
 % データ保存用インスタンス作成
 datSaver = DataSaver(paths, param);
@@ -73,24 +62,17 @@ for time = minusTime : d_time : endTime
     time %#ok<NOPTS> 
 
     %%% データ更新
-    datSaver = datSaver.update(dualArmRobo, targetSquare, controller, time, datIndex, param);
+    datSaver = datSaver.update(dualArmRobo, targetSquare, controller, time, param);
 
     %%% 推定フェーズ
     % 接触判定及び接触力計算
-    [roboExtWrench(:, 2:5), targetExtWrench, state.isContact] = calc_ContactForce(dualArmRobo, targetSquare, param);
+    [roboExtWrench(:, 2:5), targetExtWrench, isContact] = calc_ContactForce(dualArmRobo, targetSquare, param);
     
     % 手先外力センサー値計算
     roboFTsensor = roboExtWrench(:,[2,4])+roboExtWrench(:,[3,5]); % 手先の球にかかる力を足して左右のエンドエフェクタにかかる力にする 6*4->6*2
 
     % ターゲット運動状態推定
     estTarget = estimate_Target(targetSquare);
-
-    % ターゲット状況判定
-    state.isCapture = judge_IsCapture(dualArmRobo, estTarget, param);
-    if ~state.targetSlow && (abs(targetSquare.SV.w0(3)) <= param.AngularVelBorder)
-        state.time.comeTargetSlow = time;
-    end
-    state.targetSlow = abs(targetSquare.SV.w0(3)) <= param.AngularVelBorder;
 
     %%% コントロールフェーズ
     % 手先目標位置計算
@@ -102,21 +84,12 @@ for time = minusTime : d_time : endTime
     dualArmRobo  = dualArmRobo.update(controller.tau, roboExtWrench, param);    % methodを呼び出した後自身に代入することを忘れない！
     targetSquare = targetSquare.update(targetExtWrench);  
 
-    % 接触データ更新
-    if any(state.isContact)
-        state.time.lastContact = time;
-    end
-    state.newContact = ~state.wasContact & state.isContact;
-    state.endContact = state.wasContact & ~state.isContact;
-    state.wasContact = state.isContact;
-    datIndex = datIndex + 1;
+    % 状態判定更新
+    state = state.update(dualArmRobo, isContact, targetSquare, time, param);
 end
-%%% ループ終了
-
-
+%% ループ終了
 %%% データ保存
 datSaver.write()
-
 
 %% 結果表示
 % アニメーション作成
@@ -130,20 +103,8 @@ make_Graph(datSaver.datStruct, paths)
 % ファイルクローズ
 fclose('all');
 
-
 %%% シミュレーション時間の計測と表示 
-
-% シミュレーション全体時間 単位:秒
-ntime = cputime - startCPUT;
-
-nhour = floor( ntime / 3600 );                    % 単位:時間 各要素以下の最も近い整数に丸める
-nmin  = floor( ( ntime - nhour * 3600 ) / 60 );   % 単位:分 残りの分，整数に丸める
-nsec  = ntime - nhour * 3600 - nmin * 60;         % 単位:秒 残りの秒，整数に丸める
-
-% 結果表示
-fprintf( '\n\n %s %s', '開始時間 :', datestr( startT, 31 ) );
-fprintf( '\n %s %s',   '終了時間 :', datestr( clock,  31 ) );
-fprintf( '\n %s %d %s %02d %s %04.1f %s \n\n\n', '計算所要時間 :', nhour, ' 時間 ', nmin, ' 分 ', nsec, ' 秒 ' );
+show_calc_time(startT, startCPUT)
 
 %clear
 close all

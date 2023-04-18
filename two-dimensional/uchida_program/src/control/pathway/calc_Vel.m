@@ -21,7 +21,7 @@
 % mode3: 目標位置からのずれに対して，PT制御によって目標速度を求める．ゲイン調整が重要
 
 
-function vel = calc_Vel(pathWay, currentTime, robo, gain, isLeftArm, velMode)
+function vel = calc_Vel(pathWay, currentTime, robo, feedBackGain, isLeftArm, velMode)
 
 % 経由地点の数
 [~, n] = size(pathWay);
@@ -61,8 +61,8 @@ switch velMode
     case 3
     findex = [false, index];
     armSign = [isLeftArm, ~isLeftArm];
-    Ck = gain.Ck;
-    Cd = gain.Cd;
+    Ck = feedBackGain.Ck;
+    Cd = feedBackGain.Cd;
     nowPos(:, 1, 1) = [robo.POS_e_L(1:2); robo.SV.QeL(3)];  % enEffPosLeft  3*1*2
     nowPos(:, 1, 2) = [robo.POS_e_R(1:2); robo.SV.QeR(3)];  % enEffPosRight 3*1*2
     dnowPos(:, 1, 1) = [robo.VEL_e_L(1:2); robo.SV.ww(3, 4)];

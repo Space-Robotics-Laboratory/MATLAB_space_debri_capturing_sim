@@ -164,7 +164,7 @@ classdef Pathway
         % pathwayメソッドをリターン
         function pathway = contactDampen(obj, robo, targ, time, param)
             contPosRate = 0.8;              % 接触する位置の辺に対する割合．１で頂点．０で中心
-            contAng = deg2rad(10);              % 接触する時のターゲット角度．おおむね30ど以内にする
+            contAng = deg2rad(0);              % 接触する時のターゲット角度．おおむね30ど以内にする
             evadeAng = deg2rad(20);          % 接触する時のエンドエフェクター角度．おおむね10ど以内にする
 
             % ターゲット情報代入
@@ -238,9 +238,27 @@ classdef Pathway
             pathway(4, 2, :) = dtApproach + time + dtCont;                          % 時刻設定
             
         end
+
+        % 反力低減性検証用テスト
+        % 左手接触で，ターゲットに回転がない場合
+        function pathway = testImpedanceNoRotate(obj, target, time)
+            % ターゲット情報代入
+            targPos = target.SV.R0(1:2, :);
+            targV = target.SV.v0(1:2, :);
+            targWidth = target.width;
+
+            dtCont = obj.timeParam.move2targ*1.1;
+            dtMove = obj.timeParam.move2targ;
+            targGoalPos = targPos + targV * dtCont;
+            targ2cont = [targWidth * .5; 0];
+            
+            pathway(1:3, 1, 1) = [targGoalPos - targ2cont;-pi * .5];        % 非接触待機位置代入
+            pathway(1:3, 1, 2) = [[.2 ; .35 ]; pi * .5];                    % 非接触側の手先はターゲットに触れない位置にする
+            pathway(4, 1, :) = dtMove + time;                               % 時刻設定
+        end
         
         %%% 設定した時間現在位置を保持するpathway設定
-        function pathway = stop(obj, robo, currentTime, deltTime)
+        function pathway = keepPosition(obj, robo, currentTime, deltTime)
             tempObj = obj.reset(robo, currentTime);
             p1 = tempObj.pathway;
             pathway(:, 1, :) = p1;
