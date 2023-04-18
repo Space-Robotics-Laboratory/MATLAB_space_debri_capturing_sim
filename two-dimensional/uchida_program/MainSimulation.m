@@ -4,13 +4,11 @@
 % 
 % main simulation
 %
-
 clc
 clear 
 close all
   
 %%%%% シミュレーション準備
-
 %%% パラメータ設定
 % 基本的にパラメータはParamSetting内で変更する．
 param  = set_Param();                   
@@ -55,12 +53,10 @@ datSaver = DataSaver(paths, param);
 startCPUT = cputime;
 startT = clock();
 
-
 %% シミュレーションループスタート
 for time = minusTime : d_time : endTime 
     clc
     time %#ok<NOPTS> 
-
     %%% データ更新
     datSaver = datSaver.update(dualArmRobo, targetSquare, controller, time, param);
 
@@ -100,15 +96,10 @@ make_2dAnime(datSaver, paths, param)
 % グラフ作成
 make_Graph(datSaver.datStruct, paths)
 
-% ファイルクローズ
-fclose('all');
-
 %%% シミュレーション時間の計測と表示 
 show_calc_time(startT, startCPUT)
 
 %clear
+fclose('all');
 close all
 %%% EOF
-
-
-
