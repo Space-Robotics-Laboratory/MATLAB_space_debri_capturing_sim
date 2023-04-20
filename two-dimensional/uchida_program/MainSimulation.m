@@ -32,7 +32,7 @@ dualArmRobo  = DualArmRobo(param);
 % ターゲットインスタンス作成
 targetSquare = TargetSquare(param);
 % コントローラーインスタンス作成
-controller = Controller(dualArmRobo, 0, 'DIRECT');
+controller = Controller(dualArmRobo, 0, 'MULTIPLE', param);
 
 % シミュレーション時間
 endTime    = param.EndTime;                 % 終了時間設定．
@@ -84,6 +84,9 @@ for time = minusTime : d_time : endTime
     state = state.update(dualArmRobo, isContact, targetSquare, time, param);
 end
 %% ループ終了
+%%% シミュレーション時間の計測と表示 
+show_calc_time(startT, startCPUT)
+
 %%% データ保存
 datSaver.write()
 
@@ -95,9 +98,6 @@ make_2dAnime(datSaver, paths, param)
 
 % グラフ作成
 make_Graph(datSaver.datStruct, paths)
-
-%%% シミュレーション時間の計測と表示 
-show_calc_time(startT, startCPUT)
 
 %clear
 fclose('all');

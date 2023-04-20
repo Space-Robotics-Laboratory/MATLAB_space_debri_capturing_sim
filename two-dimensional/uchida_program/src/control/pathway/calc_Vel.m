@@ -46,23 +46,25 @@ dTime = dPathWay(4, index);     % 時刻差分
 switch velMode
     % 直線軌道・一定速度（時刻に対してステップ速度）
     % 最も単純であるが，加速度が発散する危険が非常に高い．
-    case 1
+    case 'str_str'
     gain = 1;
     vel = dP ./ dTime * gain;
+    return
 
     % 直線軌道・山形速度（境界で加速度0の折れ曲がった直線）
     % 時間に対して線形に速度が変化する
-    case 2
+    case 'str_tru'
     s = ( currentTime - pathWay(4, index) ) / dTime;
     gain = -abs(4*s - 2) + 2;
     vel = dP ./ dTime * gain;
+    return
 
     % フィードバックによって位置制御を行うための速度
-    case 3
+    case 'str_fbk'
     findex = [false, index];
     armSign = [isLeftArm, ~isLeftArm];
-    Ck = feedBackGain.Ck;
-    Cd = feedBackGain.Cd;
+    Ck = feedBackGain(:, 1);
+    Cd = feedBackGain(:, 2);
     nowPos(:, 1, 1) = [robo.POS_e_L(1:2); robo.SV.QeL(3)];  % enEffPosLeft  3*1*2
     nowPos(:, 1, 2) = [robo.POS_e_R(1:2); robo.SV.QeR(3)];  % enEffPosRight 3*1*2
     dnowPos(:, 1, 1) = [robo.VEL_e_L(1:2); robo.SV.ww(3, 4)];
@@ -72,5 +74,6 @@ switch velMode
     vel = Ck .* deltP + Cd .* deltD;                        % PD制御
     return
 end
+error('No such velocity mode')
 
 

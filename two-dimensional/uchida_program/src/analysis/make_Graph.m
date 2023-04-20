@@ -65,6 +65,7 @@ figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, jointsTorque([1:3,5:7], :))
+hold off
 title("Active Joint Torque")
 legend('MotorJ1', 'MotorJ2', 'MotorJ3', 'MotorJ5', 'MotorJ6', 'MotorJ7')
 ylabel("Torque [Nm]")
@@ -77,7 +78,8 @@ saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % png保存
 figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
-plot(time, jointsTorque(4:8, :))
+plot(time, jointsTorque([4,8], :))
+hold off
 title("Passive Joint Torque")
 legend('LeftWrist', 'RightWrist')
 ylabel("Torque [Nm]")

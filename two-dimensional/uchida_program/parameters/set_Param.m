@@ -1,4 +1,4 @@
-function Param = set_Param()
+function param = set_Param()
 
 %%%%%%%%%%パラメータ設定%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 直方体ベース，左右対称の4つのリンクを持つ双腕ロボットを想定．
@@ -11,15 +11,15 @@ function Param = set_Param()
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % シミュレーション条件
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Param.EndTime   = 1;%2;    %シミュレーション終了時間[s]
-Param.MinusTime = 0;      %シミュレーション開始からロボット制御開始までの時間[s]
-Param.DivTime   = 0.001;  %シミュレーション刻み時間[s]
+param.EndTime   = 12;%2;    %シミュレーション終了時間[s]
+param.MinusTime = 0;      %シミュレーション開始からロボット制御開始までの時間[s]
+param.DivTime   = 0.001;  %シミュレーション刻み時間[s]
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % アニメーション条件
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Param.MovDivTime = 0.01;  % アニメーション刻み時間
+param.MovDivTime = 0.01;  % アニメーション刻み時間
 
 
 
@@ -29,80 +29,80 @@ Param.MovDivTime = 0.01;  % アニメーション刻み時間
 
 % ロボットベース部分質量[kg]
 % 変更時，慣性行列に注意
-Param.BaseMass = 7.70;
+param.BaseMass = 7.70;
 
 %ロボットベース部分慣性行列[m^2kg]
-Param.BaseInertia = [ 1e9     0   0;   % 0の部分がカップリング項(慣性乗積?)
+param.BaseInertia = [ 1e9     0   0;   % 0の部分がカップリング項(慣性乗積?)
                         0   1e9   0;   % 慣性乗積が0ということは、固定軸の周りを回転するということ
                         0     0   .5];%0.09783069148];
 
 % ロボットリンク部分質量[kg]
 % 変更時，慣性行列に注意
 % ベースに近いリンクからa, b, c, dとし，左右対称モデルであるためリンク(1,5),(2,6)...は同じ質量．
-Param.LaMass = 1.09;
-Param.LbMass = 0.98;
-Param.LcMass = 0.32;
-Param.LdMass = 0.21;
+param.LaMass = 1.09;
+param.LbMass = 0.98;
+param.LcMass = 0.32;
+param.LdMass = 0.21;
 
 % ロボットリンク部分慣性行列[m^2kg]
 % ベースに近い方からa, b, c, d 左右対称モデル
-Param.LaInertia = [1e9   0 0;
+param.LaInertia = [1e9   0 0;
                      0 1e9 0;
                      0   0 0.00371];
-Param.LbInertia = [1e9   0 0;
+param.LbInertia = [1e9   0 0;
                      0 1e9 0;
                      0   0 0.00149];
-Param.LcInertia = [1e9   0 0;
+param.LcInertia = [1e9   0 0;
                      0 1e9 0;
                      0   0 0.000752];
-Param.LdInertia = [1e9   0 0;
+param.LdInertia = [1e9   0 0;
                      0 1e9 0;
                      0   0 0.000254];
 
 % ロボット関節条件
-Param.JointAngLim = repmat(pi-deg2rad(10), [8,1]);
-Param.JointTrqLim = repmat(10, [8,1]);
+param.JointAngLim = repmat(pi-deg2rad(10), [8,1]);
+param.JointTrqLim = repmat(10, [8,1]);
 
 % ロボットベース部分サイズ[m]
 % animation用．ダイナミクス計算には直接関係ないが，初期のパラメータではベース重心から関節までの位置を定義するのに使用している．
 % 変更時，Param.BaseCenter2Jに注意
 % 二次元モデルではheight = 0
-Param.BaseDepth  = .16;%0.22;            % 縦（奥行き）
-Param.BaseWidth  = .15757*2;%.314;%0.32;            % 横
-Param.BaseHeight = 0;               % 高さ
+param.BaseDepth  = .16;%0.22;            % 縦（奥行き）
+param.BaseWidth  = .15757*2;%.314;%0.32;            % 横
+param.BaseHeight = 0;               % 高さ
 
 % ロボットベース質量重心に対する幾何中心の相対位置
-Param.BaseMCenter2GCenter = [0, 0, 0]';
+param.BaseMCenter2GCenter = [0, 0, 0]';
 
 % ロボットリンク長さ及びエンドエフェクタ形状パラメータ[m]
 % ベースに近い方からa, b, c, d 左右対称モデル
 % Ldについては単純長さではなく，関節から刺股状のエンドエフェクタ先端までの距離H, 成す角gamma[rad]エンドエフェクタ先端球直径Dであることに注意
-Param.LaLength = .25;%.235;%0.251;
-Param.LbLength = .175;%.16;%0.181;
-Param.LcLength = .091;%.075;%0.050;
-Param.LdH      = 0.081393154503312;%0.05;
-Param.LdGamma  = 0.717235030908703;%deg2rad(36);
-Param.LdD      = 0.018;
+param.LaLength = .25;%.235;%0.251;
+param.LbLength = .175;%.16;%0.181;
+param.LcLength = .091;%.075;%0.050;
+param.LdH      = 0.081393154503312;%0.05;
+param.LdGamma  = 0.717235030908703;%deg2rad(36);
+param.LdD      = 0.018;
 
 % ベース重心から，ベースに直接結合しているリンク関節までの距離．直接結合していないリンクについては0.
 % ベース座標系における表現と考える（？）
 % ダイナミクス計算に直接関与
 % リンク2,3,4,6,7,8は[0,0,0]'
 % リンク１，５がベースに直接結合．変更する場合はDualArm_FourTips_LP_v3.m , 42行目を参照．
-Param.BaseCenter2J1 = [-Param.BaseWidth/2,  Param.BaseDepth/2, 0]';
-Param.BaseCenter2J5 = [ Param.BaseWidth/2,  Param.BaseDepth/2, 0]';
+param.BaseCenter2J1 = [-param.BaseWidth/2,  param.BaseDepth/2, 0]';
+param.BaseCenter2J5 = [ param.BaseWidth/2,  param.BaseDepth/2, 0]';
 
 % リンクi重心から関節jまでの距離をParam.Center2Joint(:,i,j)で表現する．座標系はリンク根元座標で表現 ;LP.cc
 % 論文に記述がない可能性あり．-> DualArm_FourTips_LP_v3.m, 81行目参照
 
-Param.Center2Joint    = zeros(3,8,8);           % 初期化   ;LP.cc
-Param.Center2JointEnd = zeros(3,8);             % 初期化   ;LP.ce
+param.Center2Joint    = zeros(3,8,8);           % 初期化   ;LP.cc
+param.Center2JointEnd = zeros(3,8);             % 初期化   ;LP.ce
 
 % 左手
-Param.Center2Joint(:,1,1) = [ 0 -0.24641 0 ]'; % リンク1の重心から根本側の関節(J1)への位置ベクトル
-Param.Center2Joint(:,2,2) = [ 0 -0.17641 0 ]'; % リンク2の重心から根本側の関節(J2)への位置ベクトル
-Param.Center2Joint(:,3,3) = [ 0 -0.03    0 ]'; % リンク3の重心から根本側の関節(J3)への位置ベクトル
-Param.Center2Joint(:,4,4) = [ 0 -0.03    0 ]'; % リンク4の重心から根本側の関節(J4)への位置ベクトル
+param.Center2Joint(:,1,1) = [ 0 -0.24641 0 ]'; % リンク1の重心から根本側の関節(J1)への位置ベクトル
+param.Center2Joint(:,2,2) = [ 0 -0.17641 0 ]'; % リンク2の重心から根本側の関節(J2)への位置ベクトル
+param.Center2Joint(:,3,3) = [ 0 -0.03    0 ]'; % リンク3の重心から根本側の関節(J3)への位置ベクトル
+param.Center2Joint(:,4,4) = [ 0 -0.03    0 ]'; % リンク4の重心から根本側の関節(J4)への位置ベクトル
 
 % Param.Center2Joint(:,1,2) = [ 0  0.00459 0 ]'; % リンク1の重心から先端側の関節(J2)への位置ベクトル
 % Param.Center2Joint(:,2,3) = [ 0  0.00459 0 ]'; % リンク2の重心から先端側の関節(J3)への位置ベクトル
@@ -113,18 +113,18 @@ Param.Center2Joint(:,4,4) = [ 0 -0.03    0 ]'; % リンク4の重心から根本
 % Param.Center2Joint(:,6,6) = [ 0 -0.17641 0 ]'; % リンク6の重心から根本側の関節(J6)への位置ベクトル
 % Param.Center2Joint(:,7,7) = [ 0 -0.03    0 ]'; % リンク7の重心から根本側の関節(J7)への位置ベクトル
 % Param.Center2Joint(:,8,8) = [ 0 -0.03    0 ]'; % リンク8の重心から根本側の関節(J8)への位置ベクトル
-Param.Center2Joint(:,[37,46,55,64]) = Param.Center2Joint(:,[1,10,19,28]); % 左右対称なので省略
+param.Center2Joint(:,[37,46,55,64]) = param.Center2Joint(:,[1,10,19,28]); % 左右対称なので省略
 
 %%%%%相対定義%%%%%
 % SV初期定義時のリンク向きが，真上から変更された場合，ここを書き直す．それ以外は変更しない．
 % 左手リンクの重心から先端側の関節への位置ベクトル，リンク長さによって相対的に決定
-Param.Center2Joint(:,[ 9,18,27]) = Param.Center2Joint(:,[ 1,10,19]) + [[0,0,0];Param.LaLength, Param.LbLength, Param.LcLength;[0,0,0]];
+param.Center2Joint(:,[ 9,18,27]) = param.Center2Joint(:,[ 1,10,19]) + [[0,0,0];param.LaLength, param.LbLength, param.LcLength;[0,0,0]];
 % リンク4重心から左手先端（２つの先端球の中点）への位置ベクトル
-Param.Center2JointEnd(:,4)       = Param.Center2Joint(:,4,4) + [0;Param.LdH*cos(Param.LdGamma);0];
+param.Center2JointEnd(:,4)       = param.Center2Joint(:,4,4) + [0;param.LdH*cos(param.LdGamma);0];
 % 右手リンクの重心から先端側の関節への位置ベクトル，リンク長さによって相対的に決定
-Param.Center2Joint(:,[45,54,63]) = Param.Center2Joint(:,[37,46,55]) + [[0,0,0];Param.LaLength, Param.LbLength, Param.LcLength;[0,0,0]];
+param.Center2Joint(:,[45,54,63]) = param.Center2Joint(:,[37,46,55]) + [[0,0,0];param.LaLength, param.LbLength, param.LcLength;[0,0,0]];
 % リンク8重心から右手先端（２つの先端球の中点）への位置ベクトル
-Param.Center2JointEnd(:,8)       = Param.Center2Joint(:,8,8) + [0;Param.LdH*cos(Param.LdGamma);0];
+param.Center2JointEnd(:,8)       = param.Center2Joint(:,8,8) + [0;param.LdH*cos(param.LdGamma);0];
 %%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -132,15 +132,15 @@ Param.Center2JointEnd(:,8)       = Param.Center2Joint(:,8,8) + [0;Param.LdH*cos(
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ベースの初期位置・姿勢・速度・角速度
-Param.BasePosition0     = [ 0 0 0]';             % 初期位置          ;SV.R0
-Param.BaseOrientation0  = [ 0 0 deg2rad( 0 ) ]'; % 初期姿勢  ラジアン ;SV.Q0
-Param.BaseVelocity0     = [ 0 0 0 ]';            % 初期並進速度 ;SV.v0
-Param.BaseAngVel0       = [ 0 0 0 ]';            % 初期角速度 ;SV.w0
+param.BasePosition0     = [ 0 0 0]';             % 初期位置          ;SV.R0
+param.BaseOrientation0  = [ 0 0 deg2rad( 0 ) ]'; % 初期姿勢  ラジアン ;SV.Q0
+param.BaseVelocity0     = [ 0 0 0 ]';            % 初期並進速度 ;SV.v0
+param.BaseAngVel0       = [ 0 0 0 ]';            % 初期角速度 ;SV.w0
 
 % 初期関節角度：反時計回り正
 %[pi/3 -pi*4/9 -pi*7/18 0]'
-Param.LinkAngLeft  =  [pi/3 -pi*4/9 -pi*7/18 0]';  % 左手の関節角度，ベース側から ;SV.q
-Param.LinkAngRight = -[pi/3 -pi*4/9 -pi*7/18 0]';  % 右手の関節角度，ベース側から ;SV.q
+param.LinkAngLeft  =  [pi/3 -pi*4/9 -pi*7/18 0]';  % 左手の関節角度，ベース側から ;SV.q
+param.LinkAngRight = -[pi/3 -pi*4/9 -pi*7/18 0]';  % 右手の関節角度，ベース側から ;SV.q
 % Param.LinkAngLeft  =  [0 0 0 0]';  % 左手の関節角度，ベース側から ;SV.q
 % Param.LinkAngRight = -[0 0 0 0]';  % 右手の関節角度，ベース側から ;SV.q
 
@@ -150,53 +150,51 @@ Param.LinkAngRight = -[pi/3 -pi*4/9 -pi*7/18 0]';  % 右手の関節角度，ベ
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ターゲットサイズ[m]
 % 二次元モデルではheight = 0
-Param.TargetDepth  = 0.16;
-Param.TargetWidth  = 0.16;%0.16;
-Param.TargetHeight = 0;
+param.TargetDepth  = 0.16;
+param.TargetWidth  = 0.16;%0.16;
+param.TargetHeight = 0;
 
 % ターゲット幾何中心に対する質量重心の相対位置
-Param.TargetMCenter2GCenter = [0, 0, 0]';
+param.TargetMCenter2GCenter = [0, 0, 0]';
 
 % ターゲット質量[kg]
 % 変更時，慣性行列に注意
 ro = 150; % kg/m^2
-Param.TargetMass = ro * Param.TargetDepth * Param.TargetWidth; %3.70;
+param.TargetMass = ro * param.TargetDepth * param.TargetWidth; %3.70;
 % ターゲット部分慣性行列[m^2kg]
-Param.TargetInertia = [ 1e9     0   0;   
+param.TargetInertia = [ 1e9     0   0;   
                           0   1e9   0;   
-                          0     0   Param.TargetMass*Param.TargetDepth^2/6];%0.0172];
+                          0     0   param.TargetMass*param.TargetDepth^2/6];%0.0172];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ターゲット初期状態設定
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ターゲットの初期位置・姿勢・速度・角速度
-Param.TargetPosition0     = [ 0 0.35 0]';             % 初期位置          ;SV.R0
-Param.TargetOrientation0  = [ 0 0 deg2rad( 0 ) ]';   % 初期姿勢  ラジアン ;SV.Q0
-Param.TargetVelocity0     = [ -.0 -.0 0 ]';              % 初期並進速度 ;SV.v0
-Param.TargetAngVel0       = [ 0 0 5]';              % 初期角速度 ;SV.w0
+param.TargetPosition0     = [ 0 0.35 0]';             % 初期位置          ;SV.R0
+param.TargetOrientation0  = [ 0 0 deg2rad( 0 ) ]';   % 初期姿勢  ラジアン ;SV.Q0
+param.TargetVelocity0     = [ -.0 -.0 0 ]';              % 初期並進速度 ;SV.v0
+param.TargetAngVel0       = [ 0 0 4]';              % 初期角速度 ;SV.w0
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 物理係数設定
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Param.ContactDamp  = 20;%8;%20;         % 接触力減衰係数
-Param.ContactElast = 1000;%9000;%1000;      % 接触力弾性係数
-Param.ContactNu    = .1;%0.3;       % 接触力摩擦係数
-Param.WristDamp    = .3;%0.4;       % 手首関節減衰係数
-Param.WristElast   = .4;%0.8;       % 手首関節弾性係数
+param.ContactDamp  = 20;%8;%20;         % 接触力減衰係数
+param.ContactElast = 1000;%9000;%1000;      % 接触力弾性係数
+param.ContactNu    = .1;%0.3;       % 接触力摩擦係数
+param.WristDamp    = .3;%0.4;       % 手首関節減衰係数
+param.WristElast   = .4;%0.8;       % 手首関節弾性係数
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % コントロールパラメータ
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Param.GainCk = [0, 0, 0]';
-Param.GainCd = [0, 0, 0]';
-Param.GainCf = [.1, .1, .1]';
-Param.AngularVelBorder = 1;
+param.control = controlParam();
+param.AngularVelBorder = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ファイル設定
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Param.DataSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/two-dimensional/uchida_program/dat';
-Param.FileName     = [num2str(Param.ContactDamp),'_' ,num2str(Param.ContactElast)];
+param.DataSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/two-dimensional/uchida_program/dat';
+param.FileName     = [num2str(param.ContactDamp),'_' ,num2str(param.ContactElast)];
 end

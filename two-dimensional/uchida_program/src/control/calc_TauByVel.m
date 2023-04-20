@@ -21,9 +21,8 @@ global d_time
     SV = DualArmRobo.SV;
     num_eL = DualArmRobo.num_eL;
     num_eR = DualArmRobo.num_eR;
-    
-    if size(Vel) == 6
-        error('desired velocity dimention must be 6')
+    if ~all(size(Vel)==[6,1])
+        error('desired velocity dimention must be [6,1]')
     end
 
     % 双腕ロボ一般化慣性行列，一般化速度非線形項計算
