@@ -150,8 +150,8 @@ param.LinkAngRight = -[pi/3 -pi*4/9 -pi*7/18 0]';  % 右手の関節角度，ベ
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ターゲットサイズ[m]
 % 二次元モデルではheight = 0
-param.TargetDepth  = 0.16;
-param.TargetWidth  = 0.16;%0.16;
+param.TargetDepth  = 0.13;
+param.TargetWidth  = 0.13;%0.16;
 param.TargetHeight = 0;
 
 % ターゲット幾何中心に対する質量重心の相対位置
@@ -174,7 +174,7 @@ param.TargetInertia = [ 1e9     0   0;
 param.TargetPosition0     = [ 0 0.35 0]';             % 初期位置          ;SV.R0
 param.TargetOrientation0  = [ 0 0 deg2rad( 0 ) ]';   % 初期姿勢  ラジアン ;SV.Q0
 param.TargetVelocity0     = [ -.0 -.0 0 ]';              % 初期並進速度 ;SV.v0
-param.TargetAngVel0       = [ 0 0 4]';              % 初期角速度 ;SV.w0
+param.TargetAngVel0       = [ 0 0 5]';              % 初期角速度 ;SV.w0
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -190,7 +190,6 @@ param.WristElast   = .4;%0.8;       % 手首関節弾性係数
 % コントロールパラメータ
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 param.control = controlParam();
-param.AngularVelBorder = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ファイル設定

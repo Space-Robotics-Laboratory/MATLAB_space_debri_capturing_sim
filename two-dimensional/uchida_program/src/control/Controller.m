@@ -2,20 +2,22 @@
 % 
 % 目標速度，目標関節トルク，目標位置等を保持し，ロボットに目標関節トルクを与える．
 % 目標位置の計算に関しては，幾何的で煩雑な式となることからPathwayクラスを要素として持ち，その内部で行う．
+%
 % 
 % 2023.3 akiyoshi uchida
 % 
 classdef Controller
     properties 
         % 制御用設定パラメータ
-        gain            % 制御ゲイン
         impDuration     % 接触後のインピーダンス制御持続時間
         switchingDelay  % 複数回接触から直接捕獲へと切り替える待ち時間
         mi              % imp 仮装質量
         di              % imp ダンパ特性
         ki              % imp バネ特性
-        dp              % 'str_fb'におけるfeedback微分ゲイン
-        kp              % 'str_fb'におけるfeedback比例ゲイン
+        dp              % 'str_fbk'におけるfeedback微分ゲイン
+        kp              % 'str_fbk'におけるfeedback比例ゲイン
+        controlMode     % 制御モード
+        impedanceMode   % 反力低減モード
 
         % 制御目標パラメータ
         pathway         % Pathway class: 目標位置を扱うクラス
@@ -27,8 +29,6 @@ classdef Controller
         tau             % 目標関節トルク 8*1 (ただし，受動関節はのちにバネモデルによって上書きされる)
 
         % 制御状態パラメータ
-        controllerMode  % 制御モード
-        impedanceMode   % 反力低減モード
         controlState    % string 制御状態．目標位置追従や反力低減を区別する. sub機能内での判別には用いない（追うのが大変）
         phase           % int  pathwayのどの段階にいるかの指標．現在向かっている目標が保存された目標位置の何番目の経由地かを示す．目標地点がない場合-1を持つ
         phaseStarting   % bool pathwayのphaseの切り替えを示す．経由地点を初めて達成した時刻でtrue．
@@ -40,24 +40,22 @@ classdef Controller
     end
     methods
         % constructor 
-        function obj = Controller(robo, startTime, controlMode, param)
-            obj.pathway = Pathway(robo, startTime);     % 目標手先位置・時間
-            obj.controllerMode = controlMode;           % 制御モード
-            obj.tau = zeros(8, 1);                      % 関節入力トルク
-            obj.phase = 0;                              % 目標手先位置(pathway)追従において，どの段階にいるかを示す
-            obj.desEEvel = zeros(6, 1);                 % 目標手先速度
-            obj.desEEacc = zeros(6, 1);                 % 目標手先加速度
-            obj.deltPosLike = zeros(6, 1);              % 目標位置からの変位
-            obj.velInBaseFram = [false, false];         % 手先速度がベースで表現されているかどうか
-            obj.velocityMode = 'str_tru';               % 目標位置から目標速度を計算するモード 
-            obj.flagPathUpdate = false;                 % 目標手先位置を更新するためのフラグ
-            obj.controlState = 'follow';                % 関節速度が０
-            obj.impedanceMode = 'addmitance';           % インピーダンス制御のモード
-            obj.controlArm = [false, false];            % 積極的に制御する対象となるアーム
+        function obj = Controller(robo, startTime, param)
+            obj.pathway = Pathway(robo, startTime);             % 目標手先位置・時間
+            obj.controlMode = param.control.controlMode;        % 制御モード
+            obj.tau = zeros(8, 1);                              % 関節入力トルク
+            obj.phase = 0;                                      % 目標手先位置(pathway)追従において，どの段階にいるかを示す
+            obj.desEEvel = zeros(6, 1);                         % 目標手先速度
+            obj.desEEacc = zeros(6, 1);                         % 目標手先加速度
+            obj.deltPosLike = zeros(6, 1);                      % 目標位置からの変位
+            obj.velInBaseFram = [false, false];                 % 手先速度がベースで表現されているかどうか
+            obj.velocityMode = param.control.velocityMode;      % 目標位置から目標速度を計算するモード 
+            obj.flagPathUpdate = false;                         % 目標手先位置を更新するためのフラグ
+            obj.controlState = 'follow';                        % 関節速度が０
+            obj.impedanceMode = param.control.impedanceMode;    % インピーダンス制御のモード
+            obj.controlArm = [false, false];                    % 積極的に制御する対象となるアーム
 
             % パラメータ設定
-            obj.gain.Ck = param.control.kp;             % 目標位置に関するPD制御比例ゲイン
-            obj.gain.Cd = param.control.dp;             % 目標位置に関するPD制御微分ゲイン
             obj.mi = repmat(param.control.mi, [2,1]);
             obj.di = repmat(param.control.di, [2,1]);
             obj.ki = repmat(param.control.ki, [2,1]);
@@ -71,7 +69,7 @@ classdef Controller
         %%% コントロール関数
         % 目標位置更新のフラグたてを行う．モードによって制御が異なる．
         function obj = control(obj, robo, targ, roboFTsensor, time, state, param)
-            switch obj.controllerMode
+            switch obj.controlMode
                 % 直接捕獲するケース
                 case 'DIRECT'
                     % 初期時刻にフラグをたてる
@@ -172,7 +170,7 @@ classdef Controller
             obj.tau = calc_TauByVel(robo, obj.desEEvel, roboFTsensor, obj.velInBaseFram);
         end
 
-        %% pathwayを追従する
+        %% pathwayを，両手で同時に追従する．
         function obj = followPathway(obj, time, robo, roboFTsensor)
             obj.velInBaseFram = [false, false];
             obj.controlState = 'follow';

@@ -5,6 +5,11 @@
 %
 
 function controlParam = controlParam()
+%% Controller Setting
+controlParam.controlMode = 'MULTIPLE';          % コントローラーモード
+controlParam.velocityMode = 'str_tru';          % pathwayから速度を計算する方法
+controlParam.impedanceMode = 'addmitance';      % インピーダンス制御モード
+
 %% FeedBack Gain Useed in Pathway Following(in vel mode 'str_fb')
 controlParam.kp = [5, 5, .0]';             % フィードバックによる位置制御：比例係数
 controlParam.dp = [0, 0, .0]';                % フィードバックによる位置制御：減衰係数
@@ -30,7 +35,8 @@ controlParam.ki = [.5, .5, .5]';                   % アドミタンス制御バ
 
 % contact parameters
 controlParam.contactPositionratio = .8;             % 接触位置がターゲット辺のどの割合にあるかを表す.0で中心1で頂点
-controlParam.endEffecAngleDeviation = deg2rad(20);  % 接触時点のエンドエフェクターの角度
+controlParam.endEffecAngleDeviation = deg2rad(10);  % 接触時点のエンドエフェクターの角度
+controlParam.contactTargetAngLim = deg2rad(20);     % 接触時のターゲット角度をターゲットの速度方向によって定める時の上限.大きいと手先の姿勢が達成しづらくなる
 
 
 end

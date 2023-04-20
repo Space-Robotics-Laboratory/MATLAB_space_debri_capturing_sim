@@ -32,7 +32,7 @@ dualArmRobo  = DualArmRobo(param);
 % ターゲットインスタンス作成
 targetSquare = TargetSquare(param);
 % コントローラーインスタンス作成
-controller = Controller(dualArmRobo, 0, 'MULTIPLE', param);
+controller = Controller(dualArmRobo, 0, param);
 
 % シミュレーション時間
 endTime    = param.EndTime;                 % 終了時間設定．

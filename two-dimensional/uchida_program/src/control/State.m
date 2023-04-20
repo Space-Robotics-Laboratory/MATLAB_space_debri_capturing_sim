@@ -35,12 +35,12 @@ classdef State
             obj.isContact = isContact;
             obj.newContact = ~obj.wasContact & obj.isContact;
             obj.endContact = obj.wasContact & ~obj.isContact;
-            obj.comeTargetSlow = ~obj.targetSlow && abs(target.SV.w0(3))<param.AngularVelBorder;
+            obj.comeTargetSlow = ~obj.targetSlow && abs(target.SV.w0(3))<param.control.switchingTargetAngVel;
             if obj.comeTargetSlow && obj.time.comeTargetSlow == inf
                 % 初めて角速度の境界を割った時刻．一度しか更新されない．
                 obj.time.comeTargetSlow = time;
             end
-            obj.targetSlow = abs(target.SV.w0(3)) <= param.AngularVelBorder;
+            obj.targetSlow = abs(target.SV.w0(3)) <= param.control.switchingTargetAngVel;
             if any(obj.isContact)
                 obj.time.lastContact = time;
             end

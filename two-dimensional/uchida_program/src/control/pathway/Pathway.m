@@ -162,7 +162,7 @@ classdef Pathway
         % pathwayメソッドをリターン
         function obj = contactDampen(obj, robo, targ, time, param)
             contPosRate = param.control.contactPositionratio;    % 接触する位置の辺に対する割合．１で頂点．０で中心
-            evadeAng = param.control.endEffecAngleDeviation;     % 接触する時のエンドエフェクター角度．おおむね10ど以内にする
+            evadeAng0 = param.control.endEffecAngleDeviation;    % 接触する時のエンドエフェクター角度. ターゲット角が0の場合
 
             % ターゲット情報代入
             targPos = targ.SV.R0(1:2, :);
@@ -175,7 +175,8 @@ classdef Pathway
 
             % ターゲット速度方向より接触時点のターゲット角度を計算
             targetVang = subspace([1,0]', targV);
-            contAng = targetVang;
+            contAng = min(targetVang, param.control.contactTargetAngLim);
+            evadeAng = contAng + evadeAng0;
 
             % 接触パターン設定
             % 回転の向き，並進方向から判別
