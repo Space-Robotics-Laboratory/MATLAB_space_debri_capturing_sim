@@ -96,15 +96,15 @@ classdef DualArmRobo
             obj.SV.Q0 = dc2rpy( obj.SV.A0' );                                        % ベース角度のオイラー角表現
             obj.SV.QeL= dc2rpy( obj.ORI_e_L' );                                      % 左端リンクのオイラー角表現
             obj.SV.QeR= dc2rpy( obj.ORI_e_R' );                                      % 右端リンクのオイラー角表現
-            obj.POS_es_L = calc_ArmTipsPos(obj.POS_e_L, obj.ORI_e_L, Parameters);    % 左手の先端球位置 3*2
-            obj.POS_es_R = calc_ArmTipsPos(obj.POS_e_R, obj.ORI_e_R, Parameters);    % 右手の先端球位置 3*2
+            obj.POS_es_L = calc_armTipsPos(obj.POS_e_L, obj.ORI_e_L, Parameters);    % 左手の先端球位置 3*2
+            obj.POS_es_R = calc_armTipsPos(obj.POS_e_R, obj.ORI_e_R, Parameters);    % 右手の先端球位置 3*2
 
             % 関節速度初期化
             obj.SV = calc_vel(obj.LP, obj.SV);                                          % 全リンク重心の並進・回転速度計算
             obj.VEL_e_L = calc_vel_e(obj.LP, obj.SV, obj.jointsL);                      % 左手先の並進速度計算
             obj.VEL_e_R = calc_vel_e(obj.LP, obj.SV, obj.jointsR);                      % 右手先の並進速度計算
-            obj.VEL_es_L = calc_ArmTipsVel(obj.VEL_e_L, obj.ORI_e_L, obj.SV.ww(:, 4), Parameters);  % 左手先端球の並進速度計算
-            obj.VEL_es_R = calc_ArmTipsVel(obj.VEL_e_R, obj.ORI_e_R, obj.SV.ww(:, 8), Parameters);  % 右手先端球の並進速度計算
+            obj.VEL_es_L = calc_armTipsVel(obj.VEL_e_L, obj.ORI_e_L, obj.SV.ww(:, 4), Parameters);  % 左手先端球の並進速度計算
+            obj.VEL_es_R = calc_armTipsVel(obj.VEL_e_R, obj.ORI_e_R, obj.SV.ww(:, 8), Parameters);  % 右手先端球の並進速度計算
 
             % 前状態初期化
 %             obj.DualArmRoboPrevious = obj;                                           % 0時間では前状態と現状態が一致
@@ -145,15 +145,15 @@ classdef DualArmRobo
             obj.SV.Q0 = dc2rpy( obj.SV.A0' );                                           % ベース角度のオイラー角表現
             obj.SV.QeL= dc2rpy( obj.ORI_e_L' );                                         % 左端リンクのオイラー角表現
             obj.SV.QeR= dc2rpy( obj.ORI_e_R' );                                         % 右端リンクのオイラー角表現
-            obj.POS_es_L = calc_ArmTipsPos(obj.POS_e_L, obj.ORI_e_L, Parameters);       % 左手の先端球位置 3*2
-            obj.POS_es_R = calc_ArmTipsPos(obj.POS_e_R, obj.ORI_e_R, Parameters);       % 右手の先端球位置 3*2
+            obj.POS_es_L = calc_armTipsPos(obj.POS_e_L, obj.ORI_e_L, Parameters);       % 左手の先端球位置 3*2
+            obj.POS_es_R = calc_armTipsPos(obj.POS_e_R, obj.ORI_e_R, Parameters);       % 右手の先端球位置 3*2
 
             % 順運動学によって関節速度を計算
             obj.SV = calc_vel(obj.LP, obj.SV);                                          % 全リンク重心の並進・回転速度計算
             obj.VEL_e_L = calc_vel_e(obj.LP, obj.SV, obj.jointsL);                      % 左手先の並進速度計算 3*1
             obj.VEL_e_R = calc_vel_e(obj.LP, obj.SV, obj.jointsR);                      % 右手先の並進速度計算 3*1
-            obj.VEL_es_L = calc_ArmTipsVel(obj.VEL_e_L, obj.ORI_e_L, obj.SV.ww(:, 4), Parameters);  % 左手先端球の並進速度計算 3*2
-            obj.VEL_es_R = calc_ArmTipsVel(obj.VEL_e_R, obj.ORI_e_R, obj.SV.ww(:, 8), Parameters);  % 右手先端球の並進速度計算 3*2
+            obj.VEL_es_L = calc_armTipsVel(obj.VEL_e_L, obj.ORI_e_L, obj.SV.ww(:, 4), Parameters);  % 左手先端球の並進速度計算 3*2
+            obj.VEL_es_R = calc_armTipsVel(obj.VEL_e_R, obj.ORI_e_R, obj.SV.ww(:, 8), Parameters);  % 右手先端球の並進速度計算 3*2
         end
     end
 end

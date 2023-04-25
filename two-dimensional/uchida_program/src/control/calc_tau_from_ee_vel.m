@@ -11,7 +11,7 @@
 % output: JointTorque 8*1, but only used 6*1
 %
 
-function JointTau = calc_TauByVel(DualArmRobo, Vel, RoboFTsensor, inBodyFrame)
+function JointTau = calc_tau_from_ee_vel(DualArmRobo, endEffecVel, RoboFTsensor, inBodyFrame)
 global d_time
     % ゲイン設定
     Ck = [5, 5, 5, 5, 5, 5, 5, 5]';
@@ -21,7 +21,7 @@ global d_time
     SV = DualArmRobo.SV;
     num_eL = DualArmRobo.num_eL;
     num_eR = DualArmRobo.num_eR;
-    if ~all(size(Vel)==[6,1])
+    if ~all(size(endEffecVel)==[6,1])
         error('desired velocity dimention must be [6,1]')
     end
 
@@ -35,11 +35,10 @@ global d_time
 
     % 現時刻の運動量計算
     % 現時刻でのロボット速度を使用している．ロボット速度が既知かどうかに注意
-    % ->　既知なわけなくね？PLは未知とする．
     PL = calc_momentum(LP, SV);
 %     PL = zeros(6,1);
 
-    % 目標自由度削減 12*8 -> 6*8
+    % 目標自由度削減 18*8 -> 6*8
     Jg_s = Jg([1,2,6, 7,8,12], :);   
     Jg_s(:, [4,8]) = 0;                         % jg_sは目標速度の次元を削減し，受動関節角速度0を仮定したヤコビアン
     Jb_s = Jb([1,2,6, 7,8,12], :);              % ベース速度に対する手先ヤコビアン
@@ -60,7 +59,7 @@ global d_time
     VelbyPL(~index) =  temp(~index);                                        % 運動量変化による見かけの速度
 
     % 目標関節角速度計算
-    qd_des = pinv(J) * (Vel - VelbyPL);                                     % 関節角速度．運動量変化について考える.
+    qd_des = pinv(J) * (endEffecVel - VelbyPL);                                     % 関節角速度．運動量変化について考える.
     qdd_des = (qd_des - SV.qd) / d_time;                                    % 関節角加速度
     JointTau = H_asuta * qdd_des + C_asuta - Jg' * F_c;                     % 8関節トルク（set wrist active joint）
     %JointTau = Ck .* (qd_des - SV.qd) + Cd .* (qdd_des - SV.qdd)

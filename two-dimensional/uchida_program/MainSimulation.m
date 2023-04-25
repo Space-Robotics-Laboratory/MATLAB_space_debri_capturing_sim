@@ -62,13 +62,13 @@ for time = minusTime : d_time : endTime
 
     %%% 推定フェーズ
     % 接触判定及び接触力計算
-    [roboExtWrench(:, 2:5), targetExtWrench, isContact] = calc_ContactForce(dualArmRobo, targetSquare, param);
+    [roboExtWrench(:, 2:5), targetExtWrench, isContact] = calc_contactForce(dualArmRobo, targetSquare, param);
     
     % 手先外力センサー値計算
     roboFTsensor = roboExtWrench(:,[2,4])+roboExtWrench(:,[3,5]); % 手先の球にかかる力を足して左右のエンドエフェクタにかかる力にする 6*4->6*2
 
     % ターゲット運動状態推定
-    estTarget = estimate_Target(targetSquare);
+    estTarget = estimate_target(targetSquare);
 
     %%% コントロールフェーズ
     % 手先目標位置計算
@@ -97,7 +97,7 @@ datSaver.write()
 make_2dAnime(datSaver, paths, param)
 
 % グラフ作成
-make_Graph(datSaver.datStruct, paths)
+make_graph(datSaver.datStruct, paths)
 
 %clear
 fclose('all');

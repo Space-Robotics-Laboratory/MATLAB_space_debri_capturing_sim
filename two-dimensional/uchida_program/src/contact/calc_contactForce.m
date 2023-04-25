@@ -15,7 +15,7 @@
 % 多次元配列は，dim1:xyz , dim2:targetTip , dim3:roboArmEndEfectorとして定義
 %
 
-function [edgeWrench, targetWrench, isContact] = calc_ContactForce(DualArmRobo, Target, param)
+function [edgeWrench, targetWrench, isContact] = calc_contactForce(DualArmRobo, Target, param)
     contactElast = param.ContactElast;          % 弾性係数
     contactDamp = param.ContactDamp;            % 減衰係数
     contactNu = param.ContactNu;                % 摩擦係数
@@ -128,13 +128,13 @@ function [edgeWrench, targetWrench, isContact] = calc_ContactForce(DualArmRobo, 
     roboTorques = cross(edge2ContactPos, -targetForces);                    % ロボトルク 3*4
     tageTorques = cross(target2ContactPos, targetForces);                   % ターゲットトルク 3*4
 
-    roboForce = -targetForces(:, [1, 3]) - targetForces(:, [2, 4]);         % 手先合力 3*2
-    roboTorque = roboTorques(:, [1, 3]) + roboTorques(:, [2, 4]);           % 手先合トルク 3*2
+    % roboForce = -targetForces(:, [1, 3]) - targetForces(:, [2, 4]);         % 手先合力 3*2
+    % roboTorque = roboTorques(:, [1, 3]) + roboTorques(:, [2, 4]);           % 手先合トルク 3*2
     tageForce = sum(targetForces, 2);                                       % ターゲット合力 3*1
     tageTorque = sum(tageTorques, 2);                                       % ターゲット合トルク 3*1
     
     edgeWrench = [roboForces; roboTorques];                                 % ロボ手先レンチ 6*4
     targetWrench = [tageForce; tageTorque];                                 % ターゲットレンチ 6*1
-%     edgeWrench = zeros(6,2);
-%     targetWrench = zeros(6,1);
+    edgeWrench = zeros(6,4);
+    targetWrench = zeros(6,1);
 end

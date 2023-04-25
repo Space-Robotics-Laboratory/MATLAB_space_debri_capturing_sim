@@ -11,7 +11,7 @@ function param = set_Param()
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % シミュレーション条件
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-param.EndTime   = 12;%2;    %シミュレーション終了時間[s]
+param.EndTime   = 1;%2;    %シミュレーション終了時間[s]
 param.MinusTime = 0;      %シミュレーション開始からロボット制御開始までの時間[s]
 param.DivTime   = 0.001;  %シミュレーション刻み時間[s]
 
@@ -34,7 +34,7 @@ param.BaseMass = 7.70;
 %ロボットベース部分慣性行列[m^2kg]
 param.BaseInertia = [ 1e9     0   0;   % 0の部分がカップリング項(慣性乗積?)
                         0   1e9   0;   % 慣性乗積が0ということは、固定軸の周りを回転するということ
-                        0     0   .5];%0.09783069148];
+                        0     0   0.09783069148];%.5];%0.09783069148];
 
 % ロボットリンク部分質量[kg]
 % 変更時，慣性行列に注意
@@ -150,8 +150,8 @@ param.LinkAngRight = -[pi/3 -pi*4/9 -pi*7/18 0]';  % 右手の関節角度，ベ
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ターゲットサイズ[m]
 % 二次元モデルではheight = 0
-param.TargetDepth  = 0.13;
-param.TargetWidth  = 0.13;%0.16;
+param.TargetDepth  = 0.16;
+param.TargetWidth  = 0.16;%0.16;
 param.TargetHeight = 0;
 
 % ターゲット幾何中心に対する質量重心の相対位置
@@ -164,7 +164,7 @@ param.TargetMass = ro * param.TargetDepth * param.TargetWidth; %3.70;
 % ターゲット部分慣性行列[m^2kg]
 param.TargetInertia = [ 1e9     0   0;   
                           0   1e9   0;   
-                          0     0   param.TargetMass*param.TargetDepth^2/6];%0.0172];
+                          0     0   param.TargetMass*param.TargetDepth^2/6];%0.0172];0.0164
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ターゲット初期状態設定
@@ -195,5 +195,5 @@ param.control = controlParam();
 % ファイル設定
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 param.DataSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/two-dimensional/uchida_program/dat';
-param.FileName     = [num2str(param.ContactDamp),'_' ,num2str(param.ContactElast)];
+param.FileName     = [num2str(param.control.mi'),'_' ,num2str(param.control.di'),'_' ,num2str(param.control.ki')];
 end

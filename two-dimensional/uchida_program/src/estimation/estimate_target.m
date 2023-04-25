@@ -3,6 +3,6 @@
 % 2023.2 Akiyoshi Uchida
 %
 
-function target = estimate_Target(Target)
+function target = estimate_target(Target)
 target = Target;
 end

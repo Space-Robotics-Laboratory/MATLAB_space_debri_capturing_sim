@@ -30,7 +30,7 @@ classdef State
         end
         % 状態更新
         function obj = update(obj, robo, isContact, target, time, param)
-            obj.isCapture = judge_IsCapture(robo, target, param);
+            obj.isCapture = judge_isCaptured(robo, target, param);
             obj.wasContact = obj.isContact;
             obj.isContact = isContact;
             obj.newContact = ~obj.wasContact & obj.isContact;

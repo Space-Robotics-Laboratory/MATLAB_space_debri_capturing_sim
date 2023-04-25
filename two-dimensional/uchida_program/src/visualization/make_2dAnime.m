@@ -67,10 +67,10 @@ function make_2dAnime(datSaver, paths, param)
             vis_roboForce(endEffecPos, roboForceLeft, roboForceRight, scale)
 
             % ターゲット外力描画
-            vis_TargetForce(targetR0, targetForce, scale)
+            vis_targetForce(targetR0, targetForce, scale)
 
             % 手先目標位置描画
-            vis_DesiredPos(desHandPos)
+            vis_desiredPos(desHandPos)
             
             hold off
 

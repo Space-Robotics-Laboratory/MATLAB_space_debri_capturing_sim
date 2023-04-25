@@ -21,19 +21,23 @@
 % mode3: 目標位置からのずれに対して，PT制御によって目標速度を求める．ゲイン調整が重要
 
 
-function vel = calc_Vel(pathWay, currentTime, robo, feedBackGain, isLeftArm, velMode)
+function vel = calc_vel_from_pathway(pathway, currentTime, robo, feedBackGain, isLeftArm, velMode)
+if any(isnan(pathway))
+    vel = nan(3, 1);
+    return
+end
 
 % 経由地点の数
-[~, n] = size(pathWay);
+[~, n] = size(pathway);
 
 % 初期時刻以前，最終時刻以降は速度０
-if (currentTime < pathWay(4, 1)) || (currentTime >= pathWay(4, n))
+if (currentTime < pathway(4, 1)) || (currentTime >= pathway(4, n))
     vel = zeros(3,1);
     return
 end
 
-dPathWay = pathWay(:, [2:n, 1]) - pathWay;                                      % 差分計算
-index = (pathWay(4, :) <= currentTime) & (pathWay(4, [2:n, 1]) > currentTime);  % 時刻をもとに経路のフェーズを判定
+dPathWay = pathway(:, [2:n, 1]) - pathway;                                      % 差分計算
+index = (pathway(4, :) <= currentTime) & (pathway(4, [2:n, 1]) > currentTime);  % 時刻をもとに経路のフェーズを判定
 % 時刻(pathway(4,:)が順番通りでない場合，エラーを排出する
 if sum(index) >= 2  
     error("you have to set pathway in order of time")
@@ -54,7 +58,7 @@ switch velMode
     % 直線軌道・山形速度（境界で加速度0の折れ曲がった直線）
     % 時間に対して線形に速度が変化する
     case 'str_tru'
-    s = ( currentTime - pathWay(4, index) ) / dTime;
+    s = ( currentTime - pathway(4, index) ) / dTime;
     gain = -abs(4*s - 2) + 2;
     vel = dP ./ dTime * gain;
     return
@@ -69,7 +73,7 @@ switch velMode
     nowPos(:, 1, 2) = [robo.POS_e_R(1:2); robo.SV.QeR(3)];  % enEffPosRight 3*1*2
     dnowPos(:, 1, 1) = [robo.VEL_e_L(1:2); robo.SV.ww(3, 4)];
     dnowPos(:, 1, 2) = [robo.VEL_e_R(1:2); robo.SV.ww(3, 8)];
-    deltP = pathWay(1:3, findex) - nowPos(:, 1, armSign);   % 位置差分
+    deltP = pathway(1:3, findex) - nowPos(:, 1, armSign);   % 位置差分
     deltD = -dnowPos(:, 1, armSign);                        % 速度差分
     vel = Ck .* deltP + Cd .* deltD;                        % PD制御
     return

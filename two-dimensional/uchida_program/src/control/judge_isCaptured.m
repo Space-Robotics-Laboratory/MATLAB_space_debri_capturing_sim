@@ -7,7 +7,7 @@
 % input  robo: DualArmRobo class, target: TargetSquare class
 % output isCapture bool schalar 
 
-function isCapture = judge_IsCapture(robo, target, param)
+function isCapture = judge_isCaptured(robo, target, param)
 
 d = robo.r * 2;
 lt = target.width;

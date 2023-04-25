@@ -47,42 +47,42 @@ classdef Pathway
 
         % pathwayのどのフェーズにいるか計算
         % フェーズの立ち上がりと立ち下がりをdtimeをもとに計算
-        function [phase, phaseStarting, phaseEnding] = phase(obj, time, param)
-            [~, n, ~] = size(obj.pathway);
-            index = (obj.pathway(4, :, 1) <= time) & (obj.pathway(4, [2:n, 1], 1) > time);  % 時刻をもとに経路のフェーズを判定
+        function [phase, phaseStarting, phaseEnding] = phase(obj, time, param, armIndex)
+            [~, n, ~] = size(obj.pathway(:, :, armIndex));
+            index = (obj.pathway(4, :, armIndex) <= time) & (obj.pathway(4, [2:n, 1], armIndex) > time);  % 時刻をもとに経路のフェーズを判定
             % 時刻(pathway(4,:)が順番通りでない場合，エラーを排出する
             if sum(index) >= 2                                                           
                 error("you have to set pathway in order of time")
             end
             
             % pathwayの初めの時刻より前であれば（通常負の時刻），phaseは０
-            if time < obj.pathway(4, 1, 1)
+            if time < obj.pathway(4, 1, armIndex)
                 phase = 0;
                 phaseStarting = (time - param.MinusTime) < param.DivTime * 1.01 && ...
                                 (time - param.MinusTime) >= 0;
-                phaseEnding = (obj.pathway(4, 1, 1) - time) <= param.DivTime * 1.01 && ...
-                              (obj.pathway(4, 1, 1) - time) > 0;
+                phaseEnding = (obj.pathway(4, 1, armIndex) - time) <= param.DivTime * 1.01 && ...
+                              (obj.pathway(4, 1, armIndex) - time) > 0;
                 return
             
             % pathwayの最後の項より後であれば，phaseは-1
-            elseif time >= obj.pathway(4, n, 1)
+            elseif time >= obj.pathway(4, n, armIndex)
                 phase = -1;
-                phaseStarting = (time - obj.pathway(4, n, 1)) < param.DivTime * 1.01 && ...
-                                (time - obj.pathway(4, n, 1)) >= 0;
+                phaseStarting = (time - obj.pathway(4, n, armIndex)) < param.DivTime * 1.01 && ...
+                                (time - obj.pathway(4, n, armIndex)) >= 0;
                 phaseEnding = true;
                 return
             end
             IND = 1:n;
             phase = IND(index);
-            phaseStarting = (time - obj.pathway(4, phase, 1)) < param.DivTime * 1.01 && ... 
-                            (time - obj.pathway(4, phase, 1)) >= 0; % おそらく余分
-            phaseEnding = (obj.pathway(4, phase + 1, 1) - time) <= param.DivTime * 1.01 && ...
-                          (obj.pathway(4, phase + 1, 1) - time) > 0; % おそらく余分
+            phaseStarting = (time - obj.pathway(4, phase, armIndex)) < param.DivTime * 1.01 && ... 
+                            (time - obj.pathway(4, phase, armIndex)) >= 0; % おそらく余分
+            phaseEnding = (obj.pathway(4, phase + 1, armIndex) - time) <= param.DivTime * 1.01 && ...
+                          (obj.pathway(4, phase + 1, armIndex) - time) > 0; % おそらく余分
         end
 
         % 現在時刻から，次の目標位置を返す関数
         function nextPathway = goingTo(obj, time, param)
-            phase = obj.phase(time, param);
+            phase = obj.phase(time, param, 1);
             index = phase + 1;
             if index == 0
                 nextPathway = nan(4,2);
@@ -95,8 +95,8 @@ classdef Pathway
         function desiredVel = vel(obj, time, robo, controller)
             mode = controller.velocityMode;
             gain = [controller.kp, controller.dp];
-            desiredVel(1:3, 1) = calc_Vel(obj.pathway(:, :, 1), time, robo, gain, true, mode);    % left
-            desiredVel(4:6, 1) = calc_Vel(obj.pathway(:, :, 2), time, robo, gain, false, mode);   % right
+            desiredVel(1:3, 1) = calc_vel_from_pathway(obj.pathway(:, :, 1), time, robo, gain, true, mode);    % left
+            desiredVel(4:6, 1) = calc_vel_from_pathway(obj.pathway(:, :, 2), time, robo, gain, false, mode);   % right
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -234,6 +234,9 @@ classdef Pathway
             gpathway = zeros(4, 2, 2);
             gpathway(1:3, 1, contArm) = [targWaitPos + targ2EEWait; desEffAngGoal];     % 非接触待機位置代入
             gpathway(1:3, 2, contArm) = [targGoalPos + targ2EECont; desEffAngGoal];     % 接触時位置代入  
+%             gpathway(1, :, ~contArm) = robo.SV.R0(1) - gpathway(1, :, contArm)*1.5;
+%             gpathway(2, :, ~contArm) = gpathway(2, :, contArm);
+%             gpathway(3, :, ~contArm) = -gpathway(3, :, contArm);
             gpathway(1:3, 1, ~contArm)= [targWaitPos + targ2EEFree; desEffAngGoalOpp];  % 非接触側の手先はターゲットに触れない位置にする
             gpathway(1:3, 2, ~contArm)= [targWaitPos + targ2EEFree; desEffAngGoalOpp];  % 非接触側の手先はターゲットに触れない位置にする
             gpathway(4, 1, :) = dtApproach + time;                                   % 時刻設定
@@ -243,7 +246,7 @@ classdef Pathway
 
         % 反力低減性検証用テスト
         % 左手接触で，ターゲットに回転がない場合
-        function pathway = testImpedanceNoRotate(~, target, time)
+        function pathway = testImpedanceNoRotate(~, target, time, param)
             % ターゲット情報代入
             targPos = target.SV.R0(1:2, :);
             targV = target.SV.v0(1:2, :);

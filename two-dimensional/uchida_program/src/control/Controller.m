@@ -21,6 +21,7 @@ classdef Controller
 
         % 制御目標パラメータ
         pathway         % Pathway class: 目標位置を扱うクラス
+        desBaseVel      % ベース目標速度 3*1 [vx,vy,wz]'
         desEEvel        % 目標速度 6*1
         desEEacc        % 目標加速度 6*1
         deltPosLike     % 目標位置からの変位 6*1 (by integrate)
@@ -33,7 +34,7 @@ classdef Controller
         phase           % int  pathwayのどの段階にいるかの指標．現在向かっている目標が保存された目標位置の何番目の経由地かを示す．目標地点がない場合-1を持つ
         phaseStarting   % bool pathwayのphaseの切り替えを示す．経由地点を初めて達成した時刻でtrue．
         flagPathUpdate  % bool pathwayをupdateするためのフラグ
-        controlArm      % bool 1*2 制御の対象となる腕
+        controlPart     % bool 1*3 [base, leftArm, rigthArm] 制御の対象となる物体
 
         % シミュレーションパラメータ
         dt              % 刻み時間
@@ -45,6 +46,7 @@ classdef Controller
             obj.controlMode = param.control.controlMode;        % 制御モード
             obj.tau = zeros(8, 1);                              % 関節入力トルク
             obj.phase = 0;                                      % 目標手先位置(pathway)追従において，どの段階にいるかを示す
+            obj.desBaseVel = zeros(3, 1);                       % 目標ベース速度
             obj.desEEvel = zeros(6, 1);                         % 目標手先速度
             obj.desEEacc = zeros(6, 1);                         % 目標手先加速度
             obj.deltPosLike = zeros(6, 1);                      % 目標位置からの変位
@@ -53,7 +55,7 @@ classdef Controller
             obj.flagPathUpdate = false;                         % 目標手先位置を更新するためのフラグ
             obj.controlState = 'follow';                        % 関節速度が０
             obj.impedanceMode = param.control.impedanceMode;    % インピーダンス制御のモード
-            obj.controlArm = [false, false];                    % 積極的に制御する対象となるアーム
+            obj.controlPart = [false, false, false];            % 積極的に制御する対象となる物体
 
             % パラメータ設定
             obj.mi = repmat(param.control.mi, [2,1]);
@@ -87,29 +89,45 @@ classdef Controller
                         return
                     end
                     % 初期時刻及び接触後待機時間経過後にフラグ立て
-                    flagAfterContact = equal_time(time, state.time.lastContact + obj.impDuration, param.DivTime) && obj.phase == -1;
+                    flagAfterContact = equal_time(time, state.time.lastContact + obj.impDuration, param.DivTime);% && obj.phase == -1;
                     obj.flagPathUpdate = time == 0 || flagAfterContact;
                     obj =  obj.contactDampen(robo, targ, roboFTsensor, state, time, param);
                     return 
                 
                 % 手先半力低減制御を確かめるためのテスト
                 % ターゲット回転なし，左側に並進を想定
-                case 'TEST'
+                case 'TEST1'
                     % 初期時刻にフラグをたてる
                     obj.flagPathUpdate = time == 0 ;
                     if obj.flagPathUpdate
                         obj.flagPathUpdate = false;
                         obj.velInBaseFram = [false, false];
-                        goalPathway = obj.pathway.testImpedanceNoRotate(targ, time);     % 目標位置時刻計算
+                        goalPathway = obj.pathway.testImpedanceNoRotate(targ, time, param); % 目標位置時刻計算
                         obj.pathway = obj.pathway.overWriteGoal(robo, goalPathway, time);   % pathway更新
                     end
                     % インピーダンス割り込み処理
                     obj = obj.impedance(time, robo, roboFTsensor, state, param);
                     if obj.phase ~= -1 && strcmp(obj.controlState, 'follow')
-                        obj = obj.followPathway(time, robo, roboFTsensor);
+                        obj = obj.followPathway_2hands(time, robo, roboFTsensor);
                     end
-                    obj.phase = obj.pathway.phase(time, param);
+                    obj.phase = obj.pathway.phase(time, param, 1);
                     return 
+                case 'TEST2'
+                    % 初期時刻にフラグをたてる
+                    obj.flagPathUpdate = time == 0 ;
+                    if obj.flagPathUpdate
+                        obj.flagPathUpdate = false;
+                        obj.velInBaseFram = [false, false];
+                        goalPathway = obj.pathway.testImpedanceNoRotate(targ, time, param);     % 目標位置時刻計算
+                        obj.pathway = obj.pathway.overWriteGoal(robo, goalPathway, time);   % pathway更新
+                    end
+                    if obj.phase ~= -1 && strcmp(obj.controlState, 'follow')
+                        obj.controlPart = [true, true, false];
+                        obj.desEEvel = obj.pathway.vel(time, robo, obj);
+                        obj = obj.achieveVelocity(robo, roboFTsensor);
+                    end
+                    obj.phase = obj.pathway.phase(time, param, 1);
+                    return
             end
             error('No such control mode')
         end
@@ -133,11 +151,11 @@ classdef Controller
                 obj = obj.stopEndEffector(robo, roboFTsensor);
             else
                 % 両手でpathway(目標位置)を追従
-                obj.controlArm = [true, true];
-                obj = obj.followPathway(time, robo, roboFTsensor);
+                obj.controlPart = [false, true, true];  % base leftArm rightArm
+                obj = obj.followPathway_2hands(time, robo, roboFTsensor);
             end
             % 目標手先位置追従のどのフェーズにいるか計算
-            obj.phase = obj.pathway.phase(time, param);
+            obj.phase = obj.pathway.phase(time, param, 1);
         end
 
         %% 並進するターゲットに移動している方向の手を当てる制御
@@ -152,11 +170,11 @@ classdef Controller
             % インピーダンス割り込み処理
             obj = obj.impedance(time, robo, roboFTsensor, state, param);
             if obj.phase ~= -1 && strcmp(obj.controlState, 'follow')
-                % 片手でpathway(目標位置)を追従
-                obj.controlArm = [targ.SV.v0(1)<0, targ.SV.v0(1)>=0];
-                obj = obj.followPathway(time, robo, roboFTsensor);
+                % 両手でpathway(目標位置)を追従
+                obj.controlPart = [false, targ.SV.v0(1)<0, targ.SV.v0(1)>=0];
+                obj = obj.followPathway_2hands(time, robo, roboFTsensor);
             end
-            obj.phase = obj.pathway.phase(time, param);
+            obj.phase = obj.pathway.phase(time, param, 1);
         end
 
 
@@ -165,17 +183,26 @@ classdef Controller
         function obj = stopEndEffector(obj, robo, roboFTsensor)
             obj.desEEvel = zeros(6, 1);
             obj.velInBaseFram = [true, true];
-            obj.controlArm = [false, false];
+            obj.controlPart = [false, false, false];
             obj.controlState = 'freeze';
-            obj.tau = calc_TauByVel(robo, obj.desEEvel, roboFTsensor, obj.velInBaseFram);
+            obj.tau = calc_tau_from_ee_vel(robo, obj.desEEvel, roboFTsensor, obj.velInBaseFram);
         end
 
         %% pathwayを，両手で同時に追従する．
-        function obj = followPathway(obj, time, robo, roboFTsensor)
+        function obj = followPathway_2hands(obj, time, robo, roboFTsensor)
             obj.velInBaseFram = [false, false];
             obj.controlState = 'follow';
             obj.desEEvel = obj.pathway.vel(time, robo, obj);
-            obj.tau = calc_TauByVel(robo, obj.desEEvel, roboFTsensor, obj.velInBaseFram);
+            obj.tau = calc_tau_from_ee_vel(robo, obj.desEEvel, roboFTsensor, obj.velInBaseFram);
+        end
+
+        %% 目標速度にarmのみでなくbaseもとり，任意の速度を入力として制御する
+        function obj = achieveVelocity(obj, robo, roboFTsensor)
+            obj.controlState = 'follow';
+            obj.desBaseVel = zeros(3, 1);
+            velConsidered = clone_vec(obj.controlPart, 3); 
+            allPartVel = [obj.desBaseVel; obj.desEEvel];
+            obj.tau = calc_tau_from_ee_base_vel(robo, allPartVel, roboFTsensor, velConsidered);
         end
         
         %% モードに応じてインピーダンス制御をして手先半力を低減する
@@ -188,11 +215,11 @@ classdef Controller
                     if any(state.isContact)
                         force = [roboFTsensor(1:2, 1); roboFTsensor(6, 1); roboFTsensor(1:2, 2); roboFTsensor(6, 2)]; % 6*1
                         obj.desEEvel = obj.di .* force;
-                        obj.tau = calc_TauByVel(robo, obj.desEEvel, roboFTsensor, obj.velInBaseFram);
+                        obj.tau = calc_tau_from_ee_vel(robo, obj.desEEvel, roboFTsensor, obj.velInBaseFram);
                         obj.controlState = 'imp';
                     % 規定時間経過まで計算した速度を維持
                     elseif time >= state.time.lastContact && time < state.time.lastContact + obj.impDuration * .8
-                        obj.tau = calc_TauByVel(robo, obj.desEEvel, roboFTsensor, obj.velInBaseFram);
+                        obj.tau = calc_tau_from_ee_vel(robo, obj.desEEvel, roboFTsensor, obj.velInBaseFram);
                         obj.controlState = 'imp';
                     elseif time >= state.time.lastContact + obj.impDuration * .8 && time < state.time.lastContact + obj.impDuration
                         obj = obj.stopEndEffector(robo, roboFTsensor);
@@ -209,7 +236,7 @@ classdef Controller
                         obj.desEEacc = force ./ obj.mi - obj.desEEvel .* obj.di ./ obj.mi - obj.deltPosLike .* obj.ki ./ obj.mi;
                         obj.desEEvel = obj.desEEvel + obj.desEEacc * param.DivTime; % 直接制御に用いるのはこの値
                         obj.deltPosLike = obj.deltPosLike + obj.desEEvel * param.DivTime;
-                        obj.tau = calc_TauByVel(robo, obj.desEEvel, roboFTsensor, obj.velInBaseFram);
+                        obj.tau = calc_tau_from_ee_vel(robo, obj.desEEvel, roboFTsensor, obj.velInBaseFram);
                         obj.controlState ='imp';
                     elseif time >= state.time.lastContact + obj.impDuration * .8 && time < state.time.lastContact + obj.impDuration
                         obj = obj.stopEndEffector(robo, roboFTsensor);

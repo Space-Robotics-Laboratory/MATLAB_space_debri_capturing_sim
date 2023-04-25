@@ -6,7 +6,7 @@
 
 function controlParam = controlParam()
 %% Controller Setting
-controlParam.controlMode = 'MULTIPLE';          % コントローラーモード
+controlParam.controlMode = 'TEST2';          % コントローラーモード
 controlParam.velocityMode = 'str_tru';          % pathwayから速度を計算する方法
 controlParam.impedanceMode = 'addmitance';      % インピーダンス制御モード
 
@@ -29,9 +29,9 @@ controlParam.swichingDelay2Direct = .35;        % ターゲット角速度が減
 controlParam.switchingTargetAngVel = 1;         % 境界値となるターゲット角速度
 
 % impedance parameters
-controlParam.mi = [.5, .5, .5]';                   % アドミタンス制御仮想質量
-controlParam.di = [10, 10, 10]';                   % アドミタンス制御ダンパ特性
-controlParam.ki = [.5, .5, .5]';                   % アドミタンス制御バネ特性
+controlParam.mi = [1, 1, 1]'*.1;                   % アドミタンス制御仮想質量   [.5, .5, .5]';
+controlParam.di = [1, 1, 1]';                   % アドミタンス制御ダンパ特性  [10, 10, 10]';
+controlParam.ki = [.0, .0, .0]';                   % アドミタンス制御バネ特性   [.5, .5, .5]';
 
 % contact parameters
 controlParam.contactPositionratio = .8;             % 接触位置がターゲット辺のどの割合にあるかを表す.0で中心1で頂点

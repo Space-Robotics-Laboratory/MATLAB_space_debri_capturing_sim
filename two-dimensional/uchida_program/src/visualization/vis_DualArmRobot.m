@@ -44,9 +44,9 @@ function vis_DualArmRobot(roboR0, roboQ0, jointPos, endEffecPos, endEffecOri, pa
     endEffecCornerR = [endEffecPos(:, 3), endEffecPos(:, 3:4) + cornerVecR, endEffecPos(:, 4)]; % 区の字座標 3*4
   
     plot(endEffecCornerL(1,:), endEffecCornerL(2,:),'-','LineWidth',  4,'Color','b')    % 左手区の字描画
-    plot_Circle(endEffecPos(1:2,1), LdD*.5, 'black')                                    % 左手先端球描画
-    plot_Circle(endEffecPos(1:2,2), LdD*.5, 'black')                                    % 左手先端球描画
+    plot_circle(endEffecPos(1:2,1), LdD*.5, 'black')                                    % 左手先端球描画
+    plot_circle(endEffecPos(1:2,2), LdD*.5, 'black')                                    % 左手先端球描画
 
     plot(endEffecCornerR(1,:), endEffecCornerR(2,:),'-','LineWidth',  4,'Color','b')    % 右手区の字描画
-    plot_Circle(endEffecPos(1:2,3), LdD*.5, 'black')                                    % 右手先端球描画
-    plot_Circle(endEffecPos(1:2,4), LdD*.5, 'black')                                    % 右手先端球描画
+    plot_circle(endEffecPos(1:2,3), LdD*.5, 'black')                                    % 右手先端球描画
+    plot_circle(endEffecPos(1:2,4), LdD*.5, 'black')                                    % 右手先端球描画
