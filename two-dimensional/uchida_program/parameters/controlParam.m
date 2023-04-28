@@ -6,11 +6,11 @@
 
 function controlParam = controlParam()
 %% Controller Setting
-controlParam.controlMode = 'TEST2';          % コントローラーモード
+controlParam.controlMode = 'MULTIPLE';          % コントローラーモード
 controlParam.velocityMode = 'str_tru';          % pathwayから速度を計算する方法
 controlParam.impedanceMode = 'addmitance';      % インピーダンス制御モード
 
-%% FeedBack Gain Useed in Pathway Following(in vel mode 'str_fb')
+%% FeedBack Gain Useed in Pathway Following(in vel mode 'str_fbk')
 controlParam.kp = [5, 5, .0]';             % フィードバックによる位置制御：比例係数
 controlParam.dp = [0, 0, .0]';                % フィードバックによる位置制御：減衰係数
 
@@ -29,8 +29,8 @@ controlParam.swichingDelay2Direct = .35;        % ターゲット角速度が減
 controlParam.switchingTargetAngVel = 1;         % 境界値となるターゲット角速度
 
 % impedance parameters
-controlParam.mi = [1, 1, 1]'*.1;                   % アドミタンス制御仮想質量   [.5, .5, .5]';
-controlParam.di = [1, 1, 1]';                   % アドミタンス制御ダンパ特性  [10, 10, 10]';
+controlParam.mi = [1, 1, 1]'*.5;                   % アドミタンス制御仮想質量   [.5, .5, .5]';
+controlParam.di = [1, 1, 1]'*10;                   % アドミタンス制御ダンパ特性  [10, 10, 10]';
 controlParam.ki = [.0, .0, .0]';                   % アドミタンス制御バネ特性   [.5, .5, .5]';
 
 % contact parameters

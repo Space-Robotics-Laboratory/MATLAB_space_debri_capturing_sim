@@ -22,8 +22,8 @@ classdef Controller
         % 制御目標パラメータ
         pathway         % Pathway class: 目標位置を扱うクラス
         desBaseVel      % ベース目標速度 3*1 [vx,vy,wz]'
-        desEEvel        % 目標速度 6*1
-        desEEacc        % 目標加速度 6*1
+        desEEVel        % 目標速度 6*1
+        desEEAcc        % 目標加速度 6*1
         deltPosLike     % 目標位置からの変位 6*1 (by integrate)
         velInBaseFram   % 目標速度の表現フレーム
         velocityMode    % 目標位置から目標速度を計算するモード
@@ -47,8 +47,8 @@ classdef Controller
             obj.tau = zeros(8, 1);                              % 関節入力トルク
             obj.phase = 0;                                      % 目標手先位置(pathway)追従において，どの段階にいるかを示す
             obj.desBaseVel = zeros(3, 1);                       % 目標ベース速度
-            obj.desEEvel = zeros(6, 1);                         % 目標手先速度
-            obj.desEEacc = zeros(6, 1);                         % 目標手先加速度
+            obj.desEEVel = zeros(6, 1);                         % 目標手先速度
+            obj.desEEAcc = zeros(6, 1);                         % 目標手先加速度
             obj.deltPosLike = zeros(6, 1);                      % 目標位置からの変位
             obj.velInBaseFram = [false, false];                 % 手先速度がベースで表現されているかどうか
             obj.velocityMode = param.control.velocityMode;      % 目標位置から目標速度を計算するモード 
@@ -112,6 +112,7 @@ classdef Controller
                     end
                     obj.phase = obj.pathway.phase(time, param, 1);
                     return 
+
                 case 'TEST2'
                     % 初期時刻にフラグをたてる
                     obj.flagPathUpdate = time == 0 ;
@@ -123,7 +124,7 @@ classdef Controller
                     end
                     if obj.phase ~= -1 && strcmp(obj.controlState, 'follow')
                         obj.controlPart = [true, true, false];
-                        obj.desEEvel = obj.pathway.vel(time, robo, obj);
+                        obj.desEEVel = obj.pathway.vel(time, robo, obj);
                         obj = obj.achieveVelocity(robo, roboFTsensor);
                     end
                     obj.phase = obj.pathway.phase(time, param, 1);
@@ -171,8 +172,11 @@ classdef Controller
             obj = obj.impedance(time, robo, roboFTsensor, state, param);
             if obj.phase ~= -1 && strcmp(obj.controlState, 'follow')
                 % 両手でpathway(目標位置)を追従
-                obj.controlPart = [false, targ.SV.v0(1)<0, targ.SV.v0(1)>=0];
-                obj = obj.followPathway_2hands(time, robo, roboFTsensor);
+                obj.controlPart = [true, targ.SV.v0(1)<0, targ.SV.v0(1)>=0];
+                obj.desEEVel = obj.pathway.vel(time, robo, obj);
+                obj.desBaseVel = [0; targ.SV.v0(2); 0];
+                obj = obj.achieveVelocity(robo, roboFTsensor);
+                % obj = obj.followPathway_2hands(time, robo, roboFTsensor);
             end
             obj.phase = obj.pathway.phase(time, param, 1);
         end
@@ -181,19 +185,19 @@ classdef Controller
         %%% 以下sub機能
         %% 手先をベースに対して固定する
         function obj = stopEndEffector(obj, robo, roboFTsensor)
-            obj.desEEvel = zeros(6, 1);
+            obj.desEEVel = zeros(6, 1);
             obj.velInBaseFram = [true, true];
             obj.controlPart = [false, false, false];
             obj.controlState = 'freeze';
-            obj.tau = calc_tau_from_ee_vel(robo, obj.desEEvel, roboFTsensor, obj.velInBaseFram);
+            obj.tau = calc_tau_from_ee_vel(robo, obj.desEEVel, roboFTsensor, obj.velInBaseFram);
         end
 
         %% pathwayを，両手で同時に追従する．
         function obj = followPathway_2hands(obj, time, robo, roboFTsensor)
             obj.velInBaseFram = [false, false];
             obj.controlState = 'follow';
-            obj.desEEvel = obj.pathway.vel(time, robo, obj);
-            obj.tau = calc_tau_from_ee_vel(robo, obj.desEEvel, roboFTsensor, obj.velInBaseFram);
+            obj.desEEVel = obj.pathway.vel(time, robo, obj);
+            obj.tau = calc_tau_from_ee_vel(robo, obj.desEEVel, roboFTsensor, obj.velInBaseFram);
         end
 
         %% 目標速度にarmのみでなくbaseもとり，任意の速度を入力として制御する
@@ -201,7 +205,8 @@ classdef Controller
             obj.controlState = 'follow';
             obj.desBaseVel = zeros(3, 1);
             velConsidered = clone_vec(obj.controlPart, 3); 
-            allPartVel = [obj.desBaseVel; obj.desEEvel];
+            velConsidered(1:2) = false;
+            allPartVel = [obj.desBaseVel; obj.desEEVel];
             obj.tau = calc_tau_from_ee_base_vel(robo, allPartVel, roboFTsensor, velConsidered);
         end
         
@@ -214,12 +219,12 @@ classdef Controller
                     % 新たに接触した瞬間の力に比例した速度を計算
                     if any(state.isContact)
                         force = [roboFTsensor(1:2, 1); roboFTsensor(6, 1); roboFTsensor(1:2, 2); roboFTsensor(6, 2)]; % 6*1
-                        obj.desEEvel = obj.di .* force;
-                        obj.tau = calc_tau_from_ee_vel(robo, obj.desEEvel, roboFTsensor, obj.velInBaseFram);
+                        obj.desEEVel = obj.di .* force;
+                        obj.tau = calc_tau_from_ee_vel(robo, obj.desEEVel, roboFTsensor, obj.velInBaseFram);
                         obj.controlState = 'imp';
                     % 規定時間経過まで計算した速度を維持
                     elseif time >= state.time.lastContact && time < state.time.lastContact + obj.impDuration * .8
-                        obj.tau = calc_tau_from_ee_vel(robo, obj.desEEvel, roboFTsensor, obj.velInBaseFram);
+                        obj.tau = calc_tau_from_ee_vel(robo, obj.desEEVel, roboFTsensor, obj.velInBaseFram);
                         obj.controlState = 'imp';
                     elseif time >= state.time.lastContact + obj.impDuration * .8 && time < state.time.lastContact + obj.impDuration
                         obj = obj.stopEndEffector(robo, roboFTsensor);
@@ -230,19 +235,29 @@ classdef Controller
                     return
                 case 'addmitance'
                     obj.velInBaseFram = [false, false];
+                    if ~strcmp(obj.controlState, 'imp')
+                        % インピーダンス制御に新たに入った時に初期化
+                        obj.desEEVel = zeros(6, 1);
+                    end
+                    if any(state.isContact)
+                        % 制御対象を接触アームに設定
+                        obj.controlPart = [true, any(state.isContact(1:2)), any(state.isContact(3:4))];
+                    end
                     if time >= state.time.lastContact && time < state.time.lastContact + obj.impDuration * .8
                         force = [roboFTsensor(1:2, 1); roboFTsensor(6, 1); roboFTsensor(1:2, 2); roboFTsensor(6, 2)]; % 6*1
                         % バネマスダンパモデルによって目標加速度計算
-                        obj.desEEacc = force ./ obj.mi - obj.desEEvel .* obj.di ./ obj.mi - obj.deltPosLike .* obj.ki ./ obj.mi;
-                        obj.desEEvel = obj.desEEvel + obj.desEEacc * param.DivTime; % 直接制御に用いるのはこの値
-                        obj.deltPosLike = obj.deltPosLike + obj.desEEvel * param.DivTime;
-                        obj.tau = calc_tau_from_ee_vel(robo, obj.desEEvel, roboFTsensor, obj.velInBaseFram);
+                        obj.desEEAcc = force ./ obj.mi - obj.desEEVel .* obj.di ./ obj.mi - obj.deltPosLike .* obj.ki ./ obj.mi;
+                        obj.desEEVel = obj.desEEVel + obj.desEEAcc * param.DivTime; % 直接制御に用いるのはこの値
+                        obj.deltPosLike = obj.deltPosLike + obj.desEEVel * param.DivTime;
+                        % velConsidered = clone_vec(obj.controlPart, 3); 
+                        % velConsidered(2) = false;
+                        % obj.tau = calc_tau_from_ee_base_vel(robo, [obj.desBaseVel;obj.desEEVel], roboFTsensor, velConsidered);
+                        obj.tau = calc_tau_from_ee_vel(robo, obj.desEEVel, roboFTsensor, obj.velInBaseFram);
                         obj.controlState ='imp';
                     elseif time >= state.time.lastContact + obj.impDuration * .8 && time < state.time.lastContact + obj.impDuration
                         obj = obj.stopEndEffector(robo, roboFTsensor);
                     else
                         obj.controlState = 'follow';
-%                         obj.deltPosLike = zeros(6, 1);
                     end
                     return
             end

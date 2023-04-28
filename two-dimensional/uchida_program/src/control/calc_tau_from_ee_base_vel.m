@@ -56,7 +56,7 @@ global d_time
     qd_des = pinv(Jgg_s) * desiredVel(velConsidered');              % 関節角速度．運動量変化について考える.
                                                                     % 次元が6を超える場合，最小二乗近似となる
     qdd_des = (qd_des - SV.qd) / d_time;                            % 関節角加速度
-    JointTau = H_asuta * qdd_des + C_asuta - Jgg(1:12,:)' * F_c;    % 8関節トルク（set wrist active joint）
+    JointTau = H_asuta * qdd_des + C_asuta - Jgg(7:18,:)' * F_c;    % 8関節トルク（set wrist active joint）
     %JointTau = Ck .* (qd_des - SV.qd) + Cd .* (qdd_des - SV.qdd)
     
 end

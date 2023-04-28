@@ -56,7 +56,7 @@ switch velMode
     return
 
     % 直線軌道・山形速度（境界で加速度0の折れ曲がった直線）
-    % 時間に対して線形に速度が変化する
+    % 時間に対して線形に速度が変化する(0->max->0)
     case 'str_tru'
     s = ( currentTime - pathway(4, index) ) / dTime;
     gain = -abs(4*s - 2) + 2;
@@ -77,6 +77,12 @@ switch velMode
     deltD = -dnowPos(:, 1, armSign);                        % 速度差分
     vel = Ck .* deltP + Cd .* deltD;                        % PD制御
     return
+
+    % b-spline 曲線軌道
+    % 時間に対して線形に速度が変化する(0->max->0)
+    case 'spl_tru'
+    findex = [false, index];
+    armSign = [isLeftArm, ~isLeftArm];
 end
 error('No such velocity mode')
 
