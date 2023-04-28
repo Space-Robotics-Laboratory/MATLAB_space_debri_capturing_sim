@@ -3,7 +3,7 @@
 % 2023.2 akiyoshi uchida
 %
 
-function make_Graph(datStruct, paths)
+function make_graph(datStruct, paths)
 time = datStruct.time;
 startFigNum = 102;
 
@@ -35,8 +35,10 @@ ylabel("Force [N]")
 xlabel("time [sec]")
 hold off
 
-figName = 'endEffecForce.png';                                  % png名定義
-saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % png保存
+figName = 'endEffecForce.fig';                                  % fig名定義
+pngName = 'endEffecForce.png';                                  % png名定義
+saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
+saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 
 % torque
 figureNumber = figureNumber+1;     % 図番号設定
@@ -54,8 +56,10 @@ ylabel("Torque [Nm]")
 xlabel("time [sec]")
 hold off
 
-figName = 'endEffecTorque.png';                                  % png名定義
-saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % png保存
+figName = 'endEffecTorque.fig';                                  % fig名定義
+pngName = 'endEffecTorque.png';                                  % png名定義
+saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
+saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 
 %%% make joint torque graph
 % active joints
@@ -65,27 +69,32 @@ figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, jointsTorque([1:3,5:7], :))
+hold off
 title("Active Joint Torque")
 legend('MotorJ1', 'MotorJ2', 'MotorJ3', 'MotorJ5', 'MotorJ6', 'MotorJ7')
 ylabel("Torque [Nm]")
 xlabel("time [sec]")
 
-figName = 'motorTorque.png';                                  % png名定義
-saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % png保存
+figName = 'motorTorque.fig';                                  % fig名定義
+pngName = 'motorTorque.png';                                  % png名定義
+saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
+saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 
 % passive joints
 figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
-plot(time, jointsTorque(4:8, :))
+plot(time, jointsTorque([4,8], :))
+hold off
 title("Passive Joint Torque")
 legend('LeftWrist', 'RightWrist')
 ylabel("Torque [Nm]")
 xlabel("time [sec]")
 
-figName = 'wristTorque.png';                                  % png名定義
-saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % png保存
-
+figName = 'wristTorque.fig';                                  % fig名定義
+pngName = 'wristTorque.png';                                  % png名定義
+saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
+saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 
 %%% make target angular velocity graph
 targW = datStruct.targetW(:, 3);
@@ -98,6 +107,7 @@ title("Target Angular Velocity")
 ylabel("Angular Velocity [rad/sec]")
 xlabel("time [sec]")
 
-figName = 'targetAngVel.png';                                  % png名定義
-saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % png保存
-
+figName = 'targetAngVel.fig';                                  % fig名定義
+pngName = 'targetAngVel.png';                                  % png名定義
+saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
+saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存

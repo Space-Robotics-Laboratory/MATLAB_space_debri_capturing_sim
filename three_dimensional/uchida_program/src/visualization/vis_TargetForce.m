@@ -3,7 +3,7 @@
 % 2023.3 akiyoshi uchida
 % 
 
-function vis_TargetForce(targR0, targF, scale)
+function vis_targetForce(targR0, targF, scale)
 vecStart = targR0; % 3*2
 vecSize = targF * scale;
 

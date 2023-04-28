@@ -4,7 +4,7 @@
 %
 % input : despos [L, R] 2*2
 
-function vis_DesiredPos(desPos)
+function vis_desiredPos(desPos)
 
 plot(desPos(1,:), desPos(2,:), 'o', "Color", 'g', 'MarkerFaceColor','g')
 end
