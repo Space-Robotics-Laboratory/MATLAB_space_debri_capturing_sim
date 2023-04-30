@@ -152,7 +152,7 @@ param.LinkAngRight = -[pi/3 -pi*4/9 -pi*7/18 0]';  % 右手の関節角度，ベ
 % 二次元モデルではheight = 0
 param.TargetDepth  = 0.16;
 param.TargetWidth  = 0.16;%0.16;
-param.TargetHeight = 0;
+param.TargetHeight = 100;
 
 % ターゲット幾何中心に対する質量重心の相対位置
 param.TargetMCenter2GCenter = [0, 0, 0]';
@@ -180,9 +180,7 @@ param.TargetAngVel0       = [ 0 0 5]';              % 初期角速度 ;SV.w0
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 物理係数設定
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-param.ContactDamp  = 20;%8;%20;         % 接触力減衰係数
-param.ContactElast = 1000;%9000;%1000;      % 接触力弾性係数
-param.ContactNu    = .1;%0.3;       % 接触力摩擦係数
+param.contact = contactParam();
 param.WristDamp    = .3;%0.4;       % 手首関節減衰係数
 param.WristElast   = .4;%0.8;       % 手首関節弾性係数
 
