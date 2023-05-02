@@ -140,6 +140,7 @@ classdef DualArmRobo
             obj.SV = calc_pos( obj.LP, obj.SV );                                        % 各リンク重心位置の計算
             [ obj.POS_j_L, obj.ORI_j_L ] = f_kin_j( obj.LP, obj.SV, obj.jointsL );      % 左手 関節位置・姿勢　jointsLは左手の関節数
             [ obj.POS_j_R, obj.ORI_j_R ] = f_kin_j( obj.LP, obj.SV, obj.jointsR );      % 右手 関節位置・姿勢　jointsRは右手の関節数
+            
             [ obj.POS_e_L, obj.ORI_e_L ] = f_kin_e( obj.LP, obj.SV, obj.jointsL );      % 左手先位置・姿勢（位置は２つの手先の中点）
             [ obj.POS_e_R, obj.ORI_e_R ] = f_kin_e( obj.LP, obj.SV, obj.jointsR );      % 右手先位置・姿勢（位置は２つの手先の中点）
             obj.SV.Q0 = dc2rpy( obj.SV.A0' );                                           % ベース角度のオイラー角表現
@@ -154,6 +155,19 @@ classdef DualArmRobo
             obj.VEL_e_R = calc_vel_e(obj.LP, obj.SV, obj.jointsR);                      % 右手先の並進速度計算 3*1
             obj.VEL_es_L = calc_armTipsVel(obj.VEL_e_L, obj.ORI_e_L, obj.SV.ww(:, 4), Parameters);  % 左手先端球の並進速度計算 3*2
             obj.VEL_es_R = calc_armTipsVel(obj.VEL_e_R, obj.ORI_e_R, obj.SV.ww(:, 8), Parameters);  % 右手先端球の並進速度計算 3*2
+        end
+
+        %visualise
+        function vis(obj, param)
+            jointPos = [obj.POS_j_L, obj.POS_j_R];
+            endEffecPos = [obj.POS_es_L, obj.POS_es_R];
+            endEffecOri(:,1) = dc2rpy(obj.ORI_e_L');
+            endEffecOri(:,2) = dc2rpy(obj.ORI_e_R');
+            vis_DualArmRobot(obj.SV.R0, obj.SV.Q0, jointPos, endEffecPos, endEffecOri, param)
+        end
+        function visForce(obj, param)
+            endEffecPos = [obj.POS_es_L, obj.POS_es_R];
+            vis_roboForce(endEffecPos, obj.SV.Fes(:,1:2), obj.SV.Fes(:,3:4), param.general.quiverScale, param.general.roboForceColor)
         end
     end
 end

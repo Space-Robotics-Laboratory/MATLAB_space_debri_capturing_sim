@@ -14,6 +14,7 @@ function param = set_Param()
 param.EndTime   = 2;%2;    %シミュレーション終了時間[s]
 param.MinusTime = 0;      %シミュレーション開始からロボット制御開始までの時間[s]
 param.DivTime   = 0.001;  %シミュレーション刻み時間[s]
+param.general = generalParam();
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -32,8 +33,8 @@ param.MovDivTime = 0.01;  % アニメーション刻み時間
 param.BaseMass = 7.70;
 
 %ロボットベース部分慣性行列[m^2kg]
-param.BaseInertia = [ 1e9     0   0;   % 0の部分がカップリング項(慣性乗積?)
-                        0   1e9   0;   % 慣性乗積が0ということは、固定軸の周りを回転するということ
+param.BaseInertia = [ .5     0   0;   % 0の部分がカップリング項(慣性乗積?)
+                        0   .5   0;   % 慣性乗積が0ということは、固定軸の周りを回転するということ
                         0     0   .5];%0.09783069148];
 
 % ロボットリンク部分質量[kg]
@@ -69,7 +70,7 @@ param.JointTrqLim = repmat(10, [8,1]);
 % 二次元モデルではheight = 0
 param.BaseDepth  = .16;%0.22;            % 縦（奥行き）
 param.BaseWidth  = .15757*2;%.314;%0.32;            % 横
-param.BaseHeight = 0;               % 高さ
+param.BaseHeight = .16;               % 高さ
 
 % ロボットベース質量重心に対する幾何中心の相対位置
 param.BaseMCenter2GCenter = [0, 0, 0]';
@@ -99,10 +100,10 @@ param.Center2Joint    = zeros(3,8,8);           % 初期化   ;LP.cc
 param.Center2JointEnd = zeros(3,8);             % 初期化   ;LP.ce
 
 % 左手
-param.Center2Joint(:,1,1) = [ 0 -0.24641 0 ]'; % リンク1の重心から根本側の関節(J1)への位置ベクトル
-param.Center2Joint(:,2,2) = [ 0 -0.17641 0 ]'; % リンク2の重心から根本側の関節(J2)への位置ベクトル
-param.Center2Joint(:,3,3) = [ 0 -0.03    0 ]'; % リンク3の重心から根本側の関節(J3)への位置ベクトル
-param.Center2Joint(:,4,4) = [ 0 -0.03    0 ]'; % リンク4の重心から根本側の関節(J4)への位置ベクトル
+param.Center2Joint(:,1,1) = [0 -0.15 0]';%[ 0 -0.24641 0 ]'; % リンク1の重心から根本側の関節(J1)への位置ベクトル
+param.Center2Joint(:,2,2) = [0 -0.1 0]';%[ 0 -0.17641 0 ]'; % リンク2の重心から根本側の関節(J2)への位置ベクトル
+param.Center2Joint(:,3,3) = [0 -0.04 0]';%[ 0 -0.03    0 ]'; % リンク3の重心から根本側の関節(J3)への位置ベクトル
+param.Center2Joint(:,4,4) = [0 -0.03 0]';%[ 0 -0.03    0 ]'; % リンク4の重心から根本側の関節(J4)への位置ベクトル
 
 % Param.Center2Joint(:,1,2) = [ 0  0.00459 0 ]'; % リンク1の重心から先端側の関節(J2)への位置ベクトル
 % Param.Center2Joint(:,2,3) = [ 0  0.00459 0 ]'; % リンク2の重心から先端側の関節(J3)への位置ベクトル
@@ -152,7 +153,7 @@ param.LinkAngRight = -[pi/3 -pi*4/9 -pi*7/18 0]';  % 右手の関節角度，ベ
 % 二次元モデルではheight = 0
 param.TargetDepth  = 0.16;
 param.TargetWidth  = 0.16;%0.16;
-param.TargetHeight = 100;
+param.TargetHeight = 0.16;
 
 % ターゲット幾何中心に対する質量重心の相対位置
 param.TargetMCenter2GCenter = [0, 0, 0]';
@@ -162,8 +163,8 @@ param.TargetMCenter2GCenter = [0, 0, 0]';
 ro = 150; % kg/m^2
 param.TargetMass = ro * param.TargetDepth * param.TargetWidth; %3.70;
 % ターゲット部分慣性行列[m^2kg]
-param.TargetInertia = [ 1e9     0   0;   
-                          0   1e9   0;   
+param.TargetInertia = [ param.TargetMass*param.TargetDepth^2/6     0   0;   
+                          0   param.TargetMass*param.TargetDepth^2/6   0;   
                           0     0   param.TargetMass*param.TargetDepth^2/6];%0.0172];0.0164
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -173,8 +174,8 @@ param.TargetInertia = [ 1e9     0   0;
 % ターゲットの初期位置・姿勢・速度・角速度
 param.TargetPosition0     = [ 0 0.35 0]';             % 初期位置          ;SV.R0
 param.TargetOrientation0  = [ 0 0 deg2rad( 0 ) ]';   % 初期姿勢  ラジアン ;SV.Q0
-param.TargetVelocity0     = [ -.0 -.0 0 ]';              % 初期並進速度 ;SV.v0
-param.TargetAngVel0       = [ 0 0 5]';              % 初期角速度 ;SV.w0
+param.TargetVelocity0     = [ -.01 -.0 0 ]';              % 初期並進速度 ;SV.v0
+param.TargetAngVel0       = [ 5 1 5]';              % 初期角速度 ;SV.w0
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -192,6 +193,6 @@ param.control = controlParam();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ファイル設定
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-param.DataSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/two-dimensional/uchida_program/dat';
+param.DataSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/three_dimensional/uchida_program/dat';
 param.FileName     = [num2str(param.control.mi'),'_' ,num2str(param.control.di'),'_' ,num2str(param.control.ki')];
 end

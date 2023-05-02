@@ -3,8 +3,8 @@
 % 2023.3 akiyoshi uchida
 % 
 
-function vis_targetForce(targR0, targF, scale)
+function vis_targetForce(targR0, targF, scale, color)
 vecStart = targR0; % 3*2
 vecSize = targF * scale;
 
-quiver(vecStart(1, :), vecStart(2, :), vecSize(1, :), vecSize(2, :), 0, LineWidth=3)
+quiver3(vecStart(1, :), vecStart(2, :), vecStart(3,:), vecSize(1, :), vecSize(2, :), vecSize(3, :), 0, 'Color', color,LineWidth=3)

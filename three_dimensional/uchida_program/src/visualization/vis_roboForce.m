@@ -5,8 +5,8 @@
 % input: enEfP(3*4), roboF 3*1
 
 
-function vis_roboForce(endEffecPos, roboFL, roboFR, scale)
+function vis_roboForce(endEffecPos, roboFL, roboFR, scale, color)
 vecStart = endEffecPos; % 3*4
 vecSize = [roboFL, roboFR] * scale; % 3*4
 
-quiver(vecStart(1, :), vecStart(2, :), vecSize(1, :), vecSize(2, :), 0, LineWidth=3)
+quiver3(vecStart(1, :), vecStart(2, :), vecStart(3,:), vecSize(1, :), vecSize(2, :), vecSize(3, :), 0, 'Color', color, LineWidth=3)
