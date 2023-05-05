@@ -30,13 +30,13 @@ classdef DataSaver
             % robot
             obj.datStruct.roboR0 = zeros(row, 3);                            % ベース重心位置
             obj.datStruct.roboQ0 = zeros(row, 3);                            % ベースオイラー角
-            obj.datStruct.roboJointLPos = zeros(row, 12);                    % 左手関節位置
-            obj.datStruct.roboJointRPos = zeros(row, 12);                    % 右手関節位置
-            obj.datStruct.roboEndEffecLPos = zeros(row, 6);                  % 左手手先先端球位置
-            obj.datStruct.roboEndEffecRPos = zeros(row, 6);                  % 右手手先球位置
+            obj.datStruct.roboJointLPos = zeros(row, 18);                    % 左手関節位置
+            obj.datStruct.roboJointRPos = zeros(row, 18);                    % 右手関節位置
+            obj.datStruct.roboEndEffecLPos = zeros(row, 9);                  % 左手手先先端球位置
+            obj.datStruct.roboEndEffecRPos = zeros(row, 9);                  % 右手手先球位置
             obj.datStruct.roboEndEffecLOri = zeros(row, 3);                  % 左手手先オイラー角
             obj.datStruct.roboEndEffecROri = zeros(row, 3);                  % 右手手先オイラー角
-            obj.datStruct.jointAng = zeros(row, 8);                          % 関節角度
+            obj.datStruct.jointAng = zeros(row, 12);                          % 関節角度
 
             % target 
             obj.datStruct.targR0 = zeros(row, 3);
@@ -46,22 +46,27 @@ classdef DataSaver
             % ロボット手先力
             obj.datStruct.endTipL1Force = zeros(row, 3);
             obj.datStruct.endTipL2Force = zeros(row, 3);
+            obj.datStruct.endTipL3Force = zeros(row, 3);
             obj.datStruct.endTipR1Force = zeros(row, 3);
             obj.datStruct.endTipR2Force = zeros(row, 3);
+            obj.datStruct.endTipR3Force = zeros(row, 3);
 
             obj.datStruct.endTipL1Torque = zeros(row, 3);
             obj.datStruct.endTipL2Torque = zeros(row, 3);
+            obj.datStruct.endTipL3Torque = zeros(row, 3);
             obj.datStruct.endTipR1Torque = zeros(row, 3);
             obj.datStruct.endTipR2Torque = zeros(row, 3);
+            obj.datStruct.endTipR3Torque = zeros(row, 3);
             
             % ロボ関節トルク
-            obj.datStruct.jointTorque = zeros(row, 8);
+            obj.datStruct.jointTorque = zeros(row, 12);
 
             % ターゲット外力
             obj.datStruct.targForce = zeros(row, 3);
 
             % 運動量
-            obj.datStruct.PLsum = zeros(row, 2);
+            obj.datStruct.robo_moment   = zeros(row, 6);
+            obj.datStruct.target_moment = zeros(row, 6);
 
             % 目標手先位置
             obj.datStruct.desHandPos = zeros(row, 6);
@@ -85,10 +90,10 @@ classdef DataSaver
             % robot
             obj.datStruct.roboR0(obj.index, :) = robo.SV.R0';                            % ベース重心位置
             obj.datStruct.roboQ0(obj.index, :) = robo.SV.Q0';                            % ベースオイラー角
-            obj.datStruct.roboJointLPos(obj.index, :) = reshape(robo.POS_j_L, [1, 12]);  % 左手関節位置
-            obj.datStruct.roboJointRPos(obj.index, :) = reshape(robo.POS_j_R, [1, 12]);  % 右手関節位置
-            obj.datStruct.roboEndEffecLPos(obj.index, :) = reshape(robo.POS_es_L,[1, 6]);% 左手手先位置
-            obj.datStruct.roboEndEffecRPos(obj.index, :) = reshape(robo.POS_es_R,[1, 6]);% 右手手先位置
+            obj.datStruct.roboJointLPos(obj.index, :) = reshape(robo.POS_j_L, [1, 18]);  % 左手関節位置
+            obj.datStruct.roboJointRPos(obj.index, :) = reshape(robo.POS_j_R, [1, 18]);  % 右手関節位置
+            obj.datStruct.roboEndEffecLPos(obj.index, :) = reshape(robo.POS_es_L,[1, 9]);% 左手手先位置
+            obj.datStruct.roboEndEffecRPos(obj.index, :) = reshape(robo.POS_es_R,[1, 9]);% 右手手先位置
             obj.datStruct.roboEndEffecLOri(obj.index, :) = robo.SV.QeL';                 % 左手手先オイラー角
             obj.datStruct.roboEndEffecROri(obj.index, :) = robo.SV.QeR';                 % 右手手先オイラー角
             obj.datStruct.jointAng(obj.index, :) = robo.SV.q';                           % 関節角度
@@ -101,13 +106,17 @@ classdef DataSaver
             % ロボット手先力
             obj.datStruct.endTipL1Force(obj.index, :) = robo.SV.Fes(:, 1)';
             obj.datStruct.endTipL2Force(obj.index, :) = robo.SV.Fes(:, 2)';
-            obj.datStruct.endTipR1Force(obj.index, :) = robo.SV.Fes(:, 3)';
-            obj.datStruct.endTipR2Force(obj.index, :) = robo.SV.Fes(:, 4)';
+            obj.datStruct.endTipL3Force(obj.index, :) = robo.SV.Fes(:, 3)';
+            obj.datStruct.endTipR1Force(obj.index, :) = robo.SV.Fes(:, 4)';
+            obj.datStruct.endTipR2Force(obj.index, :) = robo.SV.Fes(:, 5)';
+            obj.datStruct.endTipR3Force(obj.index, :) = robo.SV.Fes(:, 6)';
 
             obj.datStruct.endTipL1Torque(obj.index, :) = robo.SV.Tes(:, 1)';
             obj.datStruct.endTipL2Torque(obj.index, :) = robo.SV.Tes(:, 2)';
-            obj.datStruct.endTipR1Torque(obj.index, :) = robo.SV.Tes(:, 3)';
-            obj.datStruct.endTipR2Torque(obj.index, :) = robo.SV.Tes(:, 4)';
+            obj.datStruct.endTipL3Torque(obj.index, :) = robo.SV.Tes(:, 3)';
+            obj.datStruct.endTipR1Torque(obj.index, :) = robo.SV.Tes(:, 4)';
+            obj.datStruct.endTipR2Torque(obj.index, :) = robo.SV.Tes(:, 5)';
+            obj.datStruct.endTipR3Torque(obj.index, :) = robo.SV.Tes(:, 6)';
             
             % ロボ関節トルク
             obj.datStruct.jointTorque(obj.index, :) = robo.SV.tau';
@@ -116,8 +125,8 @@ classdef DataSaver
             obj.datStruct.targForce(obj.index, :) = target.SV.F0';
 
             % 運動量
-            dat = calc_momentum(robo.LP, robo.SV) + calc_momentum(target.LP, target.SV);
-            obj.datStruct.PLsum(obj.index, :) = [vecnorm(dat(1:3,1)), vecnorm(dat(4:6,1))];
+            obj.datStruct.robo_moment(obj.index, :) = calc_momentum(robo.LP, robo.SV);
+            obj.datStruct.target_moment(obj.index, :) = calc_momentum(target.LP, target.SV);
 
             % 目標手先位置
             desPathway = controller.pathway.goingTo(time, param);

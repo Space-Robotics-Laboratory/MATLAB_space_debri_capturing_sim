@@ -97,20 +97,9 @@ classdef Controller
                 % 手先半力低減制御を確かめるためのテスト
                 % ターゲット回転なし，左側に並進を想定
                 case 'TEST1'
-                    % 初期時刻にフラグをたてる
-                    obj.flagPathUpdate = time == 0 ;
-                    if obj.flagPathUpdate
-                        obj.flagPathUpdate = false;
-                        obj.velInBaseFram = [false, false];
-                        goalPathway = obj.pathway.testImpedanceNoRotate(targ, time, param); % 目標位置時刻計算
-                        obj.pathway = obj.pathway.overWriteGoal(robo, goalPathway, time);   % pathway更新
-                    end
-                    % インピーダンス割り込み処理
-                    obj = obj.impedance(time, robo, roboFTsensor, state, param);
-                    if obj.phase ~= -1 && strcmp(obj.controlState, 'follow')
-                        obj = obj.followPathway_2hands(time, robo, roboFTsensor);
-                    end
-                    obj.phase = obj.pathway.phase(time, param, 1);
+                    obj.desEEVel = [.15, -.02, -.05, 0.5, 0.5,  -.5,...
+                                     -.15, -.005, .05, -0.5, -0.5,  .5]';
+                    obj.tau = calc_tau_from_ee_vel(robo, obj.desEEVel, roboFTsensor, obj.velInBaseFram);
                     return 
 
                 case 'TEST2'

@@ -36,10 +36,10 @@ function make_3dAnime(datSaver, paths, param)
             % robo
             roboR0 = dataStruct.roboR0(count, :)';
             roboQ0 = dataStruct.roboQ0(count, :)';
-            jointPos(:, 1:4) = reshape(dataStruct.roboJointLPos(count, :), [3, 4]);
-            jointPos(:, 5:8) = reshape(dataStruct.roboJointRPos(count, :), [3, 4]);
-            endEffecPos(:, 1:2) = reshape(dataStruct.roboEndEffecLPos(count, :), [3, 2]);
-            endEffecPos(:, 3:4) = reshape(dataStruct.roboEndEffecRPos(count, :), [3, 2]);
+            jointPos(:, 1:6)  = reshape(dataStruct.roboJointLPos(count, :), [3, 6]);
+            jointPos(:, 7:12) = reshape(dataStruct.roboJointRPos(count, :), [3, 6]);
+            endEffecPos(:, 1:3) = reshape(dataStruct.roboEndEffecLPos(count, :), [3, 3]);
+            endEffecPos(:, 4:6) = reshape(dataStruct.roboEndEffecRPos(count, :), [3, 3]);
             endEffecOri(:, 1) = dataStruct.roboEndEffecLOri(count, :)';
             endEffecOri(:, 2) = dataStruct.roboEndEffecROri(count, :)';
 
@@ -48,8 +48,8 @@ function make_3dAnime(datSaver, paths, param)
             targetQ0 = dataStruct.targQ0(count, :)';
 
             % force
-            roboForceLeft  = [dataStruct.endTipL1Force(count, :)', dataStruct.endTipL2Force(count, :)'];
-            roboForceRight = [dataStruct.endTipR1Force(count, :)', dataStruct.endTipR2Force(count, :)'];
+            roboForceLeft  = [dataStruct.endTipL1Force(count, :)', dataStruct.endTipL2Force(count, :)', dataStruct.endTipL3Force(count, :)'];
+            roboForceRight = [dataStruct.endTipR1Force(count, :)', dataStruct.endTipR2Force(count, :)', dataStruct.endTipR3Force(count, :)'];
             targetForce = dataStruct.targForce(count, :)';
 
             % 手先目標位置

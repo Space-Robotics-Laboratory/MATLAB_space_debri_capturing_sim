@@ -39,8 +39,8 @@ endTime    = param.EndTime;                 % 終了時間設定．
 minusTime = param.MinusTime;                % マイナス時間設定．
 
 % ロボット・ターゲット力初期化
-roboExtWrench  = zeros(6,5);                   % ロボ外力[ BaseForce    LeftTip1Force   LeftTip2Force   RightTip1Force  RightTip2Force]
-                                               % 　　　　[ BaseTorque   LeftTip1Torque  LeftTip2Torque  RightTip1Torque RightTip2Torque]
+roboExtWrench  = zeros(6,7);                   % ロボ外力[ BaseForce    LeftTip1Force   LeftTip2Force   LeftTip3Force   RightTip1Force  RightTip2Force  RightTip3Force  ]
+                                               % 　　　　[ BaseTorque   LeftTip1Torque  LeftTip2Torque  LeftTip3Torque  RightTip1Torque RightTip2Torque RightTip3Torque ] 
 targetExtWrench= zeros(6,1);                   % タゲ外力[ BaseForce  ] 
                                                % 　　　　[ BaseTorque ] 
 % 状態判定用インスタンス初期化
@@ -64,10 +64,10 @@ for time = minusTime : d_time : endTime
 
     %%% 推定フェーズ
     % 接触判定及び接触力計算
-    [roboExtWrench(:, 2:5), targetExtWrench, isContact] = calc_contactForce(dualArmRobo, targetCube, param);
+    [roboExtWrench(:, 2:7), targetExtWrench, isContact] = calc_contactForce(dualArmRobo, targetCube, param);
     
     % 手先外力センサー値計算
-    roboFTsensor = roboExtWrench(:,[2,4])+roboExtWrench(:,[3,5]); % 手先の球にかかる力を足して左右のエンドエフェクタにかかる力にする 6*4->6*2
+    roboFTsensor = roboExtWrench(:,[2,5])+roboExtWrench(:,[3,6])+roboExtWrench(:, [4,7]); % 手先の球にかかる力を足して左右のエンドエフェクタにかかる力にする 6*4->6*2
 
     % ターゲット運動状態推定
     estTarget = estimate_target(targetCube);

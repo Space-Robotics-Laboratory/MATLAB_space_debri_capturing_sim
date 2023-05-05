@@ -21,8 +21,8 @@ global d_time
     SV = DualArmRobo.SV;
     num_eL = DualArmRobo.num_eL;
     num_eR = DualArmRobo.num_eR;
-    if ~all(size(endEffecVel)==[6,1])
-        error('desired velocity dimention must be [6,1]')
+    if ~all(size(endEffecVel)==[12,1])
+        error('desired velocity dimention must be [12,1]')
     end
 
     % 双腕ロボ一般化慣性行列，一般化速度非線形項計算
@@ -38,12 +38,12 @@ global d_time
     PL = calc_momentum(LP, SV);
 %     PL = zeros(6,1);
 
-    % 目標自由度削減 18*8 -> 6*8
-    Jg_s = Jg([1,2,6, 7,8,12], :);   
-    Jg_s(:, [4,8]) = 0;                         % jg_sは目標速度の次元を削減し，受動関節角速度0を仮定したヤコビアン
-    Jb_s = Jb([1,2,6, 7,8,12], :);              % ベース速度に対する手先ヤコビアン
-    Jm_s = Jm([1,2,6, 7,8,12], :);
-    Jm_s(:, [4,8]) = 0;
+    % 目標自由度削減 18*8 -> 12*8
+    Jg_s = Jg(:, :);   
+    % Jg_s(:, [4,8]) = 0;                         % jg_sは目標速度の次元を削減し，受動関節角速度0を仮定したヤコビアン
+    Jb_s = Jb(:, :);              % ベース速度に対する手先ヤコビアン
+    Jm_s = Jm(:, :);
+    % Jm_s(:, [4,8]) = 0;
 
     % 手先にかかる外力の推定値を代入 
     F_c = reshape(RoboFTsensor, [12,1]);
@@ -51,7 +51,7 @@ global d_time
     % inBodyFrameの速度の場合，ヤコビアンはJm
     % inInertiaFrameの速度の場合，タコビアンはJg
     % inBodyFrameの場合，ボディ系で速度を定義するため，運動量による速度は考慮しない．よってVelbyPl = 0
-    index = repmat(inBodyFrame, [3,1]);
+    index = repmat(inBodyFrame, [6,1]);
     J = Jg_s;
     J(index, :) = Jm_s(index, :);
     VelbyPL = zeros(6, 1);

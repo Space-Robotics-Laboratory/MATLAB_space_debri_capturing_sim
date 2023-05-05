@@ -56,9 +56,11 @@ GJ2A = [ Jm_L - Jb_L*(Hb\Hbm_L), -Jb_L*(Hb\Hbm_R)       ;
 % base tip jacobian
 Jb = [Jb_L; Jb_R];
 
+nL = length(jointsL);
+nR = length(jointsR);
 % joint tip jacobian
-Jm = [Jm_L,        zeros(6, 4);
-      zeros(6,4),  Jm_R];
+Jm = [Jm_L,        zeros(6, nR);
+      zeros(6,nL),  Jm_R];
 
 
 %%% EOF

@@ -35,7 +35,7 @@ SV.Te = zeros(3,LP.num_q);
 SV.tau = zeros(LP.num_q,1);
 
 % from here, they are just for dualArmSimulation
-SV.Fes = zeros(3, 4);
-SV.Tes = zeros(3, 4);
+SV.Fes = zeros(3, 6);
+SV.Tes = zeros(3, 6);
 
 %%% EOF

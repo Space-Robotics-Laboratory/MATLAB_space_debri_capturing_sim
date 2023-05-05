@@ -2,14 +2,18 @@
 % 
 % 2023.1 uchida akiyoshi
 % 
-% 初期値が左側の手先がtip1, 右がtip2
-% Tips : [x1 x2
-%         y1 y2
-%         z1 z2]
+% 手先の初期値は末端フレーム表現(baseフレームと一致してるからあまり気にしなくて良い)
+% Tips : [x1 x2 x3
+%         y1 y2 y3
+%         z1 z2 z3]
 
-function POS_es = calc_armTipsPos(POS_e, ORI_e, Param)
-    Tip1 = POS_e + ORI_e * Param.LdH * sin(Param.LdGamma) * [-1 0 0]';
-    Tip2 = POS_e + ORI_e * Param.LdH * sin(Param.LdGamma) * [ 1 0 0]';
-    POS_es = [Tip1, Tip2];
+function POS_es = calc_armTipsPos(POS_e, ORI_e, param)
+    R = param.robot.radius_endEffector;
+    L = param.robot.length_endEffector;
+    th = pi/3;
+    Tip1 = POS_e + ORI_e * [-R*sin(th), L, -R*cos(th)]'; 
+    Tip2 = POS_e + ORI_e * [         0, L,          R]';
+    Tip3 = POS_e + ORI_e * [ R*sin(th), L, -R*cos(th)]';
+    POS_es = [Tip1, Tip2, Tip3];
     
 end

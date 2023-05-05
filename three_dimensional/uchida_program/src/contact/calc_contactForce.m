@@ -21,11 +21,6 @@ function [endEffectorWrench, targetWrench, isContact] = calc_contactForce(dualAr
     targetHeight = target.height;                     % ターゲット高
     m2G  = target.m2G;                           % ターゲット質量重心から幾何中心への相対位置ベクトル 3*1
 
-    % ロボット末端位置代入（端球の中点） 
-    leftEdgePos =  repmat(dualArmRobo.POS_e_L, [1,2]);              % 後の計算のために拡張 3*2
-    rightEdgePos = repmat(dualArmRobo.POS_e_R, [1,2]);              % 後の計算のために拡張 3*2
-    fulcrumPos = [leftEdgePos, rightEdgePos];                       % ロボトルク支点(ee中点) 3*4       
-
     % ターゲット位置・速度，角速度代入
     targetV0 = target.SV.v0;
     targetW0 = target.SV.w0;
@@ -33,7 +28,7 @@ function [endEffectorWrench, targetWrench, isContact] = calc_contactForce(dualAr
     targetORI = target.SV.A0;
 
     % ロボット端球速度代入
-    endEffecVel = [dualArmRobo.VEL_es_L, dualArmRobo.VEL_es_R];         % 3*4
+    endEffecVel = [dualArmRobo.VEL_es_L, dualArmRobo.VEL_es_R];         % 3*n
 
     % ロボット端球位置代入，第三次元方向にアーム端球
     endEffecPos_2mat = [dualArmRobo.POS_es_L, dualArmRobo.POS_es_R];    % dim1:[xyz], dim2:roboArmTip 3*n
@@ -43,6 +38,12 @@ function [endEffectorWrench, targetWrench, isContact] = calc_contactForce(dualAr
     % endEffecPosLight= [DualArmRobo.POS_es_L, DualArmRobo.POS_es_R];     % dim1:[xyz], dim2:roboArmTip 3*n 
     % endEffecPos_temp = repmat(endEffecPosLight, [1, 1, 4]);             % dim1:[xyz], dim2:roboArmTip, dim3:targetTip 3*4*n
     % endEffecPos = permute(endEffecPos_temp, [1, 3, 2]);                 % dim1:[xyz], dim2:targetTip , dim3:roboArmTip 3*4*n
+
+    % ロボット末端位置代入（端球の中点） 
+    tipNum_oneHand = tipNum / 2;
+    leftEdgePos =  repmat(dualArmRobo.POS_e_L, [1,tipNum_oneHand]);              % 後の計算のために拡張 3*2
+    rightEdgePos = repmat(dualArmRobo.POS_e_R, [1,tipNum_oneHand]);              % 後の計算のために拡張 3*2
+    fulcrumPos = [leftEdgePos, rightEdgePos];                       % ロボトルク支点(ee中点) 3*4       
 
     % 先端級半径設定
     r = dualArmRobo.r;
@@ -133,7 +134,7 @@ function [endEffectorWrench, targetWrench, isContact] = calc_contactForce(dualAr
     
     % 全ての球が非接触．mayContactで判定しなかった頂点付近接触を判定
     if ~any(isContact) 
-        endEffectorWrench = zeros(6,4);
+        endEffectorWrench = zeros(6,tipNum);
         targetWrench = zeros(6,1);
         return
     end
