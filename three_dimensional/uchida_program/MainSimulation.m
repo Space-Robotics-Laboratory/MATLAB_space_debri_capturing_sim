@@ -67,7 +67,7 @@ for time = minusTime : d_time : endTime
     [roboExtWrench(:, 2:7), targetExtWrench, isContact] = calc_contactForce(dualArmRobo, targetCube, param);
     
     % 手先外力センサー値計算
-    roboFTsensor = roboExtWrench(:,[2,5])+roboExtWrench(:,[3,6])+roboExtWrench(:, [4,7]); % 手先の球にかかる力を足して左右のエンドエフェクタにかかる力にする 6*4->6*2
+    roboFTsensor = roboExtWrench(:,[2,5])+roboExtWrench(:,[3,6])+roboExtWrench(:, [4,7]); % 手先の球にかかる力を足して左右のエンドエフェクタにかかる力にする 6*6->6*2
 
     % ターゲット運動状態推定
     estTarget = estimate_target(targetCube);

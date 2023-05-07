@@ -2,9 +2,9 @@
 %
 % 2023.3 akiyoshi uchida
 %
-% input : despos [L, R] 2*2
+% input : despos [L, R] 3*2
 
 function vis_desiredPos(desPos)
 
-plot(desPos(1,:), desPos(2,:), 'o', "Color", 'g', 'MarkerFaceColor','g')
+plot3(desPos(1,:), desPos(2,:), desPos(3,:), 'o', "Color", 'g', 'MarkerFaceColor','g')
 end

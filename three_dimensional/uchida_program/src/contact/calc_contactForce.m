@@ -163,16 +163,16 @@ function [endEffectorWrench, targetWrench, isContact] = calc_contactForce(dualAr
     dampTargetForces = contactDamp * dV;                                    % 減衰係数による力 1*4
 
     % 摩擦項計算
-    targetForcesN = elastTargetForces + dampTargetForces;                   % 法線方向成分力 1*n
-    targetForcesN(targetForcesN<0) = 0;                                     % 引き付ける力は発生させない
+    targetForces_n = elastTargetForces + dampTargetForces;                  % 法線方向成分力 1*n
+    targetForces_n(targetForces_n<0) = 0;                                   % 引き付ける力は発生させない
     velDiff_surface = velDiff - dV .* contactFaceNorm;                      % 表面方向速度 3*n
     dVs = vecnorm(velDiff_surface);                                         % 表面方向速さ 1*n
     velDiff_sfc_sign = sign(dVs);                                           % 表面方向速度符号 1*n
-    targetForces_s = contactNu * targetForcesN .* velDiff_sfc_sign;         % 表面方向力 3*n
+    targetForces_s = contactNu * targetForces_n .* velDiff_sfc_sign;        % 表面方向力 3*n
     contactFaceVec = zeros(3, tipNum);
     contactFaceVec(isContact) =velDiff_surface(isContact) ./ dVs(isContact);% 表面方向単位vector 3*n
 
-    targetForces = targetForcesN .* contactFaceNorm ...
+    targetForces = targetForces_n .* contactFaceNorm ...
                  + targetForces_s .* contactFaceVec;                        % 各種力合算 3*n
 
     roboForces  = -targetForces;                                            % ロボット手先力 3*4

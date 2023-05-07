@@ -1,37 +1,42 @@
 % ロボット手先目標軌道を扱うクラス
 %
-% ロボット手先目標軌跡([pathwayLeft, pathwayRight]) 4*n*2初期化
-% pathwayは[x(t), y(t), theta(t), t]'の形で，時刻tにおける座標を示す．
+% ロボット手先目標軌跡 7*n
+% pathwayは[r(t)(DOF3), theta(t)(DOF3), t]'の形で，時刻tにおける座標を示す．
 %
 % pathwayは目標位置，その時の絶対時刻を合わせた行列．列0には初期位置，初期時刻を代入する.
-% pathWay(1:3, n-1) -> pathWay(1:3, n) の移動を，pathWay(4, n-1) -> pathWay(4,
+% pathWay(1:6, n-1) -> pathWay(1:6, n) の移動を，pathWay(7, n-1) -> pathWay(4,
 % n)秒で達成する.これをn-1回繰り返すことにより，経由地点を経た軌道を達成する．
 % 
 % ターゲットに対する処理に応じた目標位置を計算する関数をこのクラス内部で定義する
 % 
 % 2023.3 akiyoshi uchida
-% ターゲットのベースに対する相対速度で制御する方法に変更すべき？
-% 
+% 2023.5 akiyoshi uchida
+%        左右で分けた
 
 classdef Pathway
     properties
         pathway
         timeParam
+        arm
     end
     methods
         %%%%% 基本関数 %%%%%
         % 初期化
-        function obj = Pathway(robo, startTime)
+        function obj = Pathway(robo, startTime, LorR)
+            obj.arm = LorR;
             obj = obj.reset(robo, startTime);
         end
 
         % pathwayをリセットする関数
         function obj = reset(obj, robo, time)
-            % ロボット手先目標軌跡([pathwayLeft, pathwayRight]) 4*n*2初期化
-            % pathwayは[x(t), y(t), theta(t), t]'の形で，時刻tにおける座標を示す．
-            obj.pathway = zeros(4, 1, 2);
-            obj.pathway(:, 1, 1) = [robo.POS_e_L(1:2); robo.SV.QeL(3); time];   % pathwayLeft
-            obj.pathway(:, 1, 2) = [robo.POS_e_R(1:2); robo.SV.QeR(3); time];   % pathwayRight
+            % ロボット手先目標軌跡([pathwayLeft, pathwayRight]) 7*n*2初期化
+            if obj.arm == 'L'
+                obj.pathway = [robo.POS_e_L; robo.SV.QeL; time];   
+            elseif obj.arm == 'R'
+                obj.pathway = [robo.POS_e_R; robo.SV.QeR; time];
+            else
+                error('arm should be L or R')
+            end
         end
 
         % pathwayを上書きする関数
@@ -42,61 +47,63 @@ classdef Pathway
 
         % pathwayを上書きせずに追加する関数
         function obj = addEnd(obj, newPathway)
+            timeRow = 7;
+            if  newPathway(timeRow, end) <= obj.pathway(timeRow, end)
+                error('pathway has to be set in order of time')
+            end
             obj.pathway = [obj.pathway, newPathway];
         end
 
         % pathwayのどのフェーズにいるか計算
         % フェーズの立ち上がりと立ち下がりをdtimeをもとに計算
-        function [phase, phaseStarting, phaseEnding] = phase(obj, time, param, armIndex)
-            [~, n, ~] = size(obj.pathway(:, :, armIndex));
-            index = (obj.pathway(4, :, armIndex) <= time) & (obj.pathway(4, [2:n, 1], armIndex) > time);  % 時刻をもとに経路のフェーズを判定
+        function [phase, phaseStarting, phaseEnding] = phase(obj, time, param)
+            timeRow = 7;
+            [~, n] = size(obj.pathway);
+            index = (obj.pathway(timeRow, :) <= time) & ( circshift(obj.pathway(timeRow,:), -1, 2) > time );  % 時刻をもとに経路のフェーズを判定
             % 時刻(pathway(4,:)が順番通りでない場合，エラーを排出する
             if sum(index) >= 2                                                           
                 error("you have to set pathway in order of time")
             end
             
             % pathwayの初めの時刻より前であれば（通常負の時刻），phaseは０
-            if time < obj.pathway(4, 1, armIndex)
+            if time < obj.pathway(timeRow, 1)
                 phase = 0;
                 phaseStarting = (time - param.MinusTime) < param.DivTime * 1.01 && ...
                                 (time - param.MinusTime) >= 0;
-                phaseEnding = (obj.pathway(4, 1, armIndex) - time) <= param.DivTime * 1.01 && ...
-                              (obj.pathway(4, 1, armIndex) - time) > 0;
+                phaseEnding = (obj.pathway(timeRow, 1) - time) <= param.DivTime * 1.01 && ...
+                              (obj.pathway(timeRow, 1) - time) > 0;
                 return
             
             % pathwayの最後の項より後であれば，phaseは-1
-            elseif time >= obj.pathway(4, n, armIndex)
+            elseif time >= obj.pathway(timeRow, end)
                 phase = -1;
-                phaseStarting = (time - obj.pathway(4, n, armIndex)) < param.DivTime * 1.01 && ...
-                                (time - obj.pathway(4, n, armIndex)) >= 0;
+                phaseStarting = (time - obj.pathway(timeRow, end)) < param.DivTime * 1.01 && ...
+                                (time - obj.pathway(timeRow, end)) >= 0;
                 phaseEnding = true;
                 return
             end
             IND = 1:n;
             phase = IND(index);
-            phaseStarting = (time - obj.pathway(4, phase, armIndex)) < param.DivTime * 1.01 && ... 
-                            (time - obj.pathway(4, phase, armIndex)) >= 0; % おそらく余分
-            phaseEnding = (obj.pathway(4, phase + 1, armIndex) - time) <= param.DivTime * 1.01 && ...
-                          (obj.pathway(4, phase + 1, armIndex) - time) > 0; % おそらく余分
+            phaseStarting = (time - obj.pathway(timeRow, phase)) < param.DivTime * 1.01 && ... 
+                            (time - obj.pathway(timeRow, phase)) >= 0; % おそらく余分
+            phaseEnding = (obj.pathway(timeRow, phase + 1) - time) <= param.DivTime * 1.01 && ...
+                          (obj.pathway(timeRow, phase + 1) - time) > 0; % おそらく余分
         end
 
         % 現在時刻から，次の目標位置を返す関数
         function nextPathway = goingTo(obj, time, param)
-            phase = obj.phase(time, param, 1);
+            phase = obj.phase(time, param);
             index = phase + 1;
             if index == 0
-                nextPathway = nan(4,2);
+                nextPathway = nan(7,1);
                 return 
             end
-            nextPathway = obj.pathway(:, index, :);
+            nextPathway = obj.pathway(:, index);
         end
 
         % pathwayから速度計算
-        function desiredVel = vel(obj, time, robo, controller)
-            mode = controller.velocityMode;
-            gain = [controller.kp, controller.dp];
-            desiredVel(1:3, 1) = calc_vel_from_pathway(obj.pathway(:, :, 1), time, robo, gain, true, mode);    % left
-            desiredVel(4:6, 1) = calc_vel_from_pathway(obj.pathway(:, :, 2), time, robo, gain, false, mode);   % right
+        function vel = vel(obj, time, robo, param)
+            vel = calc_vel_from_pathway(obj.pathway, time, robo, param, obj.arm);
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -266,8 +273,8 @@ classdef Pathway
         function obj = keepPosition(obj, robo, currentTime, deltTime)
             tempObj = obj.reset(robo, currentTime);
             p1 = tempObj.pathway;
-            gpathway(:, 1, :) = p1;
-            gpathway(:, 2, :) = p1 + [0, 0, 0, deltTime]';
+            gpathway(:, 1) = p1;
+            gpathway(:, 2) = p1 + [0, 0, 0, 0, 0, 0, deltTime]';
             obj.pathway = gpathway;
         end
     end

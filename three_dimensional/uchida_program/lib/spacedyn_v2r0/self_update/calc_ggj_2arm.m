@@ -61,9 +61,11 @@ GGJ2A =[ -HbHbmL           , -HbHbmR            ;
 % base tip jacobian
 Jb = [Jb_L; Jb_R];
 
+nL = length(jointsL);
+nR = length(jointsR);
 % joint tip jacobian
-Jm = [Jm_L,        zeros(6, num_eR);
-      zeros(6,num_eL),  Jm_R];
+Jm = [Jm_L,        zeros(6, nR);
+      zeros(6,nL),  Jm_R];
 
 
 %%% EOF

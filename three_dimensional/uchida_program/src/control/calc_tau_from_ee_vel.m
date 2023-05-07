@@ -54,7 +54,7 @@ global d_time
     index = repmat(inBodyFrame, [6,1]);
     J = Jg_s;
     J(index, :) = Jm_s(index, :);
-    VelbyPL = zeros(6, 1);
+    VelbyPL = zeros(12, 1);
     temp = Jb_s * (Hb\PL);
     VelbyPL(~index) =  temp(~index);                                        % 運動量変化による見かけの速度
 

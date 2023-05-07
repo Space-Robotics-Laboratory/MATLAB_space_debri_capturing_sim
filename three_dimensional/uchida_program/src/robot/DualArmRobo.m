@@ -143,8 +143,8 @@ classdef DualArmRobo
             obj.SV = calc_vel(obj.LP, obj.SV);                                          % 全リンク重心の並進・回転速度計算
             obj.VEL_e_L = calc_vel_e(obj.LP, obj.SV, obj.jointsL);                      % 左手先の並進速度計算 3*1
             obj.VEL_e_R = calc_vel_e(obj.LP, obj.SV, obj.jointsR);                      % 右手先の並進速度計算 3*1
-            obj.VEL_es_L = calc_armTipsVel(obj.VEL_e_L, obj.ORI_e_L, obj.SV.ww(:, 4), Parameters);  % 左手先端球の並進速度計算 3*2
-            obj.VEL_es_R = calc_armTipsVel(obj.VEL_e_R, obj.ORI_e_R, obj.SV.ww(:, 8), Parameters);  % 右手先端球の並進速度計算 3*2
+            obj.VEL_es_L = calc_armTipsVel(obj.VEL_e_L, obj.ORI_e_L, obj.SV.ww(:, 4), Parameters);  % 左手先端球の並進速度計算 3*3
+            obj.VEL_es_R = calc_armTipsVel(obj.VEL_e_R, obj.ORI_e_R, obj.SV.ww(:, 8), Parameters);  % 右手先端球の並進速度計算 3*3
         end
 
         %visualise

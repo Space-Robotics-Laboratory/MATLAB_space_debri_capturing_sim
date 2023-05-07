@@ -27,10 +27,10 @@ robotParam.initial_jointsAngle(7:12, 1) =-[0 pi/3 -pi*4/9 0 -pi*7/18 0]';
 
 %% Phisics of Robot
 % Define Base
-robotParam.mass_base    = 10;
-robotParam.inertia_base = [0.5,   0, 0  ;
-                             0, 0.5, 0  ;
-                             0,   0, 0.5];
+robotParam.mass_base    = 8;
+robotParam.inertia_base = [0.3,   0, 0  ;
+                             0, 0.3, 0  ;
+                             0,   0, 0.3];
 
 % Define Links as "having a motor at the end of an aluminum round bar"
 robotParam.mass_motor = 0.1;

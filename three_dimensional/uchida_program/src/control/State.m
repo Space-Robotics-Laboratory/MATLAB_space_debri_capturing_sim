@@ -6,10 +6,10 @@
 classdef State
     properties
         isCapture       % bool ターゲット捕獲状況
-        isContact       % bool 1*4 各手先の現時刻接触状況
-        wasContact      % bool 1*4各手先の前時刻接触状況
-        newContact      % bool 1*4 新たに接触したかどうか
-        endContact      % bool 1*4 新たに非接触になったか
+        isContact       % bool 1*6 各手先の現時刻接触状況
+        wasContact      % bool 1*6各手先の前時刻接触状況
+        newContact      % bool 1*6 新たに接触したかどうか
+        endContact      % bool 1*6 新たに非接触になったか
         targetSlow      % bool 現時刻でターゲットの角速度がしきい値より小さいか
         comeTargetSlow  % bool 新たにターゲットの角速度がしきい値より小さくなったかどうか
         time            % 各時刻を保存する
@@ -17,11 +17,11 @@ classdef State
     methods
         % コンストラクター
         function obj = State()
-            obj.isCapture = false;
-            obj.isContact = false;
-            obj.wasContact = false;
-            obj.newContact = false;
-            obj.endContact = false;
+            obj.isCapture  = false;
+            obj.isContact  = false(1, 6);
+            obj.wasContact = false(1, 6);
+            obj.newContact = false(1, 6);
+            obj.endContact = false(1, 6);
             obj.targetSlow = false;
             obj.comeTargetSlow = false;
             obj.time.lastContact = inf;

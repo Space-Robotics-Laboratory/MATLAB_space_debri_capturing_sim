@@ -129,7 +129,8 @@ classdef DataSaver
             obj.datStruct.target_moment(obj.index, :) = calc_momentum(target.LP, target.SV);
 
             % 目標手先位置
-            desPathway = controller.pathway.goingTo(time, param);
+            desPathway(1:7, 1) = controller.pathway_L.goingTo(time, param);
+            desPathway(1:7, 2) = controller.pathway_R.goingTo(time, param);
             obj.datStruct.desHandPos(obj.index, :) = reshape(desPathway(1:3, :), [1 ,6]);
 
             %%% Velocity information

@@ -13,18 +13,18 @@
 % output: JointTorque 8*1, but only used 6*1
 %
 
-function JointTau = calc_tau_from_ee_base_vel(DualArmRobo, allPartVel, RoboFTsensor, velConsidered)
+function JointTau = calc_tau_from_ee_base_vel(DualArmRobo, allPartVel, RoboFTsensor, vel_in_control)
 global d_time
     LP = DualArmRobo.LP;
     SV = DualArmRobo.SV;
     num_eL = DualArmRobo.num_eL;
     num_eR = DualArmRobo.num_eR;
-    if ~all(size(allPartVel)==[9,1])
-        error('input velocity dimention must be [9,1]')
+    if ~all(size(allPartVel)==[18,1])
+        error('input velocity dimention must be [18,1]')
     end
 
     % 双腕ロボ一般化慣性行列，一般化速度非線形項計算
-    [H_asuta, C_asuta] = calc_asuta_2arm(LP, SV, num_eL, num_eR);
+    [H_asuta, C_asuta] = calc_asuta_2arm(LP, SV, num_eL, num_eR); 
 
     % 一般化ヤコビアン，ベース手先ヤコビアン，慣性行列計算
     [Jgg, Jb, ~, HH] = calc_ggj_2arm(LP, SV, num_eL, num_eR);
@@ -36,12 +36,10 @@ global d_time
     PL = calc_momentum(LP, SV);
 %     PL = zeros(6,1);
 
-    % 目標自由度削減 18*8 -> 6*8
-    index_ = [1, 2, 6, 7, 8, 12, 13, 14, 18];
-    index = index_(velConsidered);
+    % 目標自由度削減 18*8 -> 12*8
+    index_ = 1:18;
+    index = index_(vel_in_control);
     Jgg_s = Jgg(index, :);          % 目標速度を選択
-    Jgg_s(:, [4,8]) = 0;            % 受動関節の関節速度0を仮定
-    Jb_s = Jb([1,2,6, 7,8,12], :);  % ベース速度に対する手先ヤコビアン
 
     % 手先にかかる外力の推定値を代入 
     F_c = reshape(RoboFTsensor, [12,1]);
@@ -49,11 +47,11 @@ global d_time
     % inBodyFrameの速度の場合，ヤコビアンはJm
     % inInertiaFrameの速度の場合，タコビアンはJg
     baseVel_by_moment = (Hb\PL);                                    % 運動量変化による見かけの速度
-    eeVel_by_moment = Jb_s * baseVel_by_moment;                     % 運動量変化による見かけの速度
-    desiredVel = allPartVel - [baseVel_by_moment([1,2,6]); eeVel_by_moment];
+    eeVel_by_moment = Jb * baseVel_by_moment;                       % 運動量変化による見かけの速度
+    desiredVel = allPartVel - [baseVel_by_moment; eeVel_by_moment];
 
     % 目標関節角速度計算
-    qd_des = pinv(Jgg_s) * desiredVel(velConsidered');              % 関節角速度．運動量変化について考える.
+    qd_des = pinv(Jgg_s) * desiredVel(index);                       % 関節角速度．運動量変化について考える.
                                                                     % 次元が6を超える場合，最小二乗近似となる
     qdd_des = (qd_des - SV.qd) / d_time;                            % 関節角加速度
     JointTau = H_asuta * qdd_des + C_asuta - Jgg(7:18,:)' * F_c;    % 8関節トルク（set wrist active joint）

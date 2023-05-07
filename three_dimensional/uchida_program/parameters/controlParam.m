@@ -11,8 +11,8 @@ controlParam.velocityMode = 'str_tru';          % pathwayから速度を計算�
 controlParam.impedanceMode = 'addmitance';      % インピーダンス制御モード
 
 %% FeedBack Gain Useed in Pathway Following(in vel mode 'str_fbk')
-controlParam.kp = [5, 5, .0]';             % フィードバックによる位置制御：比例係数
-controlParam.dp = [0, 0, .0]';                % フィードバックによる位置制御：減衰係数
+controlParam.kp = [5, 5, 5, 0, 0, 0]';             % フィードバックによる位置制御：比例係数
+controlParam.dp = [0, 0, 0, 0, 0, 0]';                % フィードバックによる位置制御：減衰係数
 
 %% Used in Direct Capture
 controlParam.captureDistantMargin = 1.05;        % 捕獲した後の手先とターゲットの余裕
@@ -29,9 +29,9 @@ controlParam.swichingDelay2Direct = .35;        % ターゲット角速度が減
 controlParam.switchingTargetAngVel = 1;         % 境界値となるターゲット角速度
 
 % impedance parameters
-controlParam.mi = [1, 1, 1]'*.5;                   % アドミタンス制御仮想質量   [.5, .5, .5]';
-controlParam.di = [1, 1, 1]'*10;                   % アドミタンス制御ダンパ特性  [10, 10, 10]';
-controlParam.ki = [.0, .0, .0]';                   % アドミタンス制御バネ特性   [.5, .5, .5]';
+controlParam.mi = [1, 1, 1, 1, 1, 1]'*.05;                   % アドミタンス制御仮想質量   [.5, .5, .5]';
+controlParam.di = [1, 1, 1, 1, 1, 1]'*5;                   % アドミタンス制御ダンパ特性  [10, 10, 10]';
+controlParam.ki = [0, 0, 0, 0, 0, 0]';                   % アドミタンス制御バネ特性   [.5, .5, .5]';
 
 % contact parameters
 controlParam.contactPositionratio = .8;             % 接触位置がターゲット辺のどの割合にあるかを表す.0で中心1で頂点
