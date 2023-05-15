@@ -49,7 +49,7 @@ classdef DualArmRobo
             % ロボットリンクパラメータ設定
             obj.LP = DualArmRobo_LP(Parameters);
             % ロボット状態を初期化
-            obj.SV = init_SV(obj.LP);
+            obj.SV = init_SV_DAR(obj.LP);
 
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%% 初期値設定 %%%%%%%%%%%%%%%%%%%%

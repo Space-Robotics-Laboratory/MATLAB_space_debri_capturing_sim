@@ -194,6 +194,6 @@ param.control = controlParam();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ファイル設定
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-param.DataSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/two-dimensional/uchida_program/dat';
-param.FileName     = [num2str(param.control.mi'),'_' ,num2str(param.control.di'),'_' ,num2str(param.control.ki')];
+param.DataSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/two-dimensional/dat';
+param.FileName     = [num2str(param.ContactDamp),'_' ,num2str(param.ContactElast),'_' ,num2str(param.control.ki')];
 end
