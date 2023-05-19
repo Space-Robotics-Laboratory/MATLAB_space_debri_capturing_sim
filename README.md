@@ -11,23 +11,34 @@ Author(s) and maintainer(s): Space Robotics Lab. Orbital Team
 
 ## Repository Summary 
 
-This repository contains the necessary codes for two-dimensional capture simulation written mainly using MATLAB. These codes include inverse kinematics calculations, target motion estimation, contact force calculations, and contact determination.
-In addition, a MATLAB tool called SpaceDyn, developed by the Tohoku University Space Robotics Laboratry is used for this capture simulation.
+This repository contains the necessary codes for two-dimensional and three-dimentional capture simulation written mainly using MATLAB. These codes include inverse kinematics calculations, contact force calculations, and contact determination.
+A MATLAB tool called SpaceDyn, developed by the Tohoku University Space Robotics Laboratry is used for this capture simulation.
+In addition, you can use blender python script to make more realistic movies of calculated motion. 
 
 ## Overview of 2-D Capture Simulation
 
-In our laboratory, a dual-arm space robot test bed has been developed to experimentally verify the capture of a target that resembles space debris in a two-dimensional plane. The simulation was developed to validate the experimental results and to predict the behavior when the conditions are changed. By changing the parameters, the robot model can be changed and the shape of the target to be captured can be changed. The current model and parameters are as follows.
+In our laboratory, a dual-arm space robot test bed has been developed to experimentally verify the capture of a target that resembles space debris in a two-dimensional plane. The simulation was developed to validate the experimental results and to predict the behavior when the conditions are changed. By changing the parameters, the robot model can be changed and the shape of the target to be captured can be changed. Followign are parameters of the blender modeled robot's.
 
 
 #### Model and Parameters
-<center><img src="./docs/media/simulationmodel.jpg" alt="Simulation Model" title="Simulation Model of Dual-arm Service Robot Testbet" width="400"><img src="./docs/media/simulationparameter.jpg" alt="Simulation Parameter" title="Simulation Parameter of Dual-arm Service Robot Testbet" width="350"></center>
+<center>
+<img src="./docs/media/simulationmodel.jpg" alt="Simulation Model" title="Simulation Model of Dual-arm Service Robot Testbet" width="400">
+<img src="./docs/media/blenderParams.png" alt="Simulation Parameter" title="Simulation Parameter of Dual-arm Service Robot Testbet" width="350">
+</center>
 
+## Overview of 3-D Capture Simulation
 
-#### Software
+It is difficult to reproduce a three-dimensional microgravity environment, so three-dimensional simulation is now under developing.
 
-All software code is written in :
+## Software
+
+Dynamics calculation and simple animation code is written in :
 
 * MATLAB code
+
+Realistic animation code is written in :
+* Python ( bpy library)
+
 
 detailed information to run simulations, refer to next section this README.
 
@@ -37,35 +48,64 @@ detailed information to run simulations, refer to next section this README.
 All code is confirmed to work in
 
 * MATLAB R2020a
+* MATLAB R2022b
+* MATLAB R2023a
 
 
-## Description of the folders and files
+## Description of the imprtant folders and files
+```
+|--two-dimensional
+    |--[UNUSED]olr_references
+    |--blender/DualArm Robot
+        |--origin       : conserved original blender file
+        |--dualArm.py   : python script run in blender
+        |--dualArmRobo_moved.blend  : blender file of dyn result
+        |--dualArmRobo.blend        : blender file of initial robot state
+    |--dat
+    |--docs
+    |--lib
+    |--parameters   : parameter setting
+    |--src
+        |--analysis : analysis using graph
+        |--contact  : cont detection and calc force
+        |--control  
+            |--Pathway/Pathway.m    : A class to handle robo arm distination
+            |--Contoroller.m        : A class to calc input motor torque
+        |--datsave  
+        |--estimation
+        |--robot    : robot difinition and calc dyn
+        |--target   : target difinition and calc dyn
+        |--visualization
+|--three-dimensional
+    |--
+```
 
-* abeprograms :
-
- * functions :
-contains code for functions used to calculate equations of motion and code for SpaceDyn
-In particular, the following two codes are often used because they are related to the setup of the dual-arm space robot model.
- 	* DualArm_FourTips_LP_v3.m
- 	* DualArm_FourTips_SV_v3.m
-
- * Shikaku :
- 	* main_DualArm_TargetShikaku_FourTips_v07.m :
- 	main code for capture simulation
-    
- 	* target_LP_SV :
- 	contains codes used to set the target parameters
-    
-    * desired_hand_velocity_calculation :
-    contains codes to calculate the desired end-effector's velocity of the dual-arm space robot
-    
-    * contact_physics :
-    contains codes for making contact decisions and calculating contact forces
-    
-    * figure_and_video_creation :
-    contains codes to output a figure for each parameter and codes to create a capture simulation movie
-
+* [UNUSED]old_references :
 Files with InC at the end of the name are codes for impedance control. The calculation of torque control in the main code was changed.
+    * abeprograms :
+
+        * functions :
+            contains code for functions used to calculate equations of motion and code for SpaceDyn
+            In particular, the following two codes are often used because they are related to the setup of the dual-arm space robot model.
+        * DualArm_FourTips_LP_v3.m
+        * DualArm_FourTips_SV_v3.m
+
+    * Shikaku :
+        * main_DualArm_TargetShikaku_FourTips_v07.m :
+        main code for capture simulation
+        
+        * target_LP_SV :
+        contains codes used to set the target parameters
+        
+        * desired_hand_velocity_calculation :
+        contains codes to calculate the desired end-effector's velocity of the dual-arm space robot
+        
+        * contact_physics :
+        contains codes for making contact decisions and calculating contact forces
+        
+        * figure_and_video_creation :
+        contains codes to output a figure for each parameter and codes to create a capture simulation movie
+
 
 ## Parameters that change a lot of times
 * ts_W_i :
@@ -86,7 +126,7 @@ Make sure your environment satisfy the requirement above. Then you can run the c
 
 #### 1. Clone the repository
 
-You can simply clone this monorepository to access to whole software stack. To clone the repository, to avoid messing up, we reccomend you to make the independent directory in your home directory (e.g. named "bitbucket") and clone the repository there.
+You can simply clone this monorepository to access to whole software stack. To clone the repository, to avoid messing up, we reccomend you to make the independent directory in your home directory (e.g. named "git-hub") and clone the repository there.
 ```commandline
 $ mkdir ~/bitbucket && cd ~/bitbucket
 $ git clone git@bitbucket.org:srl-orbital/capturing_simulation.git
