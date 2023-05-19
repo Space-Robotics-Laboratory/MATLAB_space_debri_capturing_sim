@@ -11,7 +11,7 @@ function param = set_Param()
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % シミュレーション条件
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-param.EndTime   = 2;%2;    %シミュレーション終了時間[s]
+param.EndTime   = 15;%2;    %シミュレーション終了時間[s]
 param.MinusTime = 0;      %シミュレーション開始からロボット制御開始までの時間[s]
 param.DivTime   = 0.001;  %シミュレーション刻み時間[s]
 
@@ -29,7 +29,7 @@ param.MovDivTime = 0.01;  % アニメーション刻み時間
 
 % ロボットベース部分質量[kg]
 % 変更時，慣性行列に注意
-param.BaseMass = 7.70;
+param.BaseMass = 10;%7.70;
 
 %ロボットベース部分慣性行列[m^2kg]
 param.BaseInertia = [ 1e9     0   0;   % 0の部分がカップリング項(慣性乗積?)
@@ -150,8 +150,8 @@ param.LinkAngRight = -[pi/3 -pi*4/9 -pi*7/18 0]';  % 右手の関節角度，ベ
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ターゲットサイズ[m]
 % 二次元モデルではheight = 0
-param.TargetDepth  = 0.16;
-param.TargetWidth  = 0.16;%0.16;
+param.TargetDepth  = 0.14;
+param.TargetWidth  = 0.14;%0.16;
 param.TargetHeight = 0;
 
 % ターゲット幾何中心に対する質量重心の相対位置
@@ -159,7 +159,7 @@ param.TargetMCenter2GCenter = [0, 0, 0]';
 
 % ターゲット質量[kg]
 % 変更時，慣性行列に注意
-ro = 150; % kg/m^2
+ro = 150;%150; % kg/m^2
 param.TargetMass = ro * param.TargetDepth * param.TargetWidth; %3.70;
 % ターゲット部分慣性行列[m^2kg]
 param.TargetInertia = [ 1e9     0   0;   
@@ -174,7 +174,7 @@ param.TargetInertia = [ 1e9     0   0;
 param.TargetPosition0     = [ 0 0.35 0]';             % 初期位置          ;SV.R0
 param.TargetOrientation0  = [ 0 0 deg2rad( 0 ) ]';   % 初期姿勢  ラジアン ;SV.Q0
 param.TargetVelocity0     = [ -.0 -.0 0 ]';              % 初期並進速度 ;SV.v0
-param.TargetAngVel0       = [ 0 0 5]';              % 初期角速度 ;SV.w0
+param.TargetAngVel0       = [ 0 0 8]';              % 初期角速度 ;SV.w0
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

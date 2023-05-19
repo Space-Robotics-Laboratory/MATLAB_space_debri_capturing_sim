@@ -159,9 +159,8 @@ classdef Pathway
         end
 
         %%% ターゲットが並進してきている方向の手先を接触させることによりターゲット角速度を減衰させる
-        % pathwayメソッドをリターン
         function obj = contactDampen(obj, robo, targ, time, param)
-            contPosRate = param.control.contactPositionratio;    % 接触する位置の辺に対する割合．１で頂点．０で中心
+            contPosRate = param.control.contactPositionRatio;    % 接触する位置の辺に対する割合．１で頂点．０で中心
             evadeAng0 = param.control.endEffecAngleDeviation;    % 接触する時のエンドエフェクター角度. ターゲット角が0の場合
 
             % ターゲット情報代入
