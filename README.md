@@ -26,7 +26,6 @@ In our laboratory, a dual-arm space robot test bed has been developed to experim
 
 <center>
 <img src="./docs/media/simulationmodel.jpg" alt="Simulation Model" title="Simulation Model of Dual-arm Service Robot Testbet" width="400">
-<img src="./docs/media/blenderParams.png" alt="Simulation Parameter" title="Simulation Parameter of Dual-arm Service Robot Testbet" width="350">
 </center>
 
 ## Overview of 3-D Capture Simulation
@@ -88,6 +87,11 @@ param.FileName     = 'myFile';
 #### 4. Run the code
 Click the "Run" button to run the simulation. For more infirmation on how to use, please see README.md under 'two-dimensional' or 'three-dimensional'.
 
+#### 5. View in Blender
+Though this action is not necessary, it will help you to make realistic movie.
+
+Open dualArm.blender with blender and set target size in python file[(blender wiki)](https://srl.esa.io/posts/274). Then, rewrite csv file path of which you want to use referring to the comments. After them, run the code on blender to apply the motion.
+Do not forget to save the blender file with new name to conserve the original one.
 
 
 ## Contribution

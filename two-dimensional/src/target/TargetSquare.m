@@ -23,10 +23,10 @@ classdef TargetSquare
             %%%%%%%%%%%%%%%%%%%% 初期値設定 %%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % 形状設定
-            obj.depth = Parameters.TargetDepth;
-            obj.width = Parameters.TargetWidth;
-            obj.height = Parameters.TargetHeight;
-            obj.m2G = Parameters.TargetMCenter2GCenter;
+            obj.depth = Parameters.targetParam.depth;
+            obj.width = Parameters.targetParam.width;
+            obj.height = Parameters.targetParam.height;
+            obj.m2G = Parameters.targetParam.mCenter2gCenter;
             
             %%%%%%%%%% ターゲット初期値設定 %%%%%%%%%%
            

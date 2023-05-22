@@ -16,7 +16,7 @@ classdef DataSaver
         % constructor インスタンス作成時に呼び出し
         function obj = DataSaver(paths, param)
             obj.filePath = [paths.datfile, '/savedDat.csv'];
-            row = (param.EndTime + param.MinusTime) / param.DivTime;
+            row = (param.generalParam.endTime + param.generalParam.minusTime) / param.generalParam.divTime;
             obj.datNum = row;
             obj.index = 1;
 

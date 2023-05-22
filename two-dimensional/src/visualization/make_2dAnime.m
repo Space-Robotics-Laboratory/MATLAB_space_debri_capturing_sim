@@ -3,7 +3,7 @@
 
 function make_2dAnime(datSaver, paths, param)
     % パラメータインポート
-    mov_dtime = param.MovDivTime;                              % 動画刻み時間
+    mov_dtime = param.generalParam.anime_divTime;                              % 動画刻み時間
     dataStruct = datSaver.datStruct;
     
     % force vector scale
@@ -27,7 +27,7 @@ function make_2dAnime(datSaver, paths, param)
     % 描画開始
     for count = 1:datSaver.datNum
         % アニメ時間
-        anime_time = param.DivTime * count;
+        anime_time = param.generalParam.divTime * count;
         
         % アニメ時間が動画刻み時間で割り切れる時に図を描画，動画に保存
         if rem(anime_time, mov_dtime) == 0

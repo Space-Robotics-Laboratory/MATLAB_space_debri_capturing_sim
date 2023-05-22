@@ -1,7 +1,8 @@
 # Space Debris Captureing Robot simulations
 ## Two Dimensional
 
-![image2](/docs/media/simulationmodel.jpg)
+<img src="./docs/media/simulationmodel.jpg" alt="Simulation Model" title="Simulation Model of Dual-arm Service Robot Testbet" width="400">
+<img src="./docs/media/blenderParams.png" alt="Simulation Parameter" title="Simulation Parameter of Dual-arm Service Robot Testbet" width="350">
 
 ## Description of the imprtant folders and files
 ```
@@ -53,6 +54,10 @@ Pathway class can handle robot hands target position with goal time. Pathway met
 This class also has a function to calculate desired velocity by pathway, using defined velocity model. 
 
 # Parameters Often Changed
+## General Parameters
+
+## Target Parameters
+
 ## Control Parameters
 ```
 controlParam.controlMode = 'MULTIPLE'; 
@@ -61,3 +66,15 @@ controlParam.velocityMode = 'str_tru';
 * controlMode : Now, 'DIRECT' and 'MULTIPLE' are available. 'DIRECT' is two hands direct caging, and 'MULTIPLE' is repeated one hand impedance contact, followed by two hands direct caging.
 
 * velocityMode : Currently, 'str_str', 'str_tru' are available. ('str_fbk' is available too, but not useful) the former represents trajectory, the latter does speed model. For example, str_str model is straight trajectory with constant velocity, str_tru means straight trajectry with triangle speed-time graph. (constant acceleration)
+
+## Initial Robot Shape
+Here you can fine the original robot model parameters, same as the ones of blender STL model.
+
+|Link|Length[m] or Angle[rad] |
+|----|----|
+|Link 1| 0.25|
+|Link 2| 0.175|
+|Link 3| 0.091|
+|Link 4 h| 0.081393154503312|
+|Link 4 γ| 0.717235030908703|
+|Link 4 d|0.018|

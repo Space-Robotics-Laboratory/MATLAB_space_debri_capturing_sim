@@ -11,7 +11,11 @@ targetParam.height = 0;                 % 高さ [m]
 %% Mass Definition
 targetParam.mCenter2gCenter = [0, 0, 0]';
 
-%% Movement Definition
+%% Initial State
+targetParam.init_position = [0, 0, 0]';
+targetParam.init_orientation = [0, 0, 0]';
+targetParam.init_velocity = [0, 0, 0]';
+targetParam.init_angular_velocity = [0, 0, 0]';
 
 
 end

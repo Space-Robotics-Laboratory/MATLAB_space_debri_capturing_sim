@@ -89,7 +89,7 @@ classdef Controller
                         return
                     end
                     % 初期時刻及び接触後待機時間経過後にフラグ立て
-                    flagAfterContact = equal_time(time, state.time.lastContact + obj.impDuration, param.DivTime);% && obj.phase == -1;
+                    flagAfterContact = equal_time(time, state.time.lastContact + obj.impDuration, param.generalParam.divTime);% && obj.phase == -1;
                     obj.flagPathUpdate = time == 0 || flagAfterContact;
                     obj =  obj.contactDampen(robo, targ, roboFTsensor, state, time, param);
                     return 
