@@ -5,7 +5,7 @@
 
 Author(s) and maintainer(s): Space Robotics Lab. Orbital Team
 
-* **Repository admin**: Koki Abe (abe.koki.p1 at dc.tohoku.ac.jp)
+* **Repository admin**: Akiyoshi Uchida (uchida.akiyoshi.s3 at dc.tohoku.ac.jp)
 
 * **Team admin**: Kentaro Uno (unoken at tohoku.ac.jp)
 
@@ -19,8 +19,6 @@ In addition, you can use blender python script to make more realistic movies of 
 
 In our laboratory, a dual-arm space robot test bed has been developed to experimentally verify the capture of a target that resembles space debris in a two-dimensional plane. The simulation was developed to validate the experimental results and to predict the behavior when the conditions are changed. By changing the parameters, the robot model can be changed and the shape of the target to be captured can be changed. Followign are parameters of the blender modeled robot's.
 
-
-#### Model and Parameters
 <center>
 <img src="./docs/media/simulationmodel.jpg" alt="Simulation Model" title="Simulation Model of Dual-arm Service Robot Testbet" width="400">
 <img src="./docs/media/blenderParams.png" alt="Simulation Parameter" title="Simulation Parameter of Dual-arm Service Robot Testbet" width="350">
@@ -68,109 +66,28 @@ $ git checkout origin/develop
 ```
 
 #### 2. Path Settings
-Go to "Home", "Path Settings", and select "abeprograms". Then select "Add subfolders too" and save.
+In Matltab UI, go to "Home", "Path Settings", and select "two-dimensional" or "three-dimensional" . Then select "Add subfolders too" and save. After that, you can use functions in the directory. 
 
-#### 3. Change the Path
-Change the path to the directory where you want to save the output results.
+
+__importtant :__ 
+__You must not add '[UNUSED]old_references' to the path.__ They are using some functions which have the same name as Matlab native code so simulation does not work.
+
+
+#### 3. Change the Dat Path
+In setParam.m file, you can change the path to the directory where you want to save the output results.
 ```commandline
-datepath = [ 'C:/Users/baske/OneDrive/デスクトップ/' datestr( now, 'yyyy-mmdd' ) '/' timepath, '_' ];
+param.DataSavePath = '~/github/MATLAB_space_debri_capturing_sim/two-dimensional/dat';
+param.FileName     = 'myFile';
 ```
 
 #### 4. Run the code
-Click the "Run" button to run the simulation. If you don't need the figure output, prefix the following code with %{ and comment out the rest of the code.
-```commandline
-% まとめる
-mat = [ mat_02(:,1), ...
-        mat_02(:,2:1+9-1), rad2deg( mat_02(:,10:end) ), ...
-        mat_03(:,2:end), ...
-        mat_04(:,2:2+16-1), rad2deg( mat_04(:,18:18+8-1) ), ...mat_04(:,25:27), rad2deg( mat_04(:,28:30) ), mat_04(:,31:33), rad2deg( mat_04(:,34:36) ), ... % vel_desはとりあえず図にしない
-        mat_05(:,2:2+9-1), rad2deg( mat_05(:,11:end) ), ...
-        mat_06(:,2:end), ...
-        mat_07(:,2:end), ...
-        mat_08(:,2:end), ...
-        mat_09(:,2:end), ...
-        rad2deg( mat_10(:,2) ), mat_10(:,3:end), ...
-        mat_11(:,2:2+12-1), rad2deg( mat_11(:,14:14+7-1) ), mat_11(:,21:21+6-1), ...
-        mat_12(:,2:end), ...
-        mat_13(:,2:end)  ];
-        													・
-        													・
-        													・
-        													・
-```
+Click the "Run" button to run the simulation. For more infirmation on how to use, please see README.md under 'two-dimensional' or 'three-dimensional'.
 
-## Description of the imprtant folders and files
-```
-|--two-dimensional
-    |--[UNUSED]olr_references
-    |--blender/DualArm Robot
-        |--origin       : conserved original blender file
-        |--dualArm.py   : python script run in blender
-        |--dualArmRobo_moved.blend  : blender file of dyn result
-        |--dualArmRobo.blend        : blender file of initial robot state
-    |--dat
-    |--docs
-    |--lib
-    |--parameters   : parameter setting
-    |--src
-        |--analysis : analysis using graph
-        |--contact  : cont detection and calc force
-        |--control  
-            |--Pathway/Pathway.m    : A class to handle robo arm distination
-            |--Contoroller.m        : A class to calc input motor torque
-        |--datsave  
-        |--estimation
-        |--robot    : robot difinition and calc dyn
-        |--target   : target difinition and calc dyn
-        |--visualization
-|--three-dimensional
-    |--
-```
-
-* [UNUSED]old_references :
-Files with InC at the end of the name are codes for impedance control. The calculation of torque control in the main code was changed.
-    * abeprograms :
-
-        * functions :
-            contains code for functions used to calculate equations of motion and code for SpaceDyn
-            In particular, the following two codes are often used because they are related to the setup of the dual-arm space robot model.
-        * DualArm_FourTips_LP_v3.m
-        * DualArm_FourTips_SV_v3.m
-
-    * Shikaku :
-        * main_DualArm_TargetShikaku_FourTips_v07.m :
-        main code for capture simulation
-        
-        * target_LP_SV :
-        contains codes used to set the target parameters
-        
-        * desired_hand_velocity_calculation :
-        contains codes to calculate the desired end-effector's velocity of the dual-arm space robot
-        
-        * contact_physics :
-        contains codes for making contact decisions and calculating contact forces
-        
-        * figure_and_video_creation :
-        contains codes to output a figure for each parameter and codes to create a capture simulation movie
-
-
-## Parameters that change a lot of times
-* ts_W_i :
-Angular velocity of the target in inertial coordinate system
-
-* The second line of the vector zeta :
-Simulation time
-
-* kw_1 :
-Coefficient of rigidity
-
-* cw_1 :
-Viscosity coefficient (damping coefficient)
 
 
 ## Contribution
 
-The development of the capture simulation tool using the dual-arm space robot is currently being conducted in the Space Robotics Lab within the Orbital Robotics Team, and the code improvements and additional implementations are versioned in the Orbital Team's bitbucket.
+The development of the capture simulation tool using the dual-arm space robot is currently being conducted in the Space Robotics Lab within the Orbital Robotics Team, and the code improvements and additional implementations are versioned in the Orbital Team's git-hub.
 
 #### Git instructive manual
 For the detailed work flow under Git version control, refer to the team  instruction "[How to work in Git version control](https://docs.google.com/document/d/13-IrYbyNjKKX8clBSvSaJXkNx-QB75IRIWgK_Yo4LD4/edit)" (team member access only)
