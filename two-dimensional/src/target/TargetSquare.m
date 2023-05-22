@@ -31,11 +31,11 @@ classdef TargetSquare
             %%%%%%%%%% ターゲット初期値設定 %%%%%%%%%%
            
             % ベースの初期位置・姿勢・速度・角速度
-            obj.SV.R0 = Parameters.TargetPosition0;       % 初期位置
-            obj.SV.Q0 = Parameters.TargetOrientation0;    % 初期姿勢
-            obj.SV.A0 = rpy2dc( obj.SV.Q0 )';             % 初期姿勢から方向余弦行列を算出
-            obj.SV.v0 = Parameters.TargetVelocity0;       % 初期並進速度
-            obj.SV.w0 = Parameters.TargetAngVel0;         % 初期角速度
+            obj.SV.R0 = Parameters.targetParam.init_position;           % 初期位置
+            obj.SV.Q0 = Parameters.targetParam.init_orientation;        % 初期姿勢
+            obj.SV.A0 = rpy2dc( obj.SV.Q0 )';                           % 初期姿勢から方向余弦行列を算出
+            obj.SV.v0 = Parameters.targetParam.init_velocity;           % 初期並進速度
+            obj.SV.w0 = Parameters.targetParam.init_angular_velocity;   % 初期角速度
             obj.SV = calc_aa(  obj.LP, obj.SV );          % 各リンクの座標返還行列(方向余弦行列)の計算(リンクi->慣性座標系)
             obj.SV = calc_pos( obj.LP, obj.SV );          % 各リンク重心位置の計算
             obj.m2G = obj.SV.A0 * obj.m2G;                % ターゲット質量中心に対する幾何中心位置ベクトル更新
