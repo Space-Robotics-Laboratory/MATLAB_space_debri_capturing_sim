@@ -1,5 +1,10 @@
 # Space Debri Capturing Robot Simulations
-<center><img src="./docs/media/spacedebris.jpg" alt="spacedebris.jpg" title="Space debris" width="350"><img src="./docs/media/capturingsimulation.jpg" alt="Capturing simulation" title="Capturing simulation with Dual-arm service robot" width="350"></center>
+|<img src="./docs/media/2dBlenderMov.gif" alt="2D blender gif" title="2D direct capturing blebder gif">|<img src="./docs/media/2dDirect.gif" alt="Capturing simulation" title="Capturing simulation with Dual-arm service robot">|
+|----|----|
+|2D blendeer vewing|2D Matlab vewing|
+|<img src="./docs/media/blenderMov.gif" alt="3D blender gif" title="Space debris">|<img src="./docs/media/3dFollowing.gif" alt="3D direct capturing blebder gif" title="arm control by DAR in 3D space">|
+|3D blendeer vewing|3D Matlab vewing|
+|||
 
 -- Space debris capturing by the dual-arm service robot testbed
 
