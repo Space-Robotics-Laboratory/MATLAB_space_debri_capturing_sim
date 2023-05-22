@@ -51,6 +51,53 @@ All code is confirmed to work in
 * MATLAB R2022b
 * MATLAB R2023a
 
+## Operation procedure
+
+Make sure your environment satisfy the requirement above. Then you can run the code as follows.
+
+#### 1. Clone the repository
+
+You can simply clone this monorepository to access to whole software stack. To clone the repository, to avoid messing up, we reccomend you to make the independent directory in your home directory (e.g. named "git-hub") and clone the repository there.
+```commandline
+$ mkdir ~/git-hub && cd ~/git-hub
+$ git clone git@github.com:Space-Robotics-Laboratory/MATLAB_space_debri_capturing_sim.git
+```
+You can checkout "develop" branch, which contains the latest code if needed (default: "master" branch).
+```commandline
+$ git checkout origin/develop
+```
+
+#### 2. Path Settings
+Go to "Home", "Path Settings", and select "abeprograms". Then select "Add subfolders too" and save.
+
+#### 3. Change the Path
+Change the path to the directory where you want to save the output results.
+```commandline
+datepath = [ 'C:/Users/baske/OneDrive/デスクトップ/' datestr( now, 'yyyy-mmdd' ) '/' timepath, '_' ];
+```
+
+#### 4. Run the code
+Click the "Run" button to run the simulation. If you don't need the figure output, prefix the following code with %{ and comment out the rest of the code.
+```commandline
+% まとめる
+mat = [ mat_02(:,1), ...
+        mat_02(:,2:1+9-1), rad2deg( mat_02(:,10:end) ), ...
+        mat_03(:,2:end), ...
+        mat_04(:,2:2+16-1), rad2deg( mat_04(:,18:18+8-1) ), ...mat_04(:,25:27), rad2deg( mat_04(:,28:30) ), mat_04(:,31:33), rad2deg( mat_04(:,34:36) ), ... % vel_desはとりあえず図にしない
+        mat_05(:,2:2+9-1), rad2deg( mat_05(:,11:end) ), ...
+        mat_06(:,2:end), ...
+        mat_07(:,2:end), ...
+        mat_08(:,2:end), ...
+        mat_09(:,2:end), ...
+        rad2deg( mat_10(:,2) ), mat_10(:,3:end), ...
+        mat_11(:,2:2+12-1), rad2deg( mat_11(:,14:14+7-1) ), mat_11(:,21:21+6-1), ...
+        mat_12(:,2:end), ...
+        mat_13(:,2:end)  ];
+        													・
+        													・
+        													・
+        													・
+```
 
 ## Description of the imprtant folders and files
 ```
@@ -120,53 +167,6 @@ Coefficient of rigidity
 * cw_1 :
 Viscosity coefficient (damping coefficient)
 
-## Operation procedure
-
-Make sure your environment satisfy the requirement above. Then you can run the code as follows.
-
-#### 1. Clone the repository
-
-You can simply clone this monorepository to access to whole software stack. To clone the repository, to avoid messing up, we reccomend you to make the independent directory in your home directory (e.g. named "git-hub") and clone the repository there.
-```commandline
-$ mkdir ~/bitbucket && cd ~/bitbucket
-$ git clone git@bitbucket.org:srl-orbital/capturing_simulation.git
-```
-You can checkout "develop" branch, which contains the latest code if needed (default: "master" branch).
-```commandline
-$ git checkout origin/develop
-```
-
-#### 2. Path Settings
-Go to "Home", "Path Settings", and select "abeprograms". Then select "Add subfolders too" and save.
-
-#### 3. Change the Path
-Change the path to the directory where you want to save the output results.
-```commandline
-datepath = [ 'C:/Users/baske/OneDrive/デスクトップ/' datestr( now, 'yyyy-mmdd' ) '/' timepath, '_' ];
-```
-
-#### 4. Run the code
-Click the "Run" button to run the simulation. If you don't need the figure output, prefix the following code with %{ and comment out the rest of the code.
-```commandline
-% まとめる
-mat = [ mat_02(:,1), ...
-        mat_02(:,2:1+9-1), rad2deg( mat_02(:,10:end) ), ...
-        mat_03(:,2:end), ...
-        mat_04(:,2:2+16-1), rad2deg( mat_04(:,18:18+8-1) ), ...mat_04(:,25:27), rad2deg( mat_04(:,28:30) ), mat_04(:,31:33), rad2deg( mat_04(:,34:36) ), ... % vel_desはとりあえず図にしない
-        mat_05(:,2:2+9-1), rad2deg( mat_05(:,11:end) ), ...
-        mat_06(:,2:end), ...
-        mat_07(:,2:end), ...
-        mat_08(:,2:end), ...
-        mat_09(:,2:end), ...
-        rad2deg( mat_10(:,2) ), mat_10(:,3:end), ...
-        mat_11(:,2:2+12-1), rad2deg( mat_11(:,14:14+7-1) ), mat_11(:,21:21+6-1), ...
-        mat_12(:,2:end), ...
-        mat_13(:,2:end)  ];
-        													・
-        													・
-        													・
-        													・
-```
 
 ## Contribution
 
