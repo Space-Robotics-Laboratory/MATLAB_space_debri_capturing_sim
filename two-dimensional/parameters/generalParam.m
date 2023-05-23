@@ -7,7 +7,7 @@ gPram.dataSaveName = 'myFile';
 
 %% Simulation Time Setting
 gPram.minusTime = 0; % minus value like -1
-gPram.endTime   = 1;
+gPram.endTime   = 2;
 gPram.divTime   = .001;
 
 %% Animation Time Setting
