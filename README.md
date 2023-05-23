@@ -137,11 +137,14 @@ After implementing your work, through the pull request and code review process, 
 This code is not yet released.
 
 ## FAQ
-Q. From which frame, LP.cc is defined?
+Q. _From which frame, LP.cc is defined?_
+
 A. In each link frame. So, position vector like LP.cc(:, n, n-1) and LP.cc(:, n, n) are expressed in link n frame.
 
-Q. Which is the direction of joint axis?
+Q. _Which is the direction of joint axis?_
+
 A. Z axis direction in link frame. For example, joint n axis is the same as the link n Z axis.
 
-Q. I multiplied rpy2dc to vector from left, but the result was not what I expected. 
+Q. _I multiplied rpy2dc to vector from left, but the result was not what I expected._ 
+
 A. In SpaceDyn, rpy2dc calculate frame rotation of {b} -> {s}, which is endogenous. This is because roll pitch yaw is defined as endogenous x->y->z. Thanks to this difinition, you can calculate link yaw after joint's rotation as just yaw + phi. As a conclusion, if you want to achieve {s} -> {b} rotation, you can do it by multipling rpy2dc^T to vector from left. For more detail, please see calc_aa.m file.
