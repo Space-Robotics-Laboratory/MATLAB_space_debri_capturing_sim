@@ -148,3 +148,17 @@ A. Z axis direction in link frame. For example, joint n axis is the same as the 
 Q. _I multiplied rpy2dc to vector from left, but the result was not what I expected._ 
 
 A. In SpaceDyn, rpy2dc calculate frame rotation of {b} -> {s}, which is endogenous. This is because roll pitch yaw is defined as endogenous x->y->z. Thanks to this difinition, you can calculate link yaw after joint's rotation as just yaw + phi. As a conclusion, if you want to achieve {s} -> {b} rotation, you can do it by multipling rpy2dc^T to vector from left. For more detail, please see calc_aa.m file.
+
+Q. I got an error like below.
+```
+次を使用中のエラー: cross
+入力引数が多すぎます。
+
+エラー: calc_contactForce (行 61)
+    side2endEffecCent = cross(tip2EndEffecCent, targetSideDire, 1);         % 端球中心と辺直線の距離計算 3*4*4 内向き
+
+エラー: main_sim (行 65)
+    [roboExtWrench(:, 2:5), targetExtWrench, isContact] = calc_contactForce(dualArmRobo, targetSquare, param);
+```
+
+A. This is caused by path setting error. Please remove [UNUSED]old_references diretory from Matlab path.
