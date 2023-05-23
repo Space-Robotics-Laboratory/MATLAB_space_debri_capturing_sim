@@ -113,9 +113,12 @@ classdef Pathway
             targWidth = targ.width;
             targOri = targ.SV.Q0(3);
             captureDeltAng = 0;
+            LdH = param.robot.endEffector_h;
+            LdGamma = param.robot.endEffector_gamma;
+            LdD = param.robot.diameter_endTip;
 
             % ターゲット頂点がロボットエンドエフェクタの間に入る角度
-            alpha = asin(param.LdH * sin(param.LdGamma) / (targWidth/sqrt(2) + param.LdD * .5));
+            alpha = asin(LdH * sin(LdGamma) / (targWidth/sqrt(2) + LdD * .5));
 
             % 捕獲時のターゲット角度，待機時間決定
             % 角速度０の場合は任意の時間．その他はターゲットの頂点が手先刺股の間に入るまで待機
@@ -144,9 +147,9 @@ classdef Pathway
             armSign = [-1, +1];                                                                 % 左手なら負，右手なら正
             ma = param.control.approachDistantMargin;   % 誤差余裕:待機位置
             mc = param.control.captureDistantMargin;    % 誤差余裕:捕獲位置
-            dX_close = ma * sqrt( (targWidth/sqrt(2) + param.LdD*.5)^2 ...              
-                          -(param.LdH * sin(param.LdGamma))^2   ) ;                             % 手先先端球がターゲットにギリギリ触れない，ターゲット中心から手先までの距離.許容誤差.03
-            dX_capture = mc * (targWidth + param.LdD)/sqrt(2) - param.LdH * sin(param.LdGamma);     % 手先先端球がターゲットに触れる時の，ターゲット中心から手先までの距離.サバよみ
+            dX_close = ma * sqrt( (targWidth/sqrt(2) + LdD*.5)^2 ...              
+                          -(LdH * sin(LdGamma))^2   ) ;                             % 手先先端球がターゲットにギリギリ触れない，ターゲット中心から手先までの距離.許容誤差.03
+            dX_capture = mc * (targWidth + LdD)/sqrt(2) - LdH * sin(LdGamma);     % 手先先端球がターゲットに触れる時の，ターゲット中心から手先までの距離.サバよみ
             
             contactPosVecClose = captureDeltAngMat(1:2,1:2) * [dX_close; 0]  .* armSign;     % 接触アーム目標位置の，ターゲット重心に対する相対位置ベクトル 2*2
             contactPosVecCapt  = captureDeltAngMat(1:2,1:2) * [dX_capture; 0] .* armSign;
@@ -169,8 +172,9 @@ classdef Pathway
             targW = targ.SV.w0(3);
             targWidth = targ.width;
             targOri = targ.SV.Q0(3);
-            gamma = param.LdGamma;
-            r = param.LdD * .5;
+            LdH = param.robot.endEffector_h;
+            gamma = param.robot.endEffector_gamma;
+            r = param.robot.diameter_endTip * .5;
 
             % ターゲット速度方向より接触時点のターゲット角度を計算
             targetVang = subspace([1,0]', targV);
@@ -192,7 +196,7 @@ classdef Pathway
             targ2ContPos0 = targWidth * .5 * [armSign; contSign * contPosRate];         % 2*1
             targ2ContPos = contAngMat(1:2, 1:2) * targ2ContPos0;                        % 2*1
             contPos2tip = contAngMat(1:2, 1:2) * [armSign*r; 0];                        % 2*1
-            tip2EE = evadeAngMat(1:2, 1:2) * [0;  param.LdH * sin(gamma) * contSign];   % 2*1
+            tip2EE = evadeAngMat(1:2, 1:2) * [0;  LdH * sin(gamma) * contSign];   % 2*1
             targ2Tip = targ2ContPos + contPos2tip;                                      % 2*1
             targ2EECont  = targ2Tip + tip2EE;                                           % 2*1
             

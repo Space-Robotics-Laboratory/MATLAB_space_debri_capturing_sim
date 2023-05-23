@@ -96,7 +96,7 @@ gPram.endTime   = 5;
 ```
 targetParam.depth = 0.16;
 targetParam.width = targetParam.depth;
-targetParam.init_angular_velocity = [0, 0, 1]';
+targetParam.initial_angular_velocity = [0, 0, 1]';
 ```
 * depth : Target side length. 
 * width : Target side length. In this case, assuming square, it is same as depth.
