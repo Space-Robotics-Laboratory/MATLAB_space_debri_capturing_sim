@@ -2,7 +2,23 @@
 ## Two Dimensional
 
 <img src="./docs/media/simulationmodel.jpg" alt="Simulation Model" title="Simulation Model of Dual-arm Service Robot Testbet" width="400">
-<img src="./docs/media/blenderParams.png" alt="Simulation Parameter" title="Simulation Parameter of Dual-arm Service Robot Testbet" width="350">
+
+## Initial Robot Shape
+Here you can fine the original robot model parameters, same as the ones of blender STL model.
+
+<center>
+
+|Link|Length[m] or Angle[rad] |
+|----|----|
+|Link 1| 0.25|
+|Link 2| 0.175|
+|Link 3| 0.091|
+|Link 4 h| 0.081393154503312|
+|Link 4 γ| 0.717235030908703|
+|Link 4 d|0.018|
+
+</center>
+
 
 ## Description of the imprtant folders and files
 ```
@@ -55,8 +71,45 @@ This class also has a function to calculate desired velocity by pathway, using d
 
 # Parameters Often Changed
 ## General Parameters
+```
+gPram.dataSavePath = '~/github/MATLAB_space_debri_capturing_sim/two-dimensional/dat';
+gPram.dataSaveName = 'myFile';
+gPram.minusTime = -0.5;
+gPram.endTime   = 5;
+```
+* dataSavePath : You can change the path to save simulation result. It is recommended to set it as above.
+* dataSaveName : You can select data save name. In this code, results are saved like below.
+* minusTime : It should be defined as minus value. Simulation will start from minus time, and if time is minus, robot joints are not active.
+* endTime : Simulation end time. Deeply affects to the calculation time.
+```
+|-- two-dimensional
+    |-- dat
+        |-- yyyy-mm-dd
+            |-- yyyy-mm-dd-hh-mm-ss
+                |-- myFile-dat : data save directory
+                |-- myFile-fig : figure save directory
+                |-- myFile-mov : movie save directory
+                |-- myFile-png : image save directory
+```
 
 ## Target Parameters
+```
+targetParam.depth = 0.16;
+targetParam.width = targetParam.depth;
+targetParam.init_angular_velocity = [0, 0, 1]';
+```
+* depth : Target side length. 
+* width : Target side length. In this case, assuming square, it is same as depth.
+* init_angular_velocity : Initial target angular velocity. As this is 2D simulation, change only z value.
+
+## Contact Parameters
+```
+cParam.damp  = 20;
+cParam.elast = 1000;
+cParam.friction = 0.1;
+```
+* damp : Damping coefficient in contact model. The higher, the softer contact comes.
+* elast : Modulus of elasticity in contact model. The higher, the harder contact comes.
 
 ## Control Parameters
 ```
@@ -67,14 +120,3 @@ controlParam.velocityMode = 'str_tru';
 
 * velocityMode : Currently, 'str_str', 'str_tru' are available. ('str_fbk' is available too, but not useful) the former represents trajectory, the latter does speed model. For example, str_str model is straight trajectory with constant velocity, str_tru means straight trajectry with triangle speed-time graph. (constant acceleration)
 
-## Initial Robot Shape
-Here you can fine the original robot model parameters, same as the ones of blender STL model.
-
-|Link|Length[m] or Angle[rad] |
-|----|----|
-|Link 1| 0.25|
-|Link 2| 0.175|
-|Link 3| 0.091|
-|Link 4 h| 0.081393154503312|
-|Link 4 γ| 0.717235030908703|
-|Link 4 d|0.018|

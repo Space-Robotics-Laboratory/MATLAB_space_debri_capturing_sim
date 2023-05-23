@@ -23,19 +23,19 @@ classdef TargetSquare
             %%%%%%%%%%%%%%%%%%%% 初期値設定 %%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % 形状設定
-            obj.depth = Parameters.targetParam.depth;
-            obj.width = Parameters.targetParam.width;
-            obj.height = Parameters.targetParam.height;
-            obj.m2G = Parameters.targetParam.mCenter2gCenter;
+            obj.depth = Parameters.target.depth;
+            obj.width = Parameters.target.width;
+            obj.height = Parameters.target.height;
+            obj.m2G = Parameters.target.mCenter2gCenter;
             
             %%%%%%%%%% ターゲット初期値設定 %%%%%%%%%%
            
             % ベースの初期位置・姿勢・速度・角速度
-            obj.SV.R0 = Parameters.targetParam.init_position;           % 初期位置
-            obj.SV.Q0 = Parameters.targetParam.init_orientation;        % 初期姿勢
+            obj.SV.R0 = Parameters.target.init_position;           % 初期位置
+            obj.SV.Q0 = Parameters.target.init_orientation;        % 初期姿勢
             obj.SV.A0 = rpy2dc( obj.SV.Q0 )';                           % 初期姿勢から方向余弦行列を算出
-            obj.SV.v0 = Parameters.targetParam.init_velocity;           % 初期並進速度
-            obj.SV.w0 = Parameters.targetParam.init_angular_velocity;   % 初期角速度
+            obj.SV.v0 = Parameters.target.init_velocity;           % 初期並進速度
+            obj.SV.w0 = Parameters.target.init_angular_velocity;   % 初期角速度
             obj.SV = calc_aa(  obj.LP, obj.SV );          % 各リンクの座標返還行列(方向余弦行列)の計算(リンクi->慣性座標系)
             obj.SV = calc_pos( obj.LP, obj.SV );          % 各リンク重心位置の計算
             obj.m2G = obj.SV.A0 * obj.m2G;                % ターゲット質量中心に対する幾何中心位置ベクトル更新

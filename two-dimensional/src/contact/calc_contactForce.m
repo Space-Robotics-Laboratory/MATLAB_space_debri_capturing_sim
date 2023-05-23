@@ -16,9 +16,9 @@
 %
 
 function [edgeWrench, targetWrench, isContact] = calc_contactForce(DualArmRobo, Target, param)
-    contactElast = param.ContactElast;          % 弾性係数
-    contactDamp = param.ContactDamp;            % 減衰係数
-    contactNu = param.ContactNu;                % 摩擦係数
+    contactElast = param.contact.elast;          % 弾性係数
+    contactDamp = param.contact.damp;            % 減衰係数
+    contactNu = param.contact.friction;          % 摩擦係数
     tWidth = Target.width;                      % ターゲット横
     tDepth = Target.depth;                      % ターゲット縦
     m2G  = Target.m2G(1:2);                     % ターゲット質量重心から幾何中心への相対位置ベクトル 2*1

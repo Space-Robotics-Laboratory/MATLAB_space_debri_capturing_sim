@@ -16,9 +16,9 @@ LP_t.J_type = [];
 LP_t.m = [];
 
 % ベースの質量 [kg]
-rho = Param.targetParam.density;
-width = Param.targetParam.width;
-depth = Param.targetParam.depth;
+rho = Param.target.density;
+width = Param.target.width;
+depth = Param.target.depth;
 mass = rho * width * depth;
 LP_t.m0 = mass ;
 

@@ -3,14 +3,16 @@ function param = set_Param()
 % 左手リンクが[1,2,3,4], 右手リンクが[5,6,7,8]
 
 % シミュレーション条件 & パス設定
-param.generalParam = generalParam();
+param.general = generalParam();
 
 % ターゲットパラメータ
-param.targetParam = targetParam();
+param.target = targetParam();
 
 % コントロールパラメータ
 param.control = controlParam();
 
+% 接触係数
+param.contact = contactParam();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ロボットリンクパラメータ
@@ -124,14 +126,6 @@ param.LinkAngRight = -[pi/3 -pi*4/9 -pi*7/18 0]';  % 右手の関節角度，ベ
 % Param.LinkAngRight = -[0 0 0 0]';  % 右手の関節角度，ベース側から ;SV.q
 
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 物理係数設定
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-param.ContactDamp  = 20;%8;%20;         % 接触力減衰係数
-param.ContactElast = 1000;%9000;%1000;      % 接触力弾性係数
-param.ContactNu    = .1;%0.3;       % 接触力摩擦係数
 param.WristDamp    = .3;%0.4;       % 手首関節減衰係数
 param.WristElast   = .4;%0.8;       % 手首関節弾性係数
 end

@@ -8,10 +8,10 @@ function paths = make_DataFolder(Parameters)
 %paths.movfile -> アニメーション保存用
 
 % フォルダ作成
-param_name = Parameters.generalParam.dataSaveName;               % ファイル名設定
+param_name = Parameters.general.dataSaveName;               % ファイル名設定
 timepath = datestr( now, 'yyyy-mmdd-HHMMSS' );  % yはyear，mはmonth,dはday,Hはhour,Mはminute,Sはsecond.それぞれの文字数分出力する
 datepath = datestr( now, 'yyyy-mmdd' );
-path_temp = [ Parameters.generalParam.dataSavePath '/' datepath '/' timepath ];                 % データ保存のディレクトリを作る ;          
+path_temp = [ Parameters.general.dataSavePath '/' datepath '/' timepath ];                 % データ保存のディレクトリを作る ;          
 paths.datfile = [ path_temp, '/', param_name, '-', 'dat' ];                        % datファイルの名前指定
 paths.figfile = [ path_temp, '/', param_name, '-', 'fig' ];                        % グラフファイルの名前指定
 paths.pngfile = [ path_temp, '/', param_name, '-', 'png' ];                        % 画像ファイルの名前指定

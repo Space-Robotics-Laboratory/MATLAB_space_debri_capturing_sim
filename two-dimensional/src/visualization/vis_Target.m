@@ -4,9 +4,9 @@
 % 
 
 function vis_Target(targR0, targQ0, param)
-targetMCenter2GCenter = param.targetParam.mCenter2gCenter(1:2);
-targetWidth = param.targetParam.width;
-targetDepth = param.targetParam.depth;
+targetMCenter2GCenter = param.target.mCenter2gCenter(1:2);
+targetWidth = param.target.width;
+targetDepth = param.target.depth;
 
 targetCenterPos = targR0(1:2);
 targetOriZ      = targQ0(3);                                                                                    % z軸周りの角度ラジアン

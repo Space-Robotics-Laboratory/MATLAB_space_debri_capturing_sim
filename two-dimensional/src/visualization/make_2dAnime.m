@@ -3,8 +3,9 @@
 
 function make_2dAnime(datSaver, paths, param)
     % パラメータインポート
-    mov_dtime = param.generalParam.anime_divTime;                              % 動画刻み時間
     dataStruct = datSaver.datStruct;
+    dt_sim = param.general.divTime;
+    frameRate = param.general.anime_frameRate; 
     
     % force vector scale
     scale = .01;
@@ -19,18 +20,17 @@ function make_2dAnime(datSaver, paths, param)
     movfilename = "AnimeMov";   % 動画ファイル名
 
     % 動画用ファイル定義
-    frameRate = 1 / mov_dtime;                                              % フレームレート計算
     video = VideoWriter([paths.movfile, '/', char(movfilename), '.avi']);   % 動画ライター定義
     video.FrameRate = frameRate;                                            % フレームレート設定
     open(video)                                                             % 動画ライターオープン
 
     % 描画開始
     for count = 1:datSaver.datNum
-        % アニメ時間
-        anime_time = param.generalParam.divTime * count;
+        % アニメ時間ディジタル化
+        mov_d_count = fix( 1/ (frameRate * dt_sim) );
         
         % アニメ時間が動画刻み時間で割り切れる時に図を描画，動画に保存
-        if rem(anime_time, mov_dtime) == 0
+        if rem(count, mov_d_count) == 0
             %%% データインポート
             % robo
             roboR0 = dataStruct.roboR0(count, :)';

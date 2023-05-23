@@ -78,14 +78,14 @@ __You must not add '[UNUSED]old_references' to the path.__ They are using some f
 
 
 #### 3. Change the Dat Path
-In setParam.m file, you can change the path to the directory where you want to save the output results.
+In two-dimensional/parameters/generalParam.m or three-dimensional/parameters/generalParam.m, you can change the path to the directory where you want to save the output results.
 ```commandline
-param.DataSavePath = '~/github/MATLAB_space_debri_capturing_sim/two-dimensional/dat';
-param.FileName     = 'myFile';
+gParam.dataSavePath = '~/github/MATLAB_space_debri_capturing_sim/two-dimensional/dat';
+gParam.fileName     = 'myFile';
 ```
 
 #### 4. Run the code
-Click the "Run" button to run the simulation. For more infirmation on how to use, please see README.md under 'two-dimensional' or 'three-dimensional'.
+Open 'main_sim.m' code under two-dimensional/src or three-dimansional/src and click the "Run" button to run the simulation. For more infirmation on how to use, please see README.md under 'two-dimensional' or 'three-dimensional'.
 
 #### 5. View in Blender
 Though this action is not necessary, it will help you to make realistic movie.
