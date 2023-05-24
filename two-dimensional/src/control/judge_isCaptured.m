@@ -11,7 +11,10 @@ function isCapture = judge_isCaptured(robo, target, param)
 
 d = robo.r * 2;
 lt = target.width;
-l = param.LdH * sin(param.LdGamma) * 2;
+LdH = param.robot.endEffector_h;
+LdGamma = param.robot.endEffector_gamma;
+LdD = param.robot.diameter_endTip;
+l = LdH * sin(LdGamma) * 2;
 
 endEffecPos = [robo.POS_es_L, robo.POS_es_R];                 % dim1:[xyz], dim2:roboArmTip 3*4
 endEffecDiff = endEffecPos(:, [1, 2, 1, 2]) - endEffecPos(:, [4, 3, 3, 4]); % difference of (L1, R2), (L2, R1), (L1, R1), (L2, R2)

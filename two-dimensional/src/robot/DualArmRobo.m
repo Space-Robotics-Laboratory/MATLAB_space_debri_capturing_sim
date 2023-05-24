@@ -15,8 +15,9 @@ classdef DualArmRobo
         height;             % ベース高さ
         wristElast;         % 手首弾性係数
         wristDamp;          % 手首減衰係数
-        jointAngLim;        % 関節可動範囲
-        jointTrqLim;        % モータトルク限界
+        jointAngMax;        % 関節可動範囲
+        jointAngMin;        % 関節可動範囲
+        motorTrqMax;        % モータトルク限界
         LP;                 % ロボットリンクパラメータ
         SV;                 % ロボット状態パラメータ
         num_eL;             % 左手手先の番号 1
@@ -42,12 +43,12 @@ classdef DualArmRobo
     methods
         % constructor
         % 呼び出し時に実行し，ParamSettingをもとに初期位置姿勢，各リンクの重心位置，方向余弦行列を計算する
-        function obj = DualArmRobo(Parameters)
+        function obj = DualArmRobo(param)
             if nargin ~= 1
                 error("DualArmTestBed must have Paramsters")
             end
             % ロボットリンクパラメータ設定
-            obj.LP = DualArmRobo_LP(Parameters);
+            obj.LP = DualArmRobo_LP(param);
             % ロボット状態を初期化
             obj.SV = init_SV_DAR(obj.LP);
 
@@ -57,16 +58,17 @@ classdef DualArmRobo
             
             %%%%%%%%%% ロボット初期値設定 %%%%%%%%%%
             % 形状設定
-            obj.depth = Parameters.BaseDepth;
-            obj.width = Parameters.BaseWidth;
-            obj.height = Parameters.BaseHeight;
-            obj.r = Parameters.LdD * .5;
-            obj.wristElast = Parameters.WristElast;
-            obj.wristDamp = Parameters.WristDamp;
+            obj.depth = param.robot.baseDepth;
+            obj.width = param.robot.baseWidth;
+            obj.height = param.robot.baseHeight;
+            obj.r = param.robot.diameter_endTip * .5;
+            obj.wristElast = param.robot.wristElast;
+            obj.wristDamp = param.robot.wristDamp;
 
             % モータ限界値設定
-            obj.jointAngLim = Parameters.JointAngLim;
-            obj.jointTrqLim = Parameters.JointTrqLim;
+            obj.jointAngMax = param.robot.jointAngle_max; % yet unused
+            obj.jointAngMin = param.robot.jointAngle_min; % yet unused
+            obj.motorTrqMax = param.robot.motorTorque_max;
 
             % ベースからnum_eで指定された手先までを結ぶ関節(リンク)を求める  1アーム多リンクなら1, リンクの数を表す
             obj.num_eL = 1;
@@ -75,14 +77,14 @@ classdef DualArmRobo
             obj.jointsR = j_num( obj.LP, obj.num_eR );   % 右手のジョイント数
             
             % ベースの初期位置・姿勢・速度・角速度
-            obj.SV.R0 = Parameters.BasePosition0;       % 初期位置
-            obj.SV.Q0 = Parameters.BaseOrientation0;    % 初期姿勢
-            obj.SV.A0 = rpy2dc( obj.SV.Q0 )';           % 初期姿勢から方向余弦行列を算出
-            obj.SV.v0 = Parameters.BaseVelocity0;       % 初期並進速度
-            obj.SV.w0 = Parameters.BaseAngVel0;         % 初期角速度
+            obj.SV.R0 = param.robot.initial_position;       % 初期位置
+            obj.SV.Q0 = param.robot.initial_orientation;    % 初期姿勢
+            obj.SV.A0 = rpy2dc( obj.SV.Q0 )';               % 初期姿勢から方向余弦行列を算出
+            obj.SV.v0 = param.robot.initial_velocity;       % 初期並進速度
+            obj.SV.w0 = param.robot.initial_angularVelocity;% 初期角速度
             
             % ロボットの初期関節角度を設定
-            obj.SV.q = [ Parameters.LinkAngLeft; Parameters.LinkAngRight ];    % 縦に格納
+            obj.SV.q = param.robot.initial_jointsAngle;     % 縦に格納
             
             % 設定反映
             obj.SV = calc_aa(  obj.LP, obj.SV );        % 各リンクの座標返還行列(方向余弦行列)の計算(リンクi->慣性座標系)
@@ -96,15 +98,15 @@ classdef DualArmRobo
             obj.SV.Q0 = dc2rpy( obj.SV.A0' );                                        % ベース角度のオイラー角表現
             obj.SV.QeL= dc2rpy( obj.ORI_e_L' );                                      % 左端リンクのオイラー角表現
             obj.SV.QeR= dc2rpy( obj.ORI_e_R' );                                      % 右端リンクのオイラー角表現
-            obj.POS_es_L = calc_armTipsPos(obj.POS_e_L, obj.ORI_e_L, Parameters);    % 左手の先端球位置 3*2
-            obj.POS_es_R = calc_armTipsPos(obj.POS_e_R, obj.ORI_e_R, Parameters);    % 右手の先端球位置 3*2
+            obj.POS_es_L = calc_armTipsPos(obj.POS_e_L, obj.ORI_e_L, param);    % 左手の先端球位置 3*2
+            obj.POS_es_R = calc_armTipsPos(obj.POS_e_R, obj.ORI_e_R, param);    % 右手の先端球位置 3*2
 
             % 関節速度初期化
             obj.SV = calc_vel(obj.LP, obj.SV);                                          % 全リンク重心の並進・回転速度計算
             obj.VEL_e_L = calc_vel_e(obj.LP, obj.SV, obj.jointsL);                      % 左手先の並進速度計算
             obj.VEL_e_R = calc_vel_e(obj.LP, obj.SV, obj.jointsR);                      % 右手先の並進速度計算
-            obj.VEL_es_L = calc_armTipsVel(obj.VEL_e_L, obj.ORI_e_L, obj.SV.ww(:, 4), Parameters);  % 左手先端球の並進速度計算
-            obj.VEL_es_R = calc_armTipsVel(obj.VEL_e_R, obj.ORI_e_R, obj.SV.ww(:, 8), Parameters);  % 右手先端球の並進速度計算
+            obj.VEL_es_L = calc_armTipsVel(obj.VEL_e_L, obj.ORI_e_L, obj.SV.ww(:, 4), param);  % 左手先端球の並進速度計算
+            obj.VEL_es_R = calc_armTipsVel(obj.VEL_e_R, obj.ORI_e_R, obj.SV.ww(:, 8), param);  % 右手先端球の並進速度計算
 
             % 前状態初期化
 %             obj.DualArmRoboPrevious = obj;                                           % 0時間では前状態と現状態が一致
@@ -120,7 +122,7 @@ classdef DualArmRobo
 %             obj.DualArmRoboPrevious = obj;
 
             % 能動的な力
-            obj.SV.tau = min_abs(JointTau, obj.jointTrqLim);                  % トルク限界値でフィルタした関節トルク代入．tau([4,8])は受動関節なので，上書きされる．
+            obj.SV.tau = min_abs(JointTau, obj.motorTrqMax);                  % トルク限界値でフィルタした関節トルク代入．tau([4,8])は受動関節なので，上書きされる．
 
             % 受動的な力
             obj.SV.tau([4, 8]) = -obj.wristDamp  * obj.SV.qd([4, 8]) ...      % 手首関節トルクをバネダンパ系で計算

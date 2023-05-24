@@ -19,7 +19,7 @@ global d_time
 global Gravity
 global Ez
 Ez = [ 0 0 1 ]';
-d_time = param.DivTime; % シミュレーション1step当たりの時間
+d_time = param.general.divTime; % シミュレーション1step当たりの時間
 Gravity = [ 0 0 0 ]'; % 重力（地球重力は Gravity = [0 0 -9.8]）
 
 % パス設定
@@ -35,8 +35,8 @@ targetSquare = TargetSquare(param);
 controller = Controller(dualArmRobo, 0, param);
 
 % シミュレーション時間
-endTime    = param.EndTime;                 % 終了時間設定．
-minusTime = param.MinusTime;                % マイナス時間設定．
+endTime    = param.general.endTime;                 % 終了時間設定．
+minusTime = param.general.minusTime;                % マイナス時間設定．
 
 % ロボット・ターゲット力初期化
 roboExtWrench  = zeros(6,5);                   % ロボ外力[ BaseForce    LeftTip1Force   LeftTip2Force   RightTip1Force  RightTip2Force]

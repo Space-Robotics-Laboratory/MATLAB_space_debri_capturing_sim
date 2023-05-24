@@ -7,8 +7,10 @@
 %         y1 y2
 %         z1 z2]
 
-function POS_es = calc_armTipsPos(POS_e, ORI_e, Param)
-    Tip1 = POS_e + ORI_e * Param.LdH * sin(Param.LdGamma) * [-1 0 0]';
-    Tip2 = POS_e + ORI_e * Param.LdH * sin(Param.LdGamma) * [ 1 0 0]';
+function POS_es = calc_armTipsPos(POS_e, ORI_e, param)
+    LdH = param.robot.endEffector_h;
+    LdGamma = param.robot.endEffector_gamma;
+    Tip1 = POS_e + ORI_e * LdH * sin(LdGamma) * [-1 0 0]';
+    Tip2 = POS_e + ORI_e * LdH * sin(LdGamma) * [ 1 0 0]';
     POS_es = [Tip1, Tip2];
 end

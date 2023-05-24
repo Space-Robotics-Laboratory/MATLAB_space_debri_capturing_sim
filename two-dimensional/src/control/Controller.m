@@ -89,7 +89,7 @@ classdef Controller
                         return
                     end
                     % 初期時刻及び接触後待機時間経過後にフラグ立て
-                    flagAfterContact = equal_time(time, state.time.lastContact + obj.impDuration, param.DivTime);% && obj.phase == -1;
+                    flagAfterContact = equal_time(time, state.time.lastContact + obj.impDuration, param.general.divTime);% && obj.phase == -1;
                     obj.flagPathUpdate = time == 0 || flagAfterContact;
                     obj =  obj.contactDampen(robo, targ, roboFTsensor, state, time, param);
                     return 
@@ -169,14 +169,33 @@ classdef Controller
                 obj.pathway = obj.pathway.contactDampen(robo, targ, time, param);
             end
             % インピーダンス割り込み処理
-            obj = obj.impedance(time, robo, roboFTsensor, state, param);
+            % obj = obj.impedance(time, robo, roboFTsensor, state, param);
+            if obj.phase == -1
+                obj = obj.stopEndEffector(robo, roboFTsensor);
+                obj.controlState = 'follow';
+            end
             if obj.phase ~= -1 && strcmp(obj.controlState, 'follow')
-                % 両手でpathway(目標位置)を追従
-                obj.controlPart = [true, targ.SV.v0(1)<0, targ.SV.v0(1)>=0];
-                obj.desEEVel = obj.pathway.vel(time, robo, obj);
-                obj.desBaseVel = [0; targ.SV.v0(2); 0];
-                obj = obj.achieveVelocity(robo, roboFTsensor);
-                % obj = obj.followPathway_2hands(time, robo, roboFTsensor);
+                controlArm = [targ.SV.v0(1)<0, targ.SV.v0(1)>=0];
+                endEffec2target = [robo.POS_es_L, robo.POS_es_R] - targ.SV.R0 ;
+                ee2targDist = vecnorm(endEffec2target);
+                controlArm_2 = clone_vec(controlArm, 2);
+                nonContArmDist = min(ee2targDist(~controlArm_2), [], 2);
+                ee2targDistMin = param.control.nonContactArm2targetMinDistanceRatio * targ.width * sin(pi/4) + robo.r;
+                % 非接触アームがターゲットから十分遠い場合，関節速度空間のノルムが最小となるように制御
+                if nonContArmDist >= ee2targDistMin
+                    obj.controlPart = [false, targ.SV.v0(1)<0, targ.SV.v0(1)>=0];
+                    obj.desEEVel = obj.pathway.vel(time, robo, obj);
+
+                % 非接触アームがターゲットに接触する可能性がある場合，停止させる
+                else
+                    obj.controlPart = [false, true, true];
+                    controlVel = clone_vec(controlArm, 3);
+                    obj.desEEVel = obj.pathway.vel(time, robo, obj);
+                    obj.desEEVel(~controlVel) = 0;
+                end
+                % obj.desBaseVel = [0; targ.SV.v0(2); 0];
+                % obj = obj.achieveVelocity(robo, roboFTsensor);
+                obj = obj.followPathway_2hands(time, robo, roboFTsensor);
             end
             obj.phase = obj.pathway.phase(time, param, 1);
         end
@@ -197,6 +216,16 @@ classdef Controller
             obj.velInBaseFram = [false, false];
             obj.controlState = 'follow';
             obj.desEEVel = obj.pathway.vel(time, robo, obj);
+            obj.tau = calc_tau_from_ee_vel(robo, obj.desEEVel, roboFTsensor, obj.velInBaseFram);
+        end
+
+        %% pathwayを片手で追従し，他方の手は関節を固定する
+        function obj = followPathway_1hand(obj, time, robo, roboFTsensor)
+            obj.desEEVel = obj.pathway.vel(time, robo, obj);
+            stopArm = ~obj.controlPart(2:3);
+            obj.velInBaseFram = [false, false];            % activeでないアームはベースに固定する
+            indices = clone_vec(stopArm, 3);
+            obj.desEEVel(indices) = -obj.desEEVel(~indices);
             obj.tau = calc_tau_from_ee_vel(robo, obj.desEEVel, roboFTsensor, obj.velInBaseFram);
         end
 

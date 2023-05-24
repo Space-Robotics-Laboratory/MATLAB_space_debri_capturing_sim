@@ -58,25 +58,25 @@ classdef Pathway
             % pathwayの初めの時刻より前であれば（通常負の時刻），phaseは０
             if time < obj.pathway(4, 1, armIndex)
                 phase = 0;
-                phaseStarting = (time - param.MinusTime) < param.DivTime * 1.01 && ...
-                                (time - param.MinusTime) >= 0;
-                phaseEnding = (obj.pathway(4, 1, armIndex) - time) <= param.DivTime * 1.01 && ...
+                phaseStarting = (time - param.general.minusTime) < param.general.divTime * 1.01 && ...
+                                (time - param.general.minusTime) >= 0;
+                phaseEnding = (obj.pathway(4, 1, armIndex) - time) <= param.general.divTime * 1.01 && ...
                               (obj.pathway(4, 1, armIndex) - time) > 0;
                 return
             
             % pathwayの最後の項より後であれば，phaseは-1
             elseif time >= obj.pathway(4, n, armIndex)
                 phase = -1;
-                phaseStarting = (time - obj.pathway(4, n, armIndex)) < param.DivTime * 1.01 && ...
+                phaseStarting = (time - obj.pathway(4, n, armIndex)) < param.general.divTime * 1.01 && ...
                                 (time - obj.pathway(4, n, armIndex)) >= 0;
                 phaseEnding = true;
                 return
             end
             IND = 1:n;
             phase = IND(index);
-            phaseStarting = (time - obj.pathway(4, phase, armIndex)) < param.DivTime * 1.01 && ... 
+            phaseStarting = (time - obj.pathway(4, phase, armIndex)) < param.general.divTime * 1.01 && ... 
                             (time - obj.pathway(4, phase, armIndex)) >= 0; % おそらく余分
-            phaseEnding = (obj.pathway(4, phase + 1, armIndex) - time) <= param.DivTime * 1.01 && ...
+            phaseEnding = (obj.pathway(4, phase + 1, armIndex) - time) <= param.general.divTime * 1.01 && ...
                           (obj.pathway(4, phase + 1, armIndex) - time) > 0; % おそらく余分
         end
 
@@ -113,9 +113,12 @@ classdef Pathway
             targWidth = targ.width;
             targOri = targ.SV.Q0(3);
             captureDeltAng = 0;
+            LdH = param.robot.endEffector_h;
+            LdGamma = param.robot.endEffector_gamma;
+            LdD = param.robot.diameter_endTip;
 
             % ターゲット頂点がロボットエンドエフェクタの間に入る角度
-            alpha = asin(param.LdH * sin(param.LdGamma) / (targWidth/sqrt(2) + param.LdD * .5));
+            alpha = asin(LdH * sin(LdGamma) / (targWidth/sqrt(2) + LdD * .5));
 
             % 捕獲時のターゲット角度，待機時間決定
             % 角速度０の場合は任意の時間．その他はターゲットの頂点が手先刺股の間に入るまで待機
@@ -144,9 +147,9 @@ classdef Pathway
             armSign = [-1, +1];                                                                 % 左手なら負，右手なら正
             ma = param.control.approachDistantMargin;   % 誤差余裕:待機位置
             mc = param.control.captureDistantMargin;    % 誤差余裕:捕獲位置
-            dX_close = ma * sqrt( (targWidth/sqrt(2) + param.LdD*.5)^2 ...              
-                          -(param.LdH * sin(param.LdGamma))^2   ) ;                             % 手先先端球がターゲットにギリギリ触れない，ターゲット中心から手先までの距離.許容誤差.03
-            dX_capture = mc * (targWidth + param.LdD)/sqrt(2) - param.LdH * sin(param.LdGamma);     % 手先先端球がターゲットに触れる時の，ターゲット中心から手先までの距離.サバよみ
+            dX_close = ma * sqrt( (targWidth/sqrt(2) + LdD*.5)^2 ...              
+                          -(LdH * sin(LdGamma))^2   ) ;                             % 手先先端球がターゲットにギリギリ触れない，ターゲット中心から手先までの距離.許容誤差.03
+            dX_capture = mc * (targWidth + LdD)/sqrt(2) - LdH * sin(LdGamma);     % 手先先端球がターゲットに触れる時の，ターゲット中心から手先までの距離.サバよみ
             
             contactPosVecClose = captureDeltAngMat(1:2,1:2) * [dX_close; 0]  .* armSign;     % 接触アーム目標位置の，ターゲット重心に対する相対位置ベクトル 2*2
             contactPosVecCapt  = captureDeltAngMat(1:2,1:2) * [dX_capture; 0] .* armSign;
@@ -159,9 +162,8 @@ classdef Pathway
         end
 
         %%% ターゲットが並進してきている方向の手先を接触させることによりターゲット角速度を減衰させる
-        % pathwayメソッドをリターン
         function obj = contactDampen(obj, robo, targ, time, param)
-            contPosRate = param.control.contactPositionratio;    % 接触する位置の辺に対する割合．１で頂点．０で中心
+            contPosRate = param.control.contactPositionRatio;    % 接触する位置の辺に対する割合．１で頂点．０で中心
             evadeAng0 = param.control.endEffecAngleDeviation;    % 接触する時のエンドエフェクター角度. ターゲット角が0の場合
 
             % ターゲット情報代入
@@ -170,8 +172,9 @@ classdef Pathway
             targW = targ.SV.w0(3);
             targWidth = targ.width;
             targOri = targ.SV.Q0(3);
-            gamma = param.LdGamma;
-            r = param.LdD * .5;
+            LdH = param.robot.endEffector_h;
+            gamma = param.robot.endEffector_gamma;
+            r = param.robot.diameter_endTip * .5;
 
             % ターゲット速度方向より接触時点のターゲット角度を計算
             targetVang = subspace([1,0]', targV);
@@ -193,7 +196,7 @@ classdef Pathway
             targ2ContPos0 = targWidth * .5 * [armSign; contSign * contPosRate];         % 2*1
             targ2ContPos = contAngMat(1:2, 1:2) * targ2ContPos0;                        % 2*1
             contPos2tip = contAngMat(1:2, 1:2) * [armSign*r; 0];                        % 2*1
-            tip2EE = evadeAngMat(1:2, 1:2) * [0;  param.LdH * sin(gamma) * contSign];   % 2*1
+            tip2EE = evadeAngMat(1:2, 1:2) * [0;  LdH * sin(gamma) * contSign];   % 2*1
             targ2Tip = targ2ContPos + contPos2tip;                                      % 2*1
             targ2EECont  = targ2Tip + tip2EE;                                           % 2*1
             
