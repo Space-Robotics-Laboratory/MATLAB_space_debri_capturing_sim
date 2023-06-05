@@ -84,7 +84,7 @@ classdef Controller
                     % 角速度がしきい値より小さくなったら直接捕獲に移行
                     if time > state.time.comeTargetSlow + obj.impDuration
                         % 少し時間をおいてから直接捕獲のフラグを立てる
-                        obj.flagPathUpdate = equal_time(time, state.time.comeTargetSlow+obj.switchingDelay, param.DivTime);    
+                        obj.flagPathUpdate = equal_time(time, state.time.comeTargetSlow+obj.switchingDelay, param.general.divTime);    
                         obj = obj.directCapture(robo, targ, roboFTsensor, time, param);
                         return
                     end
@@ -169,7 +169,7 @@ classdef Controller
                 obj.pathway = obj.pathway.contactDampen(robo, targ, time, param);
             end
             % インピーダンス割り込み処理
-            % obj = obj.impedance(time, robo, roboFTsensor, state, param);
+            obj = obj.impedance(time, robo, roboFTsensor, state, param);
             if obj.phase == -1
                 obj = obj.stopEndEffector(robo, roboFTsensor);
                 obj.controlState = 'follow';
@@ -276,8 +276,8 @@ classdef Controller
                         force = [roboFTsensor(1:2, 1); roboFTsensor(6, 1); roboFTsensor(1:2, 2); roboFTsensor(6, 2)]; % 6*1
                         % バネマスダンパモデルによって目標加速度計算
                         obj.desEEAcc = force ./ obj.mi - obj.desEEVel .* obj.di ./ obj.mi - obj.deltPosLike .* obj.ki ./ obj.mi;
-                        obj.desEEVel = obj.desEEVel + obj.desEEAcc * param.DivTime; % 直接制御に用いるのはこの値
-                        obj.deltPosLike = obj.deltPosLike + obj.desEEVel * param.DivTime;
+                        obj.desEEVel = obj.desEEVel + obj.desEEAcc * param.general.divTime; % 直接制御に用いるのはこの値
+                        obj.deltPosLike = obj.deltPosLike + obj.desEEVel * param.general.divTime;
                         % velConsidered = clone_vec(obj.controlPart, 3); 
                         % velConsidered(2) = false;
                         % obj.tau = calc_tau_from_ee_base_vel(robo, [obj.desBaseVel;obj.desEEVel], roboFTsensor, velConsidered);
