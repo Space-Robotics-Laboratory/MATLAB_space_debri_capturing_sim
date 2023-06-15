@@ -4,15 +4,14 @@
 % 
 % main simulation
 %
-clc
-clear 
-close all
-  
-%%%%% シミュレーション準備
-%%% パラメータ設定
-% 基本的にパラメータはParamSetting内で変更する．
-param  = set_Param();                   
+function evaluation = main_sim(param)
+arguments
+    %%% パラメータ設定
+    % main_sim 実行時にパラメータを与えることも可能
+    param = set_Param(); 
+end
 
+%%%%% シミュレーション準備             
 %%% global 変数の定義 
 % 全ての関数及びメインルーチン内で共通で使用される変数
 global d_time
@@ -21,11 +20,12 @@ global Ez
 Ez = [ 0 0 1 ]';
 d_time = param.general.divTime; % シミュレーション1step当たりの時間
 Gravity = [ 0 0 0 ]'; % 重力（地球重力は Gravity = [0 0 -9.8]）
+evaluation = '$\times$';
 
 % パス設定
 paths = make_DataFolder(param);              % 保存先フォルダ作成．パスはParamSettingで設定
 % パラメータ変数保存
-save([paths.datfile, '/parameters.m'], "param", '-mat')
+save([paths.datfile, '/parameters'], "param", '-mat')
 
 % 双腕ロボインスタンス作成
 dualArmRobo  = DualArmRobo(param);
@@ -94,10 +94,10 @@ datSaver.write()
 % アニメーション作成
 % movfileにaviファイル保存
 % pngfileにpngファイル保存
-make_2dAnime(datSaver, paths, param)
+% make_2dAnime(datSaver, paths, param)
 
 % グラフ作成
-make_graph(datSaver.datStruct, paths)
+% make_graph(datSaver.datStruct, paths)
 
 %clear
 fclose('all');
