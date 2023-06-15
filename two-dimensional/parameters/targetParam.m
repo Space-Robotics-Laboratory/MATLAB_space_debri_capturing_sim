@@ -16,7 +16,7 @@ targetParam.density = 150;                  % 密度[kg/m^2]
 targetParam.initial_position = [0, 0.35, 0]';
 targetParam.initial_orientation = [0, 0, 0]';
 targetParam.initial_velocity = [0, 0, 0]';
-targetParam.initial_angular_velocity = [0, 0, 1]';
+targetParam.initial_angular_velocity = [0, 0, 5]';
 
 
 end
