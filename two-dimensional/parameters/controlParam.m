@@ -6,7 +6,7 @@
 
 function controlParam = controlParam()
 %% Controller Setting
-controlParam.controlMode = 'DIRECT';          % コントローラーモード
+controlParam.controlMode = 'MULTIPLE';          % コントローラーモード
 controlParam.velocityMode = 'str_tru';          % pathwayから速度を計算する方法
 controlParam.impedanceMode = 'addmitance';      % インピーダンス制御モード
 
@@ -27,7 +27,7 @@ controlParam.swichingDelay2Direct = .35;        % ターゲット角速度が減
 
 % border value
 controlParam.switchingTargetAngVel = 1;                     % 境界値となるターゲット角速度
-controlParam.nonContactArm2targetMinDistanceRatio = 1.2;      % 非接触アームがターゲットに接触しないための制御を開始する境界値
+controlParam.nonContactArm2targetMinDistanceRatio =1.2;      % 非接触アームがターゲットに接触しないための制御を開始する境界値
 
 % impedance parameters
 controlParam.mi = [1, 1, 1]'*.2;                   % アドミタンス制御仮想質量   [.5, .5, .5]';

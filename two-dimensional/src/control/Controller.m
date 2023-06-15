@@ -170,10 +170,14 @@ classdef Controller
             end
             % インピーダンス割り込み処理
             obj = obj.impedance(time, robo, roboFTsensor, state, param);
-            if obj.phase == -1
+
+            % インピーダンス終了後，次の動作開始まで手先を停止
+            if obj.phase == -1 && strcmp(obj.controlState, 'follow')
                 obj = obj.stopEndEffector(robo, roboFTsensor);
                 obj.controlState = 'follow';
             end
+
+            % 目標手先位置追従フェーズ
             if obj.phase ~= -1 && strcmp(obj.controlState, 'follow')
                 controlArm = [targ.SV.v0(1)<0, targ.SV.v0(1)>=0];
                 endEffec2target = [robo.POS_es_L, robo.POS_es_R] - targ.SV.R0 ;
@@ -193,9 +197,9 @@ classdef Controller
                     obj.desEEVel = obj.pathway.vel(time, robo, obj);
                     obj.desEEVel(~controlVel) = 0;
                 end
-                % obj.desBaseVel = [0; targ.SV.v0(2); 0];
-                % obj = obj.achieveVelocity(robo, roboFTsensor);
-                obj = obj.followPathway_2hands(time, robo, roboFTsensor);
+                obj.desBaseVel = [0; targ.SV.v0(2); 0];
+                obj = obj.achieveVelocity(robo, roboFTsensor);
+                % obj = obj.followPathway_2hands(time, robo, roboFTsensor);
             end
             obj.phase = obj.pathway.phase(time, param, 1);
         end
