@@ -33,10 +33,10 @@ mkdir(table_path)
 % di_s = 2:2:20;
 
 % 0616
-w_s = 5:8;
-mi_s = 0.01:0.01:0.03;
+w_s = 7;
+mi_s = 0.005:0.005:0.01;
 ki_s = 0;
-di_s = 10:2:20;
+di_s = 5:5:15;
 
 raw = length(mi_s);
 col = length(di_s);

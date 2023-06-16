@@ -29,7 +29,7 @@ robotParam.initial_jointsAngle(5:8, 1)  = - [ pi/3 -pi*4/9 -pi*7/18 0 ]';
 
 %% Phisics of Robot
 % Define Base
-robotParam.mass_base    = 10;
+robotParam.mass_base    = 15;
 robotParam.inertia_base = [1e9,   0, 0  ;
                              0, 1e9, 0  ;
                              0,   0, 0.5];

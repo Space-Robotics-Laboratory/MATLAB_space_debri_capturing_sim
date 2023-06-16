@@ -81,12 +81,16 @@ for time = minusTime : d_time : endTime
     controller = controller.control(dualArmRobo, targetSquare, roboFTsensor, time, state, param);
 
     %%% 運動計算フェーズ
-    % 運動状態更新
     dualArmRobo  = dualArmRobo.update(controller.tau, roboExtWrench, param);    % methodを呼び出した後自身に代入することを忘れない！
     targetSquare = targetSquare.update(targetExtWrench);  
 
     % 状態判定更新
     state = state.update(dualArmRobo, isContact, targetSquare, time, param);
+
+    % ターゲット回転減衰 -> 白∆
+    if state.targetSlow
+        sim_res = '\cellcolor{white}{$\bigtriangleup$}';
+    end
 
     % 捕獲成功 -> 緑o
     if state.targetStop
