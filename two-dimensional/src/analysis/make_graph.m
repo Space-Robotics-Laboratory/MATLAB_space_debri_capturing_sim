@@ -3,7 +3,7 @@
 % 2023.2 akiyoshi uchida
 %
 
-function make_graph(datStruct, paths)
+function make_graph(datStruct, time_length, paths)
 time = datStruct.time;
 startFigNum = 102;
 
@@ -33,6 +33,7 @@ title("End Effector Force")
 legend('Left Tip1 Force', 'Left Tip2 Force', 'Right Tip1 Force', 'Right Tip1 Force')
 ylabel("Force [N]")
 xlabel("time [sec]")
+xlim([time(1), time(time_length)])
 hold off
 
 figName = 'endEffecForce.fig';                                  % fig名定義
@@ -54,6 +55,7 @@ title("End Effector Torque")
 legend('Left Tip1 Torque', 'Left Tip2 Torque', 'Right Tip1 Torque', 'Right Tip1 Torque')
 ylabel("Torque [Nm]")
 xlabel("time [sec]")
+xlim([time(1), time(time_length)])
 hold off
 
 figName = 'endEffecTorque.fig';                                  % fig名定義
@@ -74,6 +76,7 @@ title("Active Joint Torque")
 legend('MotorJ1', 'MotorJ2', 'MotorJ3', 'MotorJ5', 'MotorJ6', 'MotorJ7')
 ylabel("Torque [Nm]")
 xlabel("time [sec]")
+xlim([time(1), time(time_length)])
 
 figName = 'motorTorque.fig';                                  % fig名定義
 pngName = 'motorTorque.png';                                  % png名定義
@@ -90,6 +93,7 @@ title("Passive Joint Torque")
 legend('LeftWrist', 'RightWrist')
 ylabel("Torque [Nm]")
 xlabel("time [sec]")
+xlim([time(1), time(time_length)])
 
 figName = 'wristTorque.fig';                                  % fig名定義
 pngName = 'wristTorque.png';                                  % png名定義
@@ -106,6 +110,7 @@ plot(time, targW)
 title("Target Angular Velocity")
 ylabel("Angular Velocity [rad/sec]")
 xlabel("time [sec]")
+xlim([time(1), time(time_length)])
 
 figName = 'targetAngVel.fig';                                  % fig名定義
 pngName = 'targetAngVel.png';                                  % png名定義

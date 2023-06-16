@@ -25,7 +25,7 @@ function make_2dAnime(datSaver, paths, param)
     open(video)                                                             % 動画ライターオープン
 
     % 描画開始
-    for count = 1:datSaver.datNum
+    for count = 1:datSaver.timer_length
         % アニメ時間ディジタル化
         mov_d_count = fix( 1/ (frameRate * dt_sim) );
         

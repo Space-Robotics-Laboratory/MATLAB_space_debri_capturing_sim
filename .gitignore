@@ -2,6 +2,8 @@
 *.eps
 *.png
 *.fig
+*.asv
+!*.m
 !/docs/**/*
 
 # Ignore files inside data
@@ -10,6 +12,10 @@ dat/
 *.csv
 *.dat
 *.avi
+
+# Ignore files inside RSJ simres
+
+
 
 # The followings are some examples of commonly ignored file patterns.
 # You should customize this list as applicable to your project.

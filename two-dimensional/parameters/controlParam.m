@@ -26,7 +26,7 @@ controlParam.impedanceDuration = .2;            % 接触後，インピーダン
 controlParam.swichingDelay2Direct = .35;        % ターゲット角速度が減衰したのち，直接捕獲モードに切り替える待ち時間
 
 % border value
-controlParam.switchingTargetAngVel = 1;                     % 境界値となるターゲット角速度
+controlParam.switchingTargetAngVel = 1;                     % 複数回接触の境界値となるターゲット角速度
 controlParam.nonContactArm2targetMinDistanceRatio =1.2;      % 非接触アームがターゲットに接触しないための制御を開始する境界値
 
 % impedance parameters
@@ -38,6 +38,14 @@ controlParam.ki = [.5, .5, .5]';                   % アドミタンス制御バ
 controlParam.contactPositionRatio = .8;             % 接触位置がターゲット辺のどの割合にあるかを表す.0で中心1で頂点
 controlParam.endEffecAngleDeviation = deg2rad(10);  % 接触時点のエンドエフェクターの角度
 controlParam.contactTargetAngLim = deg2rad(20);     % 接触時のターゲット角度をターゲットの速度方向によって定める時の上限.大きいと手先の姿勢が達成しづらくなる
+
+% sigurality avoidance
+controlParam.minMiddleJointsAngle = pi/6;
+
+%% Capturing Evaluation
+controlParam.stoppingTargetAngVel = 0.01;                   % ターゲットの回転が停止したとみなせる，ロボットへの相対角速度
+controlParam.stoppingTargetVel = 0.01;                      % ターゲットの回転が停止したとみなせる，ロボットへの相対速度
+controlParam.reachable = 0.6;                               % 捕獲不可能と判断する境界値
 
 
 end

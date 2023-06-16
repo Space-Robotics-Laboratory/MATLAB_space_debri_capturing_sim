@@ -10,21 +10,23 @@ classdef DataSaver
         datStruct;
         filePath;
         datNum;
-        index;      
+        index;
+        timer_length;
     end
     methods
         % constructor インスタンス作成時に呼び出し
         function obj = DataSaver(paths, param)
+            times = param.general.minusTime : param.general.divTime : param.general.endTime ;
             obj.filePath = [paths.datfile, '/savedDat.csv'];
-            row = (param.general.endTime - param.general.minusTime) / param.general.divTime;
+            row = length(times);
             obj.datNum = row;
-            obj.index = 1;
+            obj.index = 0;
 
             % パラメータ保存
 %             obj.paramStruct.linkLength = 
             
             % 時刻
-            obj.datStruct.time = zeros(row, 1);
+            obj.datStruct.time = times';
 
             %%% Anime information
             % robot
@@ -80,9 +82,10 @@ classdef DataSaver
 %             obj.datStruct.error = zeros(row, 1);
         end
         % 保存するデータを更新
-        function obj = update(obj, robo, target, controller, time, param)
-            % 時刻
-            obj.datStruct.time(obj.index, :) = time;
+        function obj = update(obj, robo, target, controller, param)
+            %%%%%%%%%%%%%%%%%%%%%%%%
+            % インデックス更新
+            obj.index = obj.index +1;
             
             %%% Anime information
             % robot
@@ -123,6 +126,7 @@ classdef DataSaver
             obj.datStruct.PLsum(obj.index, :) = [vecnorm(dat(1:3,1)), vecnorm(dat(4:6,1))];
 
             % 目標手先位置
+            time = obj.datStruct.time(obj.index);
             desPathway = controller.pathway.goingTo(time, param);
             obj.datStruct.desHandPos(obj.index, :) = reshape(desPathway(1:3, :), [1 ,6]);
 
@@ -135,15 +139,12 @@ classdef DataSaver
 
             % ロボット手先速度(変更点）
             obj.datStruct.robo_tipVEL_L(obj.index, :) = robo.VEL_e_L;
-
-            %%%%%%%%%%%%%%%%%%%%%%%%
-            % インデックス更新
-            obj.index = obj.index +1;
         end
         
         % ファイルに書き出し
         % datListは一次元配列であり，fileIdに保存
-        function write(obj)
+        function obj=write(obj)
+            obj.timer_length = obj.index;
             table = struct2table(obj.datStruct);
             writetable(table, obj.filePath)
         end

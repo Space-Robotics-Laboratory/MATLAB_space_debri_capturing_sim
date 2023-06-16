@@ -4,11 +4,15 @@
 % 
 % main simulation
 %
-function evaluation = main_sim(param)
+% RSJ2023用に，parametric解析を行うように改良．main_simの返り値は，捕獲結果のtex形式表現
+
+function sim_res = main_sim(param, paths)
 arguments
     %%% パラメータ設定
     % main_sim 実行時にパラメータを与えることも可能
     param = set_Param(); 
+    % パス設定
+    paths = make_DataFolder(param);              % 保存先フォルダ作成．パスはParamSettingで設定
 end
 
 %%%%% シミュレーション準備             
@@ -20,10 +24,8 @@ global Ez
 Ez = [ 0 0 1 ]';
 d_time = param.general.divTime; % シミュレーション1step当たりの時間
 Gravity = [ 0 0 0 ]'; % 重力（地球重力は Gravity = [0 0 -9.8]）
-evaluation = '$\times$';
+sim_res = '$\times$';
 
-% パス設定
-paths = make_DataFolder(param);              % 保存先フォルダ作成．パスはParamSettingで設定
 % パラメータ変数保存
 save([paths.datfile, '/parameters'], "param", '-mat')
 
@@ -55,10 +57,13 @@ startT = clock();
 
 %% シミュレーションループスタート
 for time = minusTime : d_time : endTime 
-    clc
-    time %#ok<NOPTS> 
+    if rem(time, 0.1) == 0
+        timer_count = sprintf("time : %2.2f [s]\n", time);
+        fprintf(timer_count)
+    end
+ 
     %%% データ更新
-    datSaver = datSaver.update(dualArmRobo, targetSquare, controller, time, param);
+    datSaver = datSaver.update(dualArmRobo, targetSquare, controller, param);
 
     %%% 推定フェーズ
     % 接触判定及び接触力計算
@@ -82,22 +87,42 @@ for time = minusTime : d_time : endTime
 
     % 状態判定更新
     state = state.update(dualArmRobo, isContact, targetSquare, time, param);
+
+    % 捕獲成功 -> 緑o
+    if state.targetStop
+        if state.isCapture
+            sim_res = '\cellcolor{green}{$\circ$}';
+        % else isCliping
+        %     sim_res = '\cellcolor{orange}{$\bigtriangleup$}';
+            break
+        end
+    end
+    % ベース接触 -> 赤x
+    if state.isBaseContact
+        sim_res = '\cellcolor{red}{$\times$}';
+        break
+    end
+    % 突き飛ばし -> 黄x
+    if state.goneAway 
+        sim_res = '\cellcolor{yellow}{$\times$}';
+        break
+    end
 end
 %% ループ終了
 %%% シミュレーション時間の計測と表示 
 show_calc_time(startT, startCPUT)
 
 %%% データ保存
-datSaver.write()
+datSaver = datSaver.write();
 
 %% 結果表示
 % アニメーション作成
 % movfileにaviファイル保存
 % pngfileにpngファイル保存
-% make_2dAnime(datSaver, paths, param)
+make_2dAnime(datSaver, paths, param)
 
 % グラフ作成
-% make_graph(datSaver.datStruct, paths)
+make_graph(datSaver.datStruct, datSaver.timer_length, paths)
 
 %clear
 fclose('all');

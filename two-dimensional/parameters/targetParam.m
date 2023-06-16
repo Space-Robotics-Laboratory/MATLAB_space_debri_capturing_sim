@@ -13,7 +13,7 @@ targetParam.comOffset = [0, 0, 0]'; % 幾何中心から質量重心までの位
 targetParam.density = 100;                  % 密度[kg/m^2]
 
 %% Initial State
-targetParam.initial_position = [0, 0.35, 0]';
+targetParam.initial_position = [0, .35, 0]';
 targetParam.initial_orientation = [0, 0, 0]';
 targetParam.initial_velocity = [0, 0, 0]';
 targetParam.initial_angular_velocity = [0, 0, 5]';

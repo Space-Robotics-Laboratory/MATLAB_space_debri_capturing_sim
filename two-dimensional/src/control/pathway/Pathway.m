@@ -236,12 +236,10 @@ classdef Pathway
             
             gpathway = zeros(4, 2, 2);
             gpathway(1:3, 1, contArm) = [targWaitPos + targ2EEWait; desEffAngGoal];     % 非接触待機位置代入
-            gpathway(1:3, 2, contArm) = [targGoalPos + targ2EECont; desEffAngGoal];     % 接触時位置代入  
-%             gpathway(1, :, ~contArm) = robo.SV.R0(1) - gpathway(1, :, contArm)*1.5;
-%             gpathway(2, :, ~contArm) = gpathway(2, :, contArm);
-%             gpathway(3, :, ~contArm) = -gpathway(3, :, contArm);
-            gpathway(1:3, 1, ~contArm)= [targWaitPos + targ2EEFree; desEffAngGoalOpp];  % 非接触側の手先はターゲットに触れない位置にする
-            gpathway(1:3, 2, ~contArm)= [targWaitPos + targ2EEFree; desEffAngGoalOpp];  % 非接触側の手先はターゲットに触れない位置にする
+            gpathway(1:3, 2, contArm) = [targGoalPos + targ2EECont; desEffAngGoal];     % 接触時位置代入 
+            % gpathway(1:3, 1, ~contArm)= [targWaitPos + targ2EEFree; desEffAngGoalOpp];  % 非接触側の手先はターゲットに触れない位置にする
+            % gpathway(1:3, 2, ~contArm)= [targWaitPos + targ2EEFree; desEffAngGoalOpp];  % 非接触側の手先はターゲットに触れない位置にする
+            gpathway(1:3, :, ~contArm) = NaN(3, 2);                                     % 非接触側の手先は目標位置を与えない．
             gpathway(4, 1, :) = dtApproach + time;                                   % 時刻設定
             gpathway(4, 2, :) = dtApproach + time + dtCont;                          % 時刻設定
             obj = obj.overWriteGoal(robo, gpathway, time);
