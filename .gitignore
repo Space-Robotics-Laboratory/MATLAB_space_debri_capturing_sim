@@ -14,6 +14,7 @@ dat/
 *.avi
 
 # Ignore files inside RSJ simres
+RSJ2023/
 
 
 
