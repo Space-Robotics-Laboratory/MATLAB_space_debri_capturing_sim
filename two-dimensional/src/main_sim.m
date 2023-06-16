@@ -24,7 +24,7 @@ global Ez
 Ez = [ 0 0 1 ]';
 d_time = param.general.divTime; % シミュレーション1step当たりの時間
 Gravity = [ 0 0 0 ]'; % 重力（地球重力は Gravity = [0 0 -9.8]）
-sim_res = '$\times$';
+sim_res = '-';
 
 % パラメータ変数保存
 save([paths.datfile, '/parameters'], "param", '-mat')
@@ -54,6 +54,7 @@ datSaver = DataSaver(paths, param);
 % タイマースタート                                               
 startCPUT = cputime;
 startT = clock();
+break_time = inf;
 
 %% シミュレーションループスタート
 for time = minusTime : d_time : endTime 
@@ -87,29 +88,38 @@ for time = minusTime : d_time : endTime
     % 状態判定更新
     state = state.update(dualArmRobo, isContact, targetSquare, time, param);
 
+    % 以降simulation中断処理
+    if time > break_time
+        break
+    end
+    if break_time ~= inf
+        continue
+    end
+
     % ターゲット回転減衰 -> 白∆
     if state.targetSlow
         sim_res = '\cellcolor{white}{$\bigtriangleup$}';
     end
 
-    % 捕獲成功 -> 緑o
+    % 捕獲
     if state.targetStop
-        if state.isCapture
+        if state.isCapture % ケージング成功 -> 緑◎
+            sim_res = '\cellcolor{green}{$\doublecirc$}';
+            break_time = time + param.general.breakTimeDuration;
+        elseif state.isPinch % 力による挟み込み -> 緑o
             sim_res = '\cellcolor{green}{$\circ$}';
-        % else isCliping
-        %     sim_res = '\cellcolor{orange}{$\bigtriangleup$}';
-            break
+            break_time = time;
         end
     end
     % ベース接触 -> 赤x
     if state.isBaseContact
         sim_res = '\cellcolor{red}{$\times$}';
-        break
+        break_time = time;
     end
     % 突き飛ばし -> 黄x
     if state.goneAway 
         sim_res = '\cellcolor{yellow}{$\times$}';
-        break
+        break_time = time;
     end
 end
 %% ループ終了

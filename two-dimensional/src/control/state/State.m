@@ -8,6 +8,8 @@ classdef State
         isCapture       % bool ターゲット捕獲状況
         isContact       % bool 1*4 各手先の現時刻接触状況
         isBaseContact   % bool ベースとターゲットの接触
+        isPinch         % bool 挟み込み
+        force_holder_   % isPinch用. -> この辺要改善
         wasContact      % bool 1*4各手先の前時刻接触状況
         newContact      % bool 1*4 新たに接触したかどうか
         endContact      % bool 1*4 新たに非接触になったか
@@ -23,6 +25,8 @@ classdef State
             obj.isCapture = false;
             obj.isContact = false;
             obj.isBaseContact = false;
+            obj.force_holder_ = zeros(1, 4);
+            obj.isPinch = false;
             obj.wasContact = false;
             obj.newContact = false;
             obj.endContact = false;
@@ -40,6 +44,10 @@ classdef State
             obj.wasContact = obj.isContact;
             obj.isContact = isContact;
             obj.isBaseContact = judge_baseContact(robo, target);
+
+            % ここだけ不自然．要改善
+            [obj.isPinch, obj.force_holder_] = judge_isPinched(obj.force_holder_, robo, param);
+
             obj.newContact = ~obj.wasContact & obj.isContact;
             obj.endContact = obj.wasContact & ~obj.isContact;
             obj.comeTargetSlow = ~obj.targetSlow && abs(target.SV.w0(3))<param.control.switchingTargetAngVel;

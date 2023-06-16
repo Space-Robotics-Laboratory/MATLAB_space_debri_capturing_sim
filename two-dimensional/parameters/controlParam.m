@@ -30,9 +30,9 @@ controlParam.switchingTargetAngVel = 1;                     % 複数回接触の
 controlParam.nonContactArm2targetMinDistanceRatio =1.2;      % 非接触アームがターゲットに接触しないための制御を開始する境界値
 
 % impedance parameters
-controlParam.mi = [1, 1, 1]'*.01;                   % アドミタンス制御仮想質量   [.5, .5, .5]';
-controlParam.di = [1, 1, 1]'*5;                   % アドミタンス制御ダンパ特性  [10, 10, 10]';
-controlParam.ki = [.5, .5, .5]';                   % アドミタンス制御バネ特性   [.5, .5, .5]';
+controlParam.mi = [1, 1, 1]'*.301;                   % アドミタンス制御仮想質量   [.5, .5, .5]';
+controlParam.di = [1, 1, 1]'*4;                   % アドミタンス制御ダンパ特性  [10, 10, 10]';
+controlParam.ki = [.5, .5, .5]'*0;                   % アドミタンス制御バネ特性   [.5, .5, .5]';
 
 % contact parameters
 controlParam.contactPositionRatio = .8;             % 接触位置がターゲット辺のどの割合にあるかを表す.0で中心1で頂点

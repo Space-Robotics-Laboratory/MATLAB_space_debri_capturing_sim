@@ -1,17 +1,20 @@
 % シミュレーション全体の設定ファイル
-function gPram = generalParam()
+function gParam = generalParam()
 %% File Setting
-gPram.dataSavePath = '/Users/ueda7/github/MATLAB/MATLAB_space_debri_capturing_sim/two-dimensional/dat';
-gPram.dataSaveName = 'myFile';
+gParam.dataSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/two-dimensional/dat';
+gParam.dataSaveName = 'myFile';
 
 
 %% Simulation Time Setting
-gPram.minusTime = 0; % minus value like -1
-gPram.endTime   = 15;
-gPram.divTime   = .001;
+gParam.minusTime = 0; % minus value like -1
+gParam.endTime   = .5;
+gParam.divTime   = .001;
+
+% Simulation Break Setting
+gParam.breakTimeDuration = 1;
 
 %% Animation Time Setting
-gPram.anime_frameRate = 10;    % fps
+gParam.anime_frameRate = 100;    % fps
 
 
 end
