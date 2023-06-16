@@ -48,8 +48,9 @@ classdef State
                 obj.time.comeTargetSlow = time;
             end
             obj.targetSlow = abs(target.SV.w0(3)) <= param.control.switchingTargetAngVel;
-            obj.targetStop = abs(target.SV.w0(3) - robo.SV.w0(3)) <= param.control.stoppingTargetAngVel && ...
-                             vecnorm(target.SV.v0 - robo.SV.v0)   <= param.control.stoppingTargetVel;
+            [~, target_vb] = tf_s2b([target.SV.R0(1:2, 1);target.SV.Q0(3)], [target.SV.v0(1:2, 1);target.SV.w0(3)], robo);
+            obj.targetStop = abs(target_vb(3)) <= param.control.stoppingTargetAngVel && ...
+                             vecnorm(target_vb(1:2))   <= param.control.stoppingTargetVel;
             obj.goneAway = vecnorm(target.SV.R0 - robo.SV.R0) >= param.control.reachable;
             if any(obj.isContact)
                 obj.time.lastContact = time;

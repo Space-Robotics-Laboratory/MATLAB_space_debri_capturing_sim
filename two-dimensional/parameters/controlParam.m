@@ -6,7 +6,7 @@
 
 function controlParam = controlParam()
 %% Controller Setting
-controlParam.controlMode = 'DIRECT';          % コントローラーモード
+controlParam.controlMode = 'MULTIPLE';          % コントローラーモード
 controlParam.velocityMode = 'str_tru';          % pathwayから速度を計算する方法
 controlParam.impedanceMode = 'addmitance';      % インピーダンス制御モード
 
@@ -30,8 +30,8 @@ controlParam.switchingTargetAngVel = 1;                     % 複数回接触の
 controlParam.nonContactArm2targetMinDistanceRatio =1.2;      % 非接触アームがターゲットに接触しないための制御を開始する境界値
 
 % impedance parameters
-controlParam.mi = [1, 1, 1]'*.2;                   % アドミタンス制御仮想質量   [.5, .5, .5]';
-controlParam.di = [1, 1, 1]'*10;                   % アドミタンス制御ダンパ特性  [10, 10, 10]';
+controlParam.mi = [1, 1, 1]'*.01;                   % アドミタンス制御仮想質量   [.5, .5, .5]';
+controlParam.di = [1, 1, 1]'*5;                   % アドミタンス制御ダンパ特性  [10, 10, 10]';
 controlParam.ki = [.5, .5, .5]';                   % アドミタンス制御バネ特性   [.5, .5, .5]';
 
 % contact parameters
@@ -43,8 +43,8 @@ controlParam.contactTargetAngLim = deg2rad(20);     % 接触時のターゲッ�
 controlParam.minMiddleJointsAngle = pi/6;
 
 %% Capturing Evaluation
-controlParam.stoppingTargetAngVel = 0.01;                   % ターゲットの回転が停止したとみなせる，ロボットへの相対角速度
-controlParam.stoppingTargetVel = 0.01;                      % ターゲットの回転が停止したとみなせる，ロボットへの相対速度
+controlParam.stoppingTargetAngVel = 0.5;                   % ターゲットの回転が停止したとみなせる，ロボットへの相対角速度
+controlParam.stoppingTargetVel = 0.1;                      % ターゲットの回転が停止したとみなせる，ロボットへの相対速度 
 controlParam.reachable = 0.6;                               % 捕獲不可能と判断する境界値
 
 

@@ -9,7 +9,7 @@ param = set_Param();
 
 %% modify unlooped param
 param.general.endTime = 30;
-param.general.anime_frameRate = 25;
+param.general.anime_frameRate = 10;
 param.control.controlMode = 'MULTIPLE';
 
 %% path setting
@@ -33,10 +33,10 @@ mkdir(table_path)
 % di_s = 2:2:20;
 
 % 0616
-w_s = 7;
-mi_s = 0.005:0.005:0.01;
-ki_s = 0;
-di_s = 5:5:15;
+w_s = 3:8;
+mi_s = 0.001:0.1:1.001;
+ki_s = 0:1:5;
+di_s = 1:1:20;
 
 raw = length(mi_s);
 col = length(di_s);
