@@ -21,19 +21,8 @@ table_path = [path_parametric, '/tables/'];
 mkdir(table_path)
 
 %% parameters to be looped
-% w_s = [4, 6, 8];
-% mi_s = 0.05:0.05:2.5;
-% ki_s = 0.1:0.2:2;
-% di_s = 1:2:20;
-
-% 0615
-% w_s = 8;
-% mi_s = 0.01:0.01:0.1;
-% ki_s = 0;
-% di_s = 2:2:20;
-
-% 0616
-w_s = 3:8;
+% 0617
+w_s = 3;
 mi_s = 0.001:0.1:1.001;
 ki_s = 0:1:5;
 di_s = 1:1:20;
