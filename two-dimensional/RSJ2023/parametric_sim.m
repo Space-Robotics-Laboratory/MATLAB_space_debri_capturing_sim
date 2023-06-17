@@ -15,14 +15,14 @@ param.control.controlMode = 'MULTIPLE';
 %% path setting
 timepath = datestr( now, 'yyyy-mmdd-HHMMSS' );  % yはyear，mはmonth,dはday,Hはhour,Mはminute,Sはsecond.それぞれの文字数分出力する
 datepath = datestr( now, 'yyyy-mmdd' );
-dataSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/two-dimensional/RSJ2023';
+dataSavePath = '/home/orbitala/GitHub/MATLAB_space_debri_capturing_sim/two-dimensional/RSJ2023';
 path_parametric = [ dataSavePath '/' datepath '/' timepath ];
 table_path = [path_parametric, '/tables/'];
 mkdir(table_path)
 
 %% parameters to be looped
 % 0617
-w_s = 3;
+w_s = 4:8;
 mi_s = 0.001:0.1:1.001;
 ki_s = 0:1:5;
 di_s = 1:1:20;
@@ -52,7 +52,7 @@ for w = w_s
             for mi = mi_s
                 ind_r = ind_r + 1;
                 % display
-                value = sprintf("w : %2.2f ki : %2.2f mi : %2.2f di : %2.2f\n", w, ki, mi, di);
+                value = sprintf("w : %3.4f ki : %3.4f mi : %3.4f di : %3.4f\n", w, ki, mi, di);
                 fprintf(value)
 
                 % set param

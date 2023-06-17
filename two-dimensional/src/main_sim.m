@@ -104,21 +104,21 @@ for time = minusTime : d_time : endTime
     % 捕獲
     if state.targetStop
         if state.isCapture % ケージング成功 -> 緑◎
-            sim_res = '\cellcolor{green}{$\doublecirc$}';
+            sim_res = '\cellcolor{green}{$\doublecirc   $}';
             break_time = time + param.general.breakTimeDuration;
         elseif state.isPinch % 力による挟み込み -> 緑o
-            sim_res = '\cellcolor{green}{$\circ$}';
+            sim_res = '\cellcolor{green }{$\circ$}';
             break_time = time;
         end
     end
     % ベース接触 -> 赤x
     if state.isBaseContact
-        sim_res = '\cellcolor{red}{$\times$}';
+        sim_res = '\cellcolor{red}{$\times          $}';
         break_time = time;
     end
     % 突き飛ばし -> 黄x
     if state.goneAway 
-        sim_res = '\cellcolor{yellow}{$\times$}';
+        sim_res = '\cellcolor{yellow}{$\times       $}';
         break_time = time;
     end
 end

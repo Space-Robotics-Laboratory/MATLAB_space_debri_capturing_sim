@@ -25,12 +25,14 @@ function make_2dAnime(datSaver, paths, param)
     open(video)                                                             % 動画ライターオープン
 
     % 描画開始
+    anime_counter = 0;
     for count = 1:datSaver.timer_length
         % アニメ時間ディジタル化
         mov_d_count = fix( 1/ (frameRate * dt_sim) );
         
         % アニメ時間が動画刻み時間で割り切れる時に図を描画，動画に保存
         if rem(count, mov_d_count) == 0
+            anime_counter = anime_counter + 1;
             %%% データインポート
             % robo
             roboR0 = dataStruct.roboR0(count, :)';
@@ -78,8 +80,16 @@ function make_2dAnime(datSaver, paths, param)
             %%% 結果保存
             % 図をVideoWriteに保存
             frame = getframe(figure(FigureNumber));
-            writeVideo(video, frame);
-
+            if anime_counter == 1
+                frameSize0 = size(frame.cdata);
+            end
+            frameSize = size(frame.cdata);
+            if all(frameSize == frameSize0)
+                writeVideo(video, frame);
+            else
+                disp("failed to save animation")
+                break
+            end
 
             % 図をpng形式で保存
             if rem(count, 500) == 0
