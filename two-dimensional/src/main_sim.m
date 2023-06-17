@@ -121,6 +121,11 @@ for time = minusTime : d_time : endTime
         sim_res = '\cellcolor{yellow}{$\times       $}';
         break_time = time;
     end
+
+    if any(isnan(dualArmRobo.SV.R0), "all") 
+        sim_res = '!';
+        break_time = time;
+    end
 end
 %% ループ終了
 %%% シミュレーション時間の計測と表示 
