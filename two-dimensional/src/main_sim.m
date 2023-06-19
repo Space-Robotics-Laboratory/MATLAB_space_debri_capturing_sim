@@ -24,7 +24,7 @@ global Ez
 Ez = [ 0 0 1 ]';
 d_time = param.general.divTime; % シミュレーション1step当たりの時間
 Gravity = [ 0 0 0 ]'; % 重力（地球重力は Gravity = [0 0 -9.8]）
-sim_res = '-';
+sim_res = '-                                  ';
 
 % パラメータ変数保存
 save([paths.datfile, '/parameters'], "param", '-mat')
@@ -107,7 +107,7 @@ for time = minusTime : d_time : endTime
             sim_res = '\cellcolor{green}{$\doublecirc   $}';
             break_time = time + param.general.breakTimeDuration;
         elseif state.isPinch % 力による挟み込み -> 緑o
-            sim_res = '\cellcolor{green }{$\circ$}';
+            sim_res = '\cellcolor{green}{$\circ$         }';
             break_time = time;
         end
     end
@@ -122,8 +122,9 @@ for time = minusTime : d_time : endTime
         break_time = time;
     end
 
+    % simulation error
     if any(isnan(dualArmRobo.SV.R0), "all") 
-        sim_res = '!';
+        sim_res = '          !                        ';
         break_time = time;
     end
 end
