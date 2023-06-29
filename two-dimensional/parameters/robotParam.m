@@ -32,7 +32,7 @@ robotParam.initial_jointsAngle(5:8, 1)  = - [ pi/3 -pi*4/9 -pi*7/18 0 ]';
 robotParam.mass_base    = 15;
 robotParam.inertia_base = [1e9,   0, 0  ;
                              0, 1e9, 0  ;
-                             0,   0, 0.5];
+                             0,   0, 1];
 
 % Define Link
 robotParam.mass_links = [1.09, 0.98, 0.32];                                     % link A, B, C. 左右対称
@@ -51,11 +51,11 @@ robotParam.inertia_endEffector = [1e9,      0,          0;
 robotParam.comOffset_endEffector = [0, 0, 0]';          % エンドエフェクター重心の，幾何中心からのずれ
 
 % Wrist Spring Setting
-robotParam.wristDamp  = 0.01;%0.4;       % 手首関節減衰係数
-robotParam.wristElast = 10;%0.8;       % 手首関節弾性係数
+robotParam.wristDamp  = 0.1;%0.4;       % 手首関節減衰係数
+robotParam.wristElast = .2;%0.8;       % 手首関節弾性係数
 
 % Motor Limitation
-robotParam.motorTorque_max = repmat(10, [8,1]); % 受動関節に関しては関係ない
+robotParam.motorTorque_max = repmat(100, [8,1]); % 受動関節に関しては関係ない
 robotParam.jointAngle_max = [];     % yet unused
 robotParam.jointAngle_min = [];     % yet unused
 
