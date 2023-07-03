@@ -129,6 +129,34 @@ classdef Controller
                     end
                     obj.phase = obj.pathway.phase(time, param, 1);
                     return
+
+                    case 'TEST3'
+                    % 初期時刻にフラグをたてる
+                    obj.flagPathUpdate = time == 0 ;
+                    if obj.flagPathUpdate
+                        obj.flagPathUpdate = false;
+                        obj.velInBaseFram = [false, false];
+                        goalPathway = zeros(4, 2, 2);     
+                        goalPathway(:, :, 1) = [-0.2, -0.169;
+                                                0.3, 0.25;
+                                                -1.5708, -1.5708;
+                                                0.5, 1]; % 2
+                        goalPathway(:, :, 2) = [0.2, 0.169;
+                                                0.3, 0.25;
+                                                1.5708, 1.5708;
+                                                0.5, 1];;% 4*2
+                        obj.pathway = obj.pathway.overWriteGoal(robo, goalPathway, time);   % pathway更新
+                    end
+                    if obj.phase == -1 
+                        obj = stopEndEffector(obj, robo, roboFTsensor);
+                    end 
+                    if obj.phase ~= -1 && strcmp(obj.controlState, 'follow')
+                        obj.controlPart = [false, true, true];
+                        obj.desEEVel = obj.pathway.vel(time, robo, obj);
+                        obj = obj.achieveVelocity(robo, roboFTsensor);
+                    end
+                    obj.phase = obj.pathway.phase(time, param, 1);
+                    return
             end
             error('No such control mode')
         end
