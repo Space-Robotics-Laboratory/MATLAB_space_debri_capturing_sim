@@ -113,7 +113,7 @@ saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
 saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 
 %ロボット手先速度グラフ化（変更点）
-vel = vecnorm(datStruct.dualArmRobo_VEL_e_L,2,2);
+vel = vecnorm(datStruct.robo_tipVEL_L,2,2);
 plot(time, vel)
 title("endTipvelocity");
 xlabel("time");
