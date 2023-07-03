@@ -11,6 +11,7 @@ classdef DataSaver
         filePath;
         datNum;
         index;
+        dualArmRobo;
     end
     methods
         % constructor インスタンス作成時に呼び出し
@@ -73,6 +74,9 @@ classdef DataSaver
             % ターゲット角速度
             obj.datStruct.targetW = zeros(row, 3);
 
+            % ロボット手先速度(変更点）
+            obj.datStruct.dualArmRobo_VEL_e_L = zeros(row, 3);
+
             %%% error log
 %             obj.datStruct.error = zeros(row, 1);
         end
@@ -129,7 +133,10 @@ classdef DataSaver
 
             % ターゲット角速度
             obj.datStruct.targetW(obj.index, :) = target.SV.w0';
-            
+
+            % ロボット手先速度(変更点）
+            obj.datStruct.dualArmRobo_VEL_e_L(obj.index, :) = robo.VEL_e_L;
+
             %%%%%%%%%%%%%%%%%%%%%%%%
             % インデックス更新
             obj.index = obj.index +1;

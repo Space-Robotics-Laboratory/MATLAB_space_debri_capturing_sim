@@ -63,6 +63,20 @@ switch velMode
     vel = dP ./ dTime * gain;
     return
 
+    % 直線起動・一定山形並立速度（台形速度）
+    % matlab練習用に作ったので工学的意味はなし
+    case 'str_com'
+    s = ( currentTime - pathway(4, index) ) / dTime;
+    if (0 <= s) && (s < 1/4)
+        vel = dP ./ dTime * 16/3 * s;
+    elseif (1/4 <= s) && (s < 3/4)
+        vel = dP ./ dTime * 4/3;
+    else 
+        vel = dP ./ dTime * ((-16/3) * s + 16/3);
+    end
+    return
+
+
     % フィードバックによって位置制御を行うための速度
     case 'str_fbk'
     findex = [false, index];
@@ -81,8 +95,9 @@ switch velMode
     % b-spline 曲線軌道
     % 時間に対して線形に速度が変化する(0->max->0)
     case 'spl_tru'
-    findex = [false, index];
-    armSign = [isLeftArm, ~isLeftArm];
+    
+
+    return
 end
 error('No such velocity mode')
 

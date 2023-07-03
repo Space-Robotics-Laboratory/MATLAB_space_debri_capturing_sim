@@ -6,8 +6,8 @@
 
 function controlParam = controlParam()
 %% Controller Setting
-controlParam.controlMode = 'MULTIPLE';          % コントローラーモード
-controlParam.velocityMode = 'str_tru';          % pathwayから速度を計算する方法
+controlParam.controlMode = 'TEST3';          % コントローラーモード
+controlParam.velocityMode = 'str_com';          % pathwayから速度を計算する方法
 controlParam.impedanceMode = 'addmitance';      % インピーダンス制御モード
 
 %% FeedBack Gain Useed in Pathway Following(in vel mode 'str_fbk')
