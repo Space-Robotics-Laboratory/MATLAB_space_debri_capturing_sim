@@ -62,8 +62,8 @@ function make_2dAnime(datSaver, paths, param)
             % ロボ描画
             vis_DualArmRobot(roboR0, roboQ0, jointPos, endEffecPos, endEffecOri, param)
             set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
-            xlabel('x [m]');
-            ylabel('y [m]');
+            xlabel('$$ \it{x} \space \rm{[m]} $$', 'Interpreter','latex');
+            ylabel('$$ \it{y} \space \rm{[m]} $$', 'Interpreter','latex');
             hold on
 
             % ターゲット描画
@@ -96,7 +96,7 @@ function make_2dAnime(datSaver, paths, param)
             end
 
             % 図をpng形式で保存
-            if rem(count, 500) == 1
+            if rem(count, 50) == 1
                 pictureName = sprintf('%s%d.png', pngfilename, picNum);              % png名定義
                 % set(fig,'Units','Inches');
                 % pos = get(fig,'Position');

@@ -32,9 +32,9 @@ plot(time, endTipR1F )
 plot(time, endTipR2F )
 
 title("End Effector Force")
-legend('Left Tip1 Force', 'Left Tip2 Force', 'Right Tip1 Force', 'Right Tip1 Force')
+legend('Left Tip 1 Force', 'Left Tip 2 Force', 'Right Tip 1 Force', 'Right Tip 1 Force')
 ylabel("Force [N]")
-xlabel("time [sec]")
+xlabel("Time [sec]")
 xlim([time(1), time(time_length)])
 hold off
 
@@ -55,9 +55,9 @@ plot(time, endTipR1T )
 plot(time, endTipR2T )
 
 title("End Effector Torque")
-legend('Left Tip1 Torque', 'Left Tip2 Torque', 'Right Tip1 Torque', 'Right Tip1 Torque')
+legend('Left Tip 1 Torque', 'Left Tip 2 Torque', 'Right Tip 1 Torque', 'Right Tip 1 Torque')
 ylabel("Torque [Nm]")
-xlabel("time [sec]")
+xlabel("Time [sec]")
 xlim([time(1), time(time_length)])
 hold off
 
@@ -77,9 +77,9 @@ plot(time, jointsTorque([1:3,5:7], :))
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 hold off
 title("Active Joint Torque")
-legend('MotorJ1', 'MotorJ2', 'MotorJ3', 'MotorJ5', 'MotorJ6', 'MotorJ7')
+legend('Motor 1', 'Motor 2', 'Motor 3', 'Motor 4', 'Motor 5', 'Motor 6')
 ylabel("Torque [Nm]")
-xlabel("time [sec]")
+xlabel("Time [sec]")
 xlim([time(1), time(time_length)])
 
 figName = 'motorTorque.fig';                                  % fig名定義
@@ -97,7 +97,7 @@ hold off
 title("Passive Joint Torque")
 legend('LeftWrist', 'RightWrist')
 ylabel("Torque [Nm]")
-xlabel("time [sec]")
+xlabel("Time [sec]")
 xlim([time(1), time(time_length)])
 
 figName = 'wristTorque.fig';                                  % fig名定義
@@ -115,7 +115,7 @@ plot(time, targW)
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 title("Target Angular Velocity")
 ylabel("Angular Velocity [rad/sec]")
-xlabel("time [sec]")
+xlabel("Time [sec]")
 xlim([time(1), time(time_length)])
 
 figName = 'targetAngVel.fig';                                  % fig名定義
