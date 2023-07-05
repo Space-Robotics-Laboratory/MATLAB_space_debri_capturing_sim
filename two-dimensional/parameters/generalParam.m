@@ -1,13 +1,13 @@
 % シミュレーション全体の設定ファイル
 function gParam = generalParam()
 %% File Setting
-gParam.dataSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/two-dimensional/dat';
+gParam.dataSavePath = '/home/akiyoshi/github/MATLAB_space_debri_capturing_sim/two-dimensional/dat';
 gParam.dataSaveName = 'myFile';
 
 
 %% Simulation Time Setting
 gParam.minusTime = 0; % minus value like -1
-gParam.endTime   = 60;
+gParam.endTime   = 45;
 gParam.divTime   = .001;
 
 % Simulation Break Setting
