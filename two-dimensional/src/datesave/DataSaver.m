@@ -8,7 +8,8 @@ classdef DataSaver
     properties
         paramStruct;
         datStruct;
-        filePath;
+        datSaveName;
+        datSaveFolder;
         datNum;
         index;
         timer_length;
@@ -17,7 +18,8 @@ classdef DataSaver
         % constructor インスタンス作成時に呼び出し
         function obj = DataSaver(paths, param)
             times = param.general.minusTime : param.general.divTime : param.general.endTime ;
-            obj.filePath = [paths.datfile, '/savedDat.csv'];
+            obj.datSaveName = [paths.datfile, '/savedDat.csv'];
+            obj.datSaveFolder = paths.datfile;
             row = length(times);
             obj.datNum = row;
             obj.index = 0;
@@ -143,10 +145,16 @@ classdef DataSaver
         
         % ファイルに書き出し
         % datListは一次元配列であり，fileIdに保存
-        function obj=write(obj)
+        function obj=write(obj, param)
+            % save as csv
             obj.timer_length = obj.index;
             table = struct2table(obj.datStruct);
-            writetable(table, obj.filePath)
+            writetable(table, obj.datSaveName)
+
+            % save as mat
+            temp = obj.datStruct;
+            save([obj.datSaveFolder, '/param.mat'], "param", '-mat')
+            save([obj.datSaveFolder, '/datStruct.mat'], "temp", '-mat')
         end
     end
 end

@@ -26,9 +26,6 @@ d_time = param.general.divTime; % シミュレーション1step当たりの時�
 Gravity = [ 0 0 0 ]'; % 重力（地球重力は Gravity = [0 0 -9.8]）
 sim_res = '-                                  ';
 
-% パラメータ変数保存
-save([paths.datfile, '/parameters'], "param", '-mat')
-
 % 双腕ロボインスタンス作成
 dualArmRobo  = DualArmRobo(param);
 % ターゲットインスタンス作成
@@ -133,7 +130,7 @@ end
 show_calc_time(startT, startCPUT)
 
 %%% データ保存
-datSaver = datSaver.write();
+datSaver = datSaver.write(param);
 
 %% 結果表示
 % アニメーション作成

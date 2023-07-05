@@ -12,7 +12,8 @@ function make_2dAnime(datSaver, paths, param)
 
     % 図定義
     FigureNumber = 101;     % 図番号設定
-    figure(FigureNumber);   % 図定義
+    fig = figure(FigureNumber);   % 図定義
+    fontSize = 22;  % 目盛りのフォントサイズ
     picNum = 1;             % 画像保存インデックス
     
     % ファイル名定義
@@ -31,7 +32,7 @@ function make_2dAnime(datSaver, paths, param)
         mov_d_count = fix( 1/ (frameRate * dt_sim) );
         
         % アニメ時間が動画刻み時間で割り切れる時に図を描画，動画に保存
-        if rem(count, mov_d_count) == 0
+        if rem(count, mov_d_count) == 1
             anime_counter = anime_counter + 1;
             %%% データインポート
             % robo
@@ -60,6 +61,9 @@ function make_2dAnime(datSaver, paths, param)
             %%% 描画
             % ロボ描画
             vis_DualArmRobot(roboR0, roboQ0, jointPos, endEffecPos, endEffecOri, param)
+            set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
+            xlabel('x [m]');
+            ylabel('y [m]');
             hold on
 
             % ターゲット描画
@@ -92,9 +96,18 @@ function make_2dAnime(datSaver, paths, param)
             end
 
             % 図をpng形式で保存
-            if rem(count, 500) == 0
+            if rem(count, 500) == 1
                 pictureName = sprintf('%s%d.png', pngfilename, picNum);              % png名定義
-                saveas(figure(FigureNumber), [paths.pngfile, '/', pictureName]);     % png保存
+                % set(fig,'Units','Inches');
+                % pos = get(fig,'Position');
+                % set(fig,'PaperPositionMode','manual','PaperUnits','Inches','PaperSize',[0.01, pos(4)])
+                % 
+                % margin = -5;  % 追加の余白サイズを調整（必要に応じて適切な値に変更）
+                % paperPos = [margin, margin, pos(3)-2*margin, pos(4)-2*margin];
+                % set(gca, 'LooseInset', get(gca, 'TightInset'));
+                % 
+                % print(fig,[paths.pngfile, '/', 'tny_', pictureName],'-dpng','-r0')
+                saveas(fig, [paths.pngfile, '/', pictureName]);     % png保存
                 picNum = picNum + 1;
             end
         end
