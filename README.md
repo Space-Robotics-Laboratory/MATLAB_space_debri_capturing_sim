@@ -126,9 +126,16 @@ $ git checkout -b feature/yourFeatureBranchName
 After implementing your work, through the pull request and code review process, your works will be merged into "develop" branch. Pull request can be sent in bitbucket web GUI.
 
 
-
-## Reference
-[1] T.Matsushita, K.Yoshida, "EXPERIMENTAL VERIFICATION ON CAGING-CAPTURE OF A FREE-FLOATING OBJECT BY A DUAL-ARM SPACE ROBOT", Submitted to i-SAIRAS, 2020.
+## References
+```
+@article{matsushitaexperimental,
+  title={EXPERIMENTAL VERIFICATION ON CAGING-CAPTURE OF A FREE-FLOATING OBJECT BY A DUAL-ARM SPACE ROBOT},
+  author={Matsushita, Tomoya and Yoshida, Kazuya},
+  booktitle={Proc. i-SAIRAS},
+  year={2020}
+}
+```
+@TODO: put Naoki Hase paper, and UchidaRSJ papers info as well in the same format.
 
 **You can also find the publications in team's shared drive.**
 
