@@ -4,15 +4,18 @@
 % 
 % main simulation
 %
-clc
-clear 
-close all
-  
-%%%%% シミュレーション準備
-%%% パラメータ設定
-% 基本的にパラメータはParamSetting内で変更する．
-param  = set_Param();                   
+% RSJ2023用に，parametric解析を行うように改良．main_simの返り値は，捕獲結果のtex形式表現
 
+function sim_res = main_sim(param, paths)
+arguments
+    %%% パラメータ設定
+    % main_sim 実行時にパラメータを与えることも可能
+    param = set_Param(); 
+    % パス設定
+    paths = make_DataFolder(param);              % 保存先フォルダ作成．パスはParamSettingで設定
+end
+
+%%%%% シミュレーション準備             
 %%% global 変数の定義 
 % 全ての関数及びメインルーチン内で共通で使用される変数
 global d_time
@@ -21,11 +24,7 @@ global Ez
 Ez = [ 0 0 1 ]';
 d_time = param.general.divTime; % シミュレーション1step当たりの時間
 Gravity = [ 0 0 0 ]'; % 重力（地球重力は Gravity = [0 0 -9.8]）
-
-% パス設定
-paths = make_DataFolder(param);              % 保存先フォルダ作成．パスはParamSettingで設定
-% パラメータ変数保存
-save([paths.datfile, '/parameters.m'], "param", '-mat')
+sim_res = '-                                  ';
 
 % 双腕ロボインスタンス作成
 dualArmRobo  = DualArmRobo(param);
@@ -52,13 +51,17 @@ datSaver = DataSaver(paths, param);
 % タイマースタート                                               
 startCPUT = cputime;
 startT = clock();
+break_time = inf;
 
 %% シミュレーションループスタート
 for time = minusTime : d_time : endTime 
-    clc
-    time %#ok<NOPTS> 
+    if rem(time, 0.1) == 0
+        timer_count = sprintf("time : %2.2f [s]\n", time);
+        fprintf(timer_count)
+    end
+ 
     %%% データ更新
-    datSaver = datSaver.update(dualArmRobo, targetSquare, controller, time, param);
+    datSaver = datSaver.update(dualArmRobo, targetSquare, controller, param);
 
     %%% 推定フェーズ
     % 接触判定及び接触力計算
@@ -76,19 +79,58 @@ for time = minusTime : d_time : endTime
     controller = controller.control(dualArmRobo, targetSquare, roboFTsensor, time, state, param);
 
     %%% 運動計算フェーズ
-    % 運動状態更新
     dualArmRobo  = dualArmRobo.update(controller.tau, roboExtWrench, param);    % methodを呼び出した後自身に代入することを忘れない！
     targetSquare = targetSquare.update(targetExtWrench);  
 
     % 状態判定更新
     state = state.update(dualArmRobo, isContact, targetSquare, time, param);
+
+    % 以降simulation中断処理
+    if time > break_time
+        break
+    end
+    if break_time ~= inf
+        continue
+    end
+
+    % ターゲット回転減衰 -> 白∆
+    if state.targetSlow
+        sim_res = '\cellcolor{white}{$\bigtriangleup$}';
+    end
+
+    % 捕獲
+    if state.targetStop
+        if state.isCapture % ケージング成功 -> 緑◎
+            % sim_res = '\cellcolor{green}{$\doublecirc   $}';
+            % break_time = time + param.general.breakTimeDuration;
+        elseif state.isPinch % 力による挟み込み -> 緑o
+            sim_res = '\cellcolor{green}{$\circ$         }';
+            break_time = time;
+        end
+    end
+    % ベース接触 -> 赤x
+    if state.isBaseContact
+        sim_res = '\cellcolor{red}{$\times          $}';
+        break_time = time;
+    end
+    % 突き飛ばし -> 黄x
+    if state.goneAway 
+        sim_res = '\cellcolor{yellow}{$\times       $}';
+        break_time = time;
+    end
+
+    % simulation error
+    if any(isnan(dualArmRobo.SV.R0), "all") 
+        sim_res = '          !                        ';
+        break_time = time;
+    end
 end
 %% ループ終了
 %%% シミュレーション時間の計測と表示 
 show_calc_time(startT, startCPUT)
 
 %%% データ保存
-datSaver.write()
+datSaver = datSaver.write(param);
 
 %% 結果表示
 % アニメーション作成
@@ -97,7 +139,7 @@ datSaver.write()
 make_2dAnime(datSaver, paths, param)
 
 % グラフ作成
-make_graph(datSaver.datStruct, paths)
+make_graph(datSaver.datStruct, datSaver.timer_length, paths)
 
 %clear
 fclose('all');

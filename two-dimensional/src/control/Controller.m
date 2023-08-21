@@ -35,6 +35,7 @@ classdef Controller
         phaseStarting   % bool pathwayのphaseの切り替えを示す．経由地点を初めて達成した時刻でtrue．
         flagPathUpdate  % bool pathwayをupdateするためのフラグ
         controlPart     % bool 1*3 [base, leftArm, rigthArm] 制御の対象となる物体
+        f_exp_drt       % bool multiple -> directの切り替え経験フラグ．クイックなバクフィクス用．すぐ対応->93付近
 
         % シミュレーションパラメータ
         dt              % 刻み時間
@@ -56,6 +57,7 @@ classdef Controller
             obj.controlState = 'follow';                        % 関節速度が０
             obj.impedanceMode = param.control.impedanceMode;    % インピーダンス制御のモード
             obj.controlPart = [false, false, false];            % 積極的に制御する対象となる物体
+            obj.f_exp_drt = false;
 
             % パラメータ設定
             obj.mi = repmat(param.control.mi, [2,1]);
@@ -84,7 +86,12 @@ classdef Controller
                     % 角速度がしきい値より小さくなったら直接捕獲に移行
                     if time > state.time.comeTargetSlow + obj.impDuration
                         % 少し時間をおいてから直接捕獲のフラグを立てる
-                        obj.flagPathUpdate = equal_time(time, state.time.comeTargetSlow+obj.switchingDelay, param.general.divTime);    
+                        obj.flagPathUpdate = equal_time(time, state.time.comeTargetSlow+obj.switchingDelay, param.general.divTime); 
+                        obj.f_exp_drt = obj.f_exp_drt || obj.flagPathUpdate;
+                        if ~obj.f_exp_drt
+                            obj = obj.stopEndEffector(robo, roboFTsensor);
+                            return % フラグが初めて立つまではdirectCaptureの処理をしたくない．汚いのでよう改善
+                        end
                         obj = obj.directCapture(robo, targ, roboFTsensor, time, param);
                         return
                     end
@@ -213,12 +220,14 @@ classdef Controller
                 controlArm_2 = clone_vec(controlArm, 2);
                 nonContArmDist = min(ee2targDist(~controlArm_2), [], 2);
                 ee2targDistMin = param.control.nonContactArm2targetMinDistanceRatio * targ.width * sin(pi/4) + robo.r;
+                singuDanger = any(abs(robo.SV.q([2,3,6,7]))<param.control.minMiddleJointsAngle, "all");
+              
                 % 非接触アームがターゲットから十分遠い場合，関節速度空間のノルムが最小となるように制御
-                if nonContArmDist >= ee2targDistMin
+                if nonContArmDist >= ee2targDistMin && ~singuDanger
                     obj.controlPart = [false, targ.SV.v0(1)<0, targ.SV.v0(1)>=0];
                     obj.desEEVel = obj.pathway.vel(time, robo, obj);
 
-                % 非接触アームがターゲットに接触する可能性がある場合，停止させる
+                % 非接触アームがターゲットに接触する可能性がある場合，または特異点に近い可能性がある場合，停止させる
                 else
                     obj.controlPart = [false, true, true];
                     controlVel = clone_vec(controlArm, 3);

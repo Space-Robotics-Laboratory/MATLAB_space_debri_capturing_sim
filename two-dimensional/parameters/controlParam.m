@@ -6,8 +6,8 @@
 
 function controlParam = controlParam()
 %% Controller Setting
-controlParam.controlMode = 'TEST3';          % コントローラーモード
-controlParam.velocityMode = 'str_com';          % pathwayから速度を計算する方法
+controlParam.controlMode = 'DIRECT';          % コントローラーモード
+controlParam.velocityMode = 'str_tru';          % pathwayから速度を計算する方法
 controlParam.impedanceMode = 'addmitance';      % インピーダンス制御モード
 
 %% FeedBack Gain Useed in Pathway Following(in vel mode 'str_fbk')
@@ -26,18 +26,26 @@ controlParam.impedanceDuration = .2;            % 接触後，インピーダン
 controlParam.swichingDelay2Direct = .35;        % ターゲット角速度が減衰したのち，直接捕獲モードに切り替える待ち時間
 
 % border value
-controlParam.switchingTargetAngVel = 1;                     % 境界値となるターゲット角速度
+controlParam.switchingTargetAngVel = 1;                     % 複数回接触の境界値となるターゲット角速度
 controlParam.nonContactArm2targetMinDistanceRatio =1.2;      % 非接触アームがターゲットに接触しないための制御を開始する境界値
 
 % impedance parameters
-controlParam.mi = [1, 1, 1]'*.2;                   % アドミタンス制御仮想質量   [.5, .5, .5]';
-controlParam.di = [1, 1, 1]'*10;                   % アドミタンス制御ダンパ特性  [10, 10, 10]';
-controlParam.ki = [.0, .0, .0]';                   % アドミタンス制御バネ特性   [.5, .5, .5]';
+controlParam.mi = [1, 1, 1]'*.05;                   % アドミタンス制御仮想質量   [.5, .5, .5]';
+controlParam.di = [1, 1, 1]'*.3;                   % アドミタンス制御ダンパ特性  [10, 10, 10]';
+controlParam.ki = [.5, .5, .5]'*.1;                   % アドミタンス制御バネ特性   [.5, .5, .5]';
 
 % contact parameters
 controlParam.contactPositionRatio = .8;             % 接触位置がターゲット辺のどの割合にあるかを表す.0で中心1で頂点
 controlParam.endEffecAngleDeviation = deg2rad(10);  % 接触時点のエンドエフェクターの角度
 controlParam.contactTargetAngLim = deg2rad(20);     % 接触時のターゲット角度をターゲットの速度方向によって定める時の上限.大きいと手先の姿勢が達成しづらくなる
+
+% sigurality avoidance
+controlParam.minMiddleJointsAngle = pi/6;
+
+%% Capturing Evaluation
+controlParam.stoppingTargetAngVel = 0.5;                   % ターゲットの回転が停止したとみなせる，ロボットへの相対角速度
+controlParam.stoppingTargetVel = 0.1;                      % ターゲットの回転が停止したとみなせる，ロボットへの相対速度 
+controlParam.reachable = 0.6;                               % 捕獲不可能と判断する境界値
 
 
 end

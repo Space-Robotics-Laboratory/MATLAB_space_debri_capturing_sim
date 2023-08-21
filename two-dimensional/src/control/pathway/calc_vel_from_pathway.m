@@ -22,8 +22,8 @@
 
 
 function vel = calc_vel_from_pathway(pathway, currentTime, robo, feedBackGain, isLeftArm, velMode)
-if any(isnan(pathway))
-    vel = nan(3, 1);
+if any(isnan(pathway), "all")
+    vel = zeros(3, 1);
     return
 end
 
