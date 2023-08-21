@@ -134,14 +134,16 @@ After implementing your work, through the pull request and code review process, 
   booktitle={Proc. i-SAIRAS},
   year={2020}
 }
-
+```
+```
 @article{haseparametric,
   title={Parametric Analysis on Repeated Impact-Based Capture of a Free-Floating Cylindrical Object by a Dual-Arm Space Robot},
   author={Naoki, Hase and Kenji, Nagaoka and Yoshida, Kazuya},
   booktitle={Proc. i-SAIRAS},
   year={2018}
 }
-
+```
+```
 @article{uchidamultiplesimulation,
   title={インピーダンス制御を用いた双腕ロボットによる宇宙デブリ捕獲手法},
   author={Akiyoshi, Uchida and Kentaro, Uno and Yoshida, Kazuya},
@@ -149,7 +151,6 @@ After implementing your work, through the pull request and code review process, 
   year={2023}
 }
 ```
-@TODO: put Naoki Hase paper, and UchidaRSJ papers info as well in the same format.
 
 **You can also find the publications in team's shared drive.**
 
