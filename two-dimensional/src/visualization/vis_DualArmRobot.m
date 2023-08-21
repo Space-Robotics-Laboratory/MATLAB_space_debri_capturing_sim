@@ -26,7 +26,7 @@ function vis_DualArmRobot(roboR0, roboQ0, jointPos, endEffecPos, endEffecOri, pa
 
     % 図設定
     xlim( [ -0.5, 0.5 ] ); 
-    ylim( [ -0.2, 0.8 ] );
+    ylim( [ -0.2, 0.55 ] );
     xticks( -0.5:0.1:0.5 );
     yticks( -0.2:0.1:0.8 );
     daspect([1, 1, 1]);
