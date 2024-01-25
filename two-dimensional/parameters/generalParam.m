@@ -7,7 +7,7 @@ gParam.dataSaveName = 'myFile';
 
 %% Simulation Time Setting
 gParam.minusTime = 0; % minus value like -1
-gParam.endTime   = 2;
+gParam.endTime   = 45;
 gParam.divTime   = .001;
 
 % Simulation Break Setting
