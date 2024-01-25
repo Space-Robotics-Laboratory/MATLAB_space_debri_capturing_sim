@@ -101,8 +101,8 @@ for time = minusTime : d_time : endTime
     % 捕獲
     if state.targetStop
         if state.isCapture % ケージング成功 -> 緑◎
-            % sim_res = '\cellcolor{green}{$\doublecirc   $}';
-            % break_time = time + param.general.breakTimeDuration;
+            sim_res = '\cellcolor{green}{$\doublecirc   $}';
+            break_time = time + param.general.breakTimeDuration;
         elseif state.isPinch % 力による挟み込み -> 緑o
             sim_res = '\cellcolor{green}{$\circ$         }';
             break_time = time;
