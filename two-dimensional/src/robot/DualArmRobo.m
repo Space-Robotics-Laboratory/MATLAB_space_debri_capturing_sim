@@ -62,8 +62,10 @@ classdef DualArmRobo
             obj.width = param.robot.baseWidth;
             obj.height = param.robot.baseHeight;
             obj.r = param.robot.diameter_endTip * .5;
-            obj.wristElast = param.robot.wristElast;
-            obj.wristDamp = param.robot.wristDamp;
+            if(param.robot.compliantWrist)
+                obj.wristElast = param.robot.wristElast;
+                obj.wristDamp = param.robot.wristDamp;
+            end
 
             % モータ限界値設定
             obj.jointAngMax = param.robot.jointAngle_max; % yet unused
@@ -120,13 +122,6 @@ classdef DualArmRobo
         function obj = update(obj, JointTau, ExtWrench, Parameters)
             % 前時間の自身クラスを保存, 必要か？
 %             obj.DualArmRoboPrevious = obj;
-
-            % 能動的な力
-            obj.SV.tau = min_abs(JointTau, obj.motorTrqMax);                  % トルク限界値でフィルタした関節トルク代入．tau([4,8])は受動関節なので，上書きされる．
-
-            % 受動的な力
-            obj.SV.tau([4, 8]) = -obj.wristDamp  * obj.SV.qd([4, 8]) ...      % 手首関節トルクをバネダンパ系で計算
-                                 -obj.wristElast * obj.SV.q([4, 8]);          % 物理係数はパラメータで設定
             obj.SV.Fes = ExtWrench(1:3, 2:5);                       % 手先球にかかる力
             obj.SV.Tes = ExtWrench(4:6, 2:5);                       % 手先球にかかるトルク
             obj.SV.F0 = ExtWrench(1:3, 1);                          % ベース力
@@ -135,6 +130,15 @@ classdef DualArmRobo
             obj.SV.Te(:, 4) = ExtWrench(4:6, 2)+ExtWrench(4:6, 3);  % 左手手先トルク
             obj.SV.Fe(:, 8) = ExtWrench(1:3, 4)+ExtWrench(1:3, 5);  % 右手手先力
             obj.SV.Te(:, 8) = ExtWrench(4:6, 4)+ExtWrench(4:6, 5);  % 右手手先トルク
+            % 能動的な力
+            obj.SV.tau = min_abs(JointTau, obj.motorTrqMax);                  % トルク限界値でフィルタした関節トルク代入．tau([4,8])は受動関節なので，上書きされる．
+
+            % 受動的な力
+            % コンプライアントかどうかで分岐
+            if(Parameters.robot.compliantWrist)
+                obj.SV.tau([4, 8]) = -obj.wristDamp  * obj.SV.qd([4, 8]) ...      % 手首関節トルクをバネダンパ系で計算
+                                     -obj.wristElast * obj.SV.q([4, 8]);          % 物理係数はパラメータで設定
+            end
 
             % 順運動学によって関節位置，角度を計算
             obj.SV = f_dyn_rk2(obj.LP, obj.SV);                                         % ロボットに関する順動力学

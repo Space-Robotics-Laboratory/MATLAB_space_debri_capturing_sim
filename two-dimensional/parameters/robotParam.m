@@ -50,14 +50,18 @@ robotParam.inertia_endEffector = [1e9,      0,          0;
                                      0,      0,  0.00015];%0.000254];
 robotParam.comOffset_endEffector = [0, 0, 0]';          % エンドエフェクター重心の，幾何中心からのずれ
 
+
 % Wrist Spring Setting
-robotParam.wristDamp  = 0.1;%0.4;       % 手首関節減衰係数
-robotParam.wristElast = .2;%0.8;       % 手首関節弾性係数
+robotParam.compliantWrist = false;
+if(robotParam.compliantWrist)
+    robotParam.wristDamp  = 0.1;%0.4;       % 手首関節減衰係数
+    robotParam.wristElast = .2;%0.8;       % 手首関節弾性係数
+end
 
 % Motor Limitation
-robotParam.motorTorque_max = repmat(100, [8,1]); % 受動関節に関しては関係ない
-robotParam.jointAngle_max = [];     % yet unused
-robotParam.jointAngle_min = [];     % yet unused
+robotParam.motorTorque_max = repmat(10, [8,1]); % 受動関節に関しては関係ない
+robotParam.jointAngle_max = [];     % still unused
+robotParam.jointAngle_min = [];     % still unused
 
 
 end
