@@ -16,11 +16,12 @@ LP_t.J_type = [];
 LP_t.m = [];
 
 % ベースの質量 [kg]
-rho = Param.target.density;
-width = Param.target.width;
-depth = Param.target.depth;
-mass = rho * width * depth;
-LP_t.m0 = mass ;
+% rho = Param.target.density;
+% width = Param.target.width;
+% depth = Param.target.depth;
+% mass = rho * width * depth;
+% LP_t.m0 = mass ;
+LP_t.m0 = Param.target.mass;
 
 LP_t.mass = sum(LP_t.m) + LP_t.m0;
 
@@ -41,8 +42,9 @@ LP_t.cc = zeros(3,LP_t.num_q,LP_t.num_q);
 LP_t.ce = zeros(3,LP_t.num_q);
 
 % ベースの慣性テンソル
-LP_t.inertia0 = [1e9 0 0;
-                 0   1e9 0;
-                 0,    0,  mass * width * depth / 6];
+% LP_t.inertia0 = [1e9 0 0;
+%                  0   1e9 0;
+%                  0,    0,  mass * width * depth / 6];
+LP_t.inertia0 = Param.target.inertia;
 
 LP_t.inertia = zeros(3,3*LP_t.num_q);
