@@ -42,8 +42,8 @@ LP_d.J_type = [ 'R' 'R' 'R' 'R'    'R' 'R' 'R' 'R' ];
 %%%%% ベース重心から関節iへの位置ベクトル %%%%%
 % 直接連結していないリンクはすべて0 ベースの座標系からみたもの
 zero3 = zeros(3,1);
-baseToJoint1 = [-param.robot.baseWidth/2; param.robot.baseDepth/2; 0];
-baseToJoint5 = [ param.robot.baseWidth/2; param.robot.baseDepth/2; 0];
+baseToJoint1 = [-param.robot.baseWidth/2; param.robot.baseDepth/2; 0] - param.robot.comOffset_base;
+baseToJoint5 = [ param.robot.baseWidth/2; param.robot.baseDepth/2; 0] - param.robot.comOffset_base;
 LP_d.c0 = [ baseToJoint1, zero3, zero3, zero3,   baseToJoint5, zero3, zero3, zero3 ];
 
 %%%%% ベース部 (リンク0) の質量 %%%%%

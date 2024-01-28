@@ -79,7 +79,7 @@ classdef DualArmRobo
             obj.jointsR = j_num( obj.LP, obj.num_eR );   % 右手のジョイント数
             
             % ベースの初期位置・姿勢・速度・角速度
-            obj.SV.R0 = param.robot.initial_position;       % 初期位置
+            obj.SV.R0 = param.robot.initial_position + param.robot.comOffset_base;       % 初期位置
             obj.SV.Q0 = param.robot.initial_orientation;    % 初期姿勢
             obj.SV.A0 = rpy2dc( obj.SV.Q0 )';               % 初期姿勢から方向余弦行列を算出
             obj.SV.v0 = param.robot.initial_velocity;       % 初期並進速度

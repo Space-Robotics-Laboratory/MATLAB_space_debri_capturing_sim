@@ -8,7 +8,7 @@
 function vis_DualArmRobot(roboR0, roboQ0, jointPos, endEffecPos, endEffecOri, param)
     baseWidth = param.robot.baseWidth;
     baseDepth = param.robot.baseDepth;
-    basePos = roboR0;
+    basePos = roboR0 - rpy2dc(roboQ0)' * param.robot.comOffset_base;
     LdD = param.robot.diameter_endTip;
     gamma = param.robot.endEffector_gamma;
     LdH = param.robot.endEffector_h;
