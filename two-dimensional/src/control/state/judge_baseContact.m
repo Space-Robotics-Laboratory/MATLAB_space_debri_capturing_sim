@@ -2,7 +2,7 @@
 % ベクトルは2次元
 function isBaseContact = judge_baseContact(robo, target, param)
 
-basePos = robo.SV.R0(1:2,1) - param.robot.comOffset_base(1:2,1);
+basePos = robo.SV.R0(1:2,1) - robo.SV.A0(1:2, 1:2) * param.robot.comOffset_base(1:2,1);
 targetPos = target.SV.R0(1:2,1) + target.m2G(1:2,1);
 aboutDistance = vecnorm([target.width, target.depth]) + vecnorm([robo.width, robo.depth]);
 
