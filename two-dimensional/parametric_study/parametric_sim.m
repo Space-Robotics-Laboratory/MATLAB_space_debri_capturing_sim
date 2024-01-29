@@ -8,36 +8,23 @@
 param = set_Param();
 
 %% modify unlooped param
-param.general.endTime = 30;
+param.general.endTime = 45;
 param.general.anime_frameRate = 10;
 param.control.controlMode = 'MULTIPLE';
 
 %% path setting
 timepath = datestr( now, 'yyyy-mmdd-HHMMSS' );  % yはyear，mはmonth,dはday,Hはhour,Mはminute,Sはsecond.それぞれの文字数分出力する
 datepath = datestr( now, 'yyyy-mmdd' );
-dataSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/two-dimensional/RSJ2023';
+dataSavePath = './iSpaRo2024';
 path_parametric = [ dataSavePath '/' datepath '/' timepath ];
 table_path = [path_parametric, '/tables/'];
 mkdir(table_path)
 
 %% parameters to be looped
-% 0617
-% w_s = 3;
-% mi_s = 0.001:0.1:1.001;
-% ki_s = 0:1:5;
-% di_s = 1:1:20;
-
-% 0618 suc k0, continue
-% w_s = 3;
-% mi_s = 0.001:0.1:1.001;
-% ki_s = 1:5;
-% di_s = 1:1:20;
-
-% 0619 w4, 5 are done. check from behind
-w_s = 8;
-mi_s = 0.001:0.1:1.001;
+w_s = 1:2:3;
+mi_s = 0.5:0.5:2.0;
 ki_s = 0:5;
-di_s = 1:1:20;
+di_s = 0:5;
 
 raw = length(mi_s);
 col = length(di_s);
