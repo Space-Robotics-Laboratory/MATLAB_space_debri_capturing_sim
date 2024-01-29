@@ -43,7 +43,7 @@ classdef State
             obj.isCapture = judge_isCaptured(robo, target, param);
             obj.wasContact = obj.isContact;
             obj.isContact = isContact;
-            obj.isBaseContact = judge_baseContact(robo, target);
+            obj.isBaseContact = judge_baseContact(robo, target, param);
 
             % ここだけ不自然．要改善
             [obj.isPinch, obj.force_holder_] = judge_isPinched(obj.force_holder_, robo, param);
