@@ -23,14 +23,14 @@ mkdir(table_path)
 %% parameters to be looped
 w_s = [1,3,2];
 mi_s = 0.5:0.5:10;
-ki_s = 0:2.5:10;
+ki_s = 0:2.5:100;
 di_s = 0:2.5:10;
 
-raw = length(mi_s);
+raw = length(ki_s);
 col = length(di_s);
 
 v_names = string(di_s);
-r_names = string(mi_s);
+r_names = string(ki_s);
 varTypes = repmat({'string'}, 1, col);
 
 
@@ -40,15 +40,15 @@ startT = clock();
 
 %% loop loop 
 for w = w_s
-    for ki = ki_s
+    for mi = mi_s
         ind_c = 0;
-        tab_name_ = 'ki' + string(ki) + '___w' + string(w);
+        tab_name_ = 'mi' + string(mi) + '___w' + string(w);
         tab_name = table_path + strrep(tab_name_, '.', '_');
         res_table = table('Size',[raw col] ,'VariableTypes', varTypes, 'VariableNames', v_names, 'RowNames', r_names);
         for di = di_s
             ind_r = 0;
             ind_c = ind_c + 1;
-            for mi = mi_s
+            for ki = ki_s
                 ind_r = ind_r + 1;
                 % display
                 value = sprintf("w : %3.4f ki : %3.4f mi : %3.4f di : %3.4f\n", w, ki, mi, di);
@@ -59,7 +59,7 @@ for w = w_s
                 param.control.mi = [1, 1, 1]' * mi;
                 param.control.ki = [1, 1, 1]' * ki;
                 param.control.di = [1, 1, 1]' * di;
-                data_name_temp = '__di' + string(di) + '___mi' + string(mi);
+                data_name_temp = '__di' + string(di) + '___ki' + string(ki);
                 data_name_temp = strrep(tab_name_, '.', '_') + strrep(data_name_temp, '.', '_');
                 data_name = char(data_name_temp);
                 paths = make_dataFolder_Parametric(data_name, path_parametric);
