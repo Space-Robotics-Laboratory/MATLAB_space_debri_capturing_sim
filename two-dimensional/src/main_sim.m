@@ -93,15 +93,15 @@ for time = minusTime : d_time : endTime
         continue
     end
 
-    % ターゲット回転減衰 -> 白∆
+    % ターゲット回転減衰 -> 黄∆
     if state.targetSlow
-        sim_res = '\cellcolor{white}{$\bigtriangleup$}';
+        sim_res = '\cellcolor{yellow}{$\bigtriangleup$}';
     end
 
     % 捕獲
     if state.targetStop
-        if state.isCapture % ケージング成功 -> 緑◎
-            sim_res = '\cellcolor{green}{$\doublecirc   $}';
+        if state.isCapture % ケージング成功 -> 緑 ✓
+            sim_res = '\cellcolor{green}{$\checkmark    $}';
             break_time = time + param.general.breakTimeDuration;
         elseif state.isPinch % 力による挟み込み -> 緑o
             sim_res = '\cellcolor{green}{$\circ$         }';
@@ -128,6 +128,7 @@ end
 %% ループ終了
 %%% シミュレーション時間の計測と表示 
 show_calc_time(startT, startCPUT)
+disp(sim_res)
 
 %%% データ保存
 datSaver = datSaver.write(param);
