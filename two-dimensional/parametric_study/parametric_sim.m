@@ -22,8 +22,8 @@ mkdir(table_path)
 
 %% parameters to be looped
 w_s = [1,3,2];
-mi_s = 0.5:0.5:10;
-ki_s = 0:2.5:100;
+mi_s = [0.05, 0.5, 1.0, 1.5, 2.0];
+ki_s = 0:2.5:10;
 di_s = 0:2.5:10;
 
 raw = length(ki_s);
