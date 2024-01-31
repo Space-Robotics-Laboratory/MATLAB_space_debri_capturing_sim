@@ -6,7 +6,7 @@ function make_2dAnime(datSaver, paths, param)
     dataStruct = datSaver.datStruct;
     dt_sim = param.general.divTime;
     frameRate = param.general.anime_frameRate; 
-    snapShotRate = param.general.snapShot_frameRate;
+    snapShotRate = fix( 1/ (param.general.snapShot_frameRate * dt_sim) );
     
     % force vector scale
     scale = .01;

@@ -15,7 +15,7 @@ gParam.breakTimeDuration = 1;
 
 %% Animation Time Setting
 gParam.anime_frameRate = 100;    % fps
-gParam.snapShot_frameRate = 5000; % fps
+gParam.snapShot_frameRate = 1; % fps
 
 
 end
