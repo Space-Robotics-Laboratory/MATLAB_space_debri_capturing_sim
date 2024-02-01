@@ -42,7 +42,7 @@ startT = clock();
 for w = w_s
     for mi = mi_s
         ind_c = 0;
-        tab_name_ = 'mi' + string(mi) + '___w' + string(w);
+        tab_name_ = 'w' + string(w) + '___mi' + string(mi);
         tab_name = table_path + strrep(tab_name_, '.', '_');
         res_table = table('Size',[raw col] ,'VariableTypes', varTypes, 'VariableNames', v_names, 'RowNames', r_names);
         for di = di_s
@@ -51,7 +51,7 @@ for w = w_s
             for ki = ki_s
                 ind_r = ind_r + 1;
                 % display
-                value = sprintf("w : %3.4f ki : %3.4f mi : %3.4f di : %3.4f\n", w, ki, mi, di);
+                value = sprintf("w : %3.4f mi : %3.4f di : %3.4f ki : %3.4f\n", w, mi, di, ki);
                 fprintf(value)
 
                 % set param
