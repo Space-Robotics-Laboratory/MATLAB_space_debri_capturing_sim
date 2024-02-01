@@ -83,7 +83,7 @@ for time = minusTime : d_time : endTime
     targetSquare = targetSquare.update(targetExtWrench);  
 
     % 状態判定更新
-    state = state.update(dualArmRobo, isContact, targetSquare, time, param);
+    state = state.update(controller, dualArmRobo, isContact, targetSquare, time, param);
 
     % 以降simulation中断処理
     if time > break_time
@@ -101,7 +101,11 @@ for time = minusTime : d_time : endTime
     % 捕獲
     if state.targetStop
         if state.isCapture % ケージング成功 -> 緑 ✓
-            sim_res = '\cellcolor{green}{$\checkmark    $}';
+            if(state.hasAccidentalContact)
+                sim_res = '\cellcolor{yellow}{$\checkmark    $}';
+            else
+                sim_res = '\cellcolor{green}{$\checkmark    $}';
+            end
             break_time = time + param.general.breakTimeDuration;
         elseif state.isPinch % 力による挟み込み -> 緑o
             sim_res = '\cellcolor{green}{$\circ$         }';

@@ -86,6 +86,7 @@ classdef Controller
                     % 角速度がしきい値より小さくなったら直接捕獲に移行
                     if time > state.time.comeTargetSlow + obj.impDuration
                         % 少し時間をおいてから直接捕獲のフラグを立てる
+                        % 不測の接触後，もう一度トライ
                         obj.flagPathUpdate = equal_time(time, state.time.comeTargetSlow+obj.switchingDelay, param.general.divTime) || ...
                             equal_time(time, state.time.lastContact + obj.impDuration, param.general.divTime);
                         obj.f_exp_drt = obj.f_exp_drt || obj.flagPathUpdate;
@@ -152,7 +153,7 @@ classdef Controller
                         goalPathway(:, :, 2) = [0.2, 0.169;
                                                 0.3, 0.25;
                                                 1.5708, 1.5708;
-                                                0.5, 1];;% 4*2
+                                                0.5, 1];% 4*2
                         obj.pathway = obj.pathway.overWriteGoal(robo, goalPathway, time);   % pathway更新
                     end
                     if obj.phase == -1 
