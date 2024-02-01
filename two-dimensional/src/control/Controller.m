@@ -86,7 +86,8 @@ classdef Controller
                     % 角速度がしきい値より小さくなったら直接捕獲に移行
                     if time > state.time.comeTargetSlow + obj.impDuration
                         % 少し時間をおいてから直接捕獲のフラグを立てる
-                        obj.flagPathUpdate = equal_time(time, state.time.comeTargetSlow+obj.switchingDelay, param.general.divTime); 
+                        obj.flagPathUpdate = equal_time(time, state.time.comeTargetSlow+obj.switchingDelay, param.general.divTime) || ...
+                            equal_time(time, state.time.lastContact + obj.impDuration, param.general.divTime);
                         obj.f_exp_drt = obj.f_exp_drt || obj.flagPathUpdate;
                         if ~obj.f_exp_drt
                             obj = obj.stopEndEffector(robo, roboFTsensor);
