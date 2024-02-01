@@ -22,9 +22,9 @@ mkdir(table_path)
 
 %% parameters to be looped
 w_s = [1,3,2];
-mi_s = [0.05, 0.5, 1.0, 1.5, 2.0];
-ki_s = 0:2.5:10;
-di_s = 0:2.5:10;
+mi_s = [0.01, 0.05, 1.0, 2.0];
+ki_s = 0:1.5:9;
+di_s = 0:1.5:9;
 
 raw = length(ki_s);
 col = length(di_s);
