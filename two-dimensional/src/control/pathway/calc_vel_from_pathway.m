@@ -51,29 +51,34 @@ switch velMode
     % 直線軌道・一定速度（時刻に対してステップ速度）
     % 最も単純であるが，加速度が発散する危険が非常に高い．
     case 'str_str'
-    gain = 1;
-    vel = dP ./ dTime * gain;
+        gain = 1;
+        vel = dP ./ dTime * gain;
     return
 
     % 直線軌道・山形速度（境界で加速度0の折れ曲がった直線）
     % 時間に対して線形に速度が変化する(0->max->0)
     case 'str_tru'
-    s = ( currentTime - pathway(4, index) ) / dTime;
-    gain = -abs(4*s - 2) + 2;
-    vel = dP ./ dTime * gain;
+        s = ( currentTime - pathway(4, index) ) / dTime;
+        gain = -abs(4*s - 2) + 2;
+        vel = dP ./ dTime * gain;
     return
 
     % 直線起動・一定山形並立速度（台形速度）
     % matlab練習用に作ったので工学的意味はなし
     case 'str_com'
-    s = ( currentTime - pathway(4, index) ) / dTime;
-    if (0 <= s) && (s < 1/4)
-        vel = dP ./ dTime * 16/3 * s;
-    elseif (1/4 <= s) && (s < 3/4)
-        vel = dP ./ dTime * 4/3;
-    else 
-        vel = dP ./ dTime * ((-16/3) * s + 16/3);
-    end
+        s = ( currentTime - pathway(4, index) ) / dTime;
+        if (0 <= s) && (s < 1/4)
+            vel = dP ./ dTime * 16/3 * s;
+        elseif (1/4 <= s) && (s < 3/4)
+            vel = dP ./ dTime * 4/3;
+        else 
+            vel = dP ./ dTime * ((-16/3) * s + 16/3);
+        end
+    return
+    case 'str_poly3'
+        s = ( currentTime - pathway(4, index) ) / dTime;
+        gain = -6 *(s^2 - s);
+        vel = dP ./ dTime * gain;
     return
 
 
