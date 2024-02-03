@@ -11,6 +11,14 @@ param = set_Param();
 param.general.endTime = 45;
 param.general.anime_frameRate = 10;
 param.control.controlMode = 'MULTIPLE';
+param.robot.initial_jointsAngle(1:4,  1) =   [ pi/3 -pi/3 -pi/2 0 ]';
+param.robot.initial_jointsAngle(5:8, 1)  = - [ pi/3 -pi/3 -pi/2 0 ]';
+    % - 1.047   # joint La :PI/3                    ___    ___        
+    % - -1.047  # joint Lb :-PI/3                  |          |                             
+    % - -1.571  # joint Lc :-PI/2                  \ ________ /                        
+    % - -1.047  # joint Ra :-PI/3                   |        |      
+    % - 1.047   # joint Rb :PI/3                    |________| wide
+    % - 1.571   # joint Rc :PI/2 
 
 %% path setting
 timepath = datestr( now, 'yyyy-mmdd-HHMMSS' );  % yはyear，mはmonth,dはday,Hはhour,Mはminute,Sはsecond.それぞれの文字数分出力する
