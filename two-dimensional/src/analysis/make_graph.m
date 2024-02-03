@@ -7,6 +7,8 @@ function make_graph(datStruct, time_length, paths)
 time = datStruct.time;
 startFigNum = 102;
 fontSize = 22;
+lineWidth = 2;
+showTitle = false;
 
 %%% make endEffector FT graph
 % ベクトルの大きさで評価
@@ -24,17 +26,19 @@ endTipR2T = vecnorm(datStruct.endTipR2Torque, 2, 2);
 figureNumber = startFigNum;     % 図番号設定
 figure(figureNumber);   % 図定義
 
-plot(time, endTipL1F )
+plot(time, endTipL1F, "LineWidth", lineWidth)
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 hold on
-plot(time, endTipL2F )
-plot(time, endTipR1F )
-plot(time, endTipR2F )
+plot(time, endTipL2F, "LineWidth", lineWidth)
+plot(time, endTipR1F, "LineWidth", lineWidth)
+plot(time, endTipR2F, "LineWidth", lineWidth)
 
-title("End Effector Force")
-legend('Left Tip 1 Force', 'Left Tip 2 Force', 'Right Tip 1 Force', 'Right Tip 1 Force')
+if(showTitle)
+    title("End Effector Force")
+end
+legend('Left Tip 1', 'Left Tip 2', 'Right Tip 1', 'Right Tip 1')
 ylabel("Force [N]")
-xlabel("Time [sec]")
+xlabel("Time [s]")
 xlim([time(1), time(time_length)])
 hold off
 
@@ -47,17 +51,19 @@ saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
-plot(time, endTipL1T )
+plot(time, endTipL1T, "LineWidth", lineWidth)
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 hold on
-plot(time, endTipL2T )
-plot(time, endTipR1T )
-plot(time, endTipR2T )
+plot(time, endTipL2T, "LineWidth", lineWidth)
+plot(time, endTipR1T, "LineWidth", lineWidth)
+plot(time, endTipR2T, "LineWidth", lineWidth)
 
-title("End Effector Torque")
-legend('Left Tip 1 Torque', 'Left Tip 2 Torque', 'Right Tip 1 Torque', 'Right Tip 1 Torque')
+if(showTitle)
+    title("End Effector Torque")
+end
+legend('Left Tip 1', 'Left Tip 2', 'Right Tip 1', 'Right Tip 1')
 ylabel("Torque [Nm]")
-xlabel("Time [sec]")
+xlabel("Time [s]")
 xlim([time(1), time(time_length)])
 hold off
 
@@ -73,13 +79,15 @@ jointsTorque = datStruct.jointTorque';
 figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
-plot(time, jointsTorque([1:3,5:7], :))
+plot(time, jointsTorque([1:3,5:7], :), "LineWidth", lineWidth)
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 hold off
-title("Active Joint Torque")
+if(showTitle)
+    title("Active Joint Torque")
+end
 legend('Motor 1', 'Motor 2', 'Motor 3', 'Motor 4', 'Motor 5', 'Motor 6')
 ylabel("Torque [Nm]")
-xlabel("Time [sec]")
+xlabel("Time [s]")
 xlim([time(1), time(time_length)])
 
 figName = 'motorTorque.fig';                                  % fig名定義
@@ -91,13 +99,15 @@ saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
-plot(time, jointsTorque([4,8], :))
+plot(time, jointsTorque([4,8], :), "LineWidth", lineWidth)
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 hold off
-title("Passive Joint Torque")
+if(showTitle)
+    title("Passive Joint Torque")
+end
 legend('LeftWrist', 'RightWrist')
 ylabel("Torque [Nm]")
-xlabel("Time [sec]")
+xlabel("Time [s]")
 xlim([time(1), time(time_length)])
 
 figName = 'wristTorque.fig';                                  % fig名定義
@@ -111,11 +121,13 @@ targW = datStruct.targetW(:, 3);
 figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
-plot(time, targW)
+plot(time, targW, "LineWidth", lineWidth)
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
-title("Target Angular Velocity")
-ylabel("Angular Velocity [rad/sec]")
-xlabel("Time [sec]")
+if(showTitle)
+    title("Target Angular Velocity")
+end
+ylabel("Angular Velocity [rad/s]")
+xlabel("Time [s]")
 xlim([time(1), time(time_length)])
 
 figName = 'targetAngVel.fig';                                  % fig名定義
@@ -123,14 +135,26 @@ pngName = 'targetAngVel.png';                                  % png名定義
 saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
 saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 
-%ロボット手先速度グラフ化（変更点）
-vel = vecnorm(datStruct.robo_tipVEL_L,2,2);
-plot(time, vel)
-title("endTipvelocity");
-xlabel("time");
-ylabel("velocity");
+%ロボット手先速度グラフ化
+velL = vecnorm(datStruct.roboEndEffecLVel,2,2);
+velR = vecnorm(datStruct.roboEndEffecRVel,2,2);
 
-figName = 'dualArmRobo.VEL_e_L.fig';                                  % fig名定義
-pngName = 'dualArmRobo.VEL_e_L.png';                                  % png名定義
+figureNumber = figureNumber+1;     % 図番号設定
+figure(figureNumber);   % 図定義
+
+plot(time, velL, "LineWidth", lineWidth)
+hold on
+plot(time, velR, "LineWidth", lineWidth)
+set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
+hold off
+if(showTitle)
+    title("End Effector Velocity");
+end
+legend("Left Arm", "Right Arm")
+xlabel("Time [s]");
+ylabel("Velocity [m/s]");
+
+figName = 'endEffecVel.fig';                                  % fig名定義
+pngName = 'endEffecVel.png';                                  % png名定義
 saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
 saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
