@@ -1,2 +1,0 @@
-path = 
-tab = readmatrix(path);
