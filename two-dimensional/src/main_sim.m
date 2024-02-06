@@ -141,10 +141,14 @@ datSaver = datSaver.write(param);
 % アニメーション作成
 % movfileにaviファイル保存
 % pngfileにpngファイル保存
-make_2dAnime(datSaver, paths, param)
+if param.general.makeAnimation
+    make_2dAnime(datSaver, paths, param)
+end
 
 % グラフ作成
-make_graph(datSaver.datStruct, datSaver.timer_length, paths)
+if param.general.makeGraph
+    make_graph(datSaver.datStruct, datSaver.timer_length, paths)
+end
 
 %clear
 fclose('all');

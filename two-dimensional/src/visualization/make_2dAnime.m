@@ -14,6 +14,9 @@ function make_2dAnime(datSaver, paths, param)
     % 図定義
     FigureNumber = 101;     % 図番号設定
     fig = figure(FigureNumber);   % 図定義
+    if ~visualizeAnimation
+        fig.Visible = 'off';
+    end
     fontSize = 22;  % 目盛りのフォントサイズ
     picNum = 1;             % 画像保存インデックス
     
@@ -84,7 +87,7 @@ function make_2dAnime(datSaver, paths, param)
             
             %%% 結果保存
             % 図をVideoWriteに保存
-            frame = getframe(figure(FigureNumber));
+            frame = getframe(fig);
             if anime_counter == 1
                 frameSize0 = size(frame.cdata);
             end

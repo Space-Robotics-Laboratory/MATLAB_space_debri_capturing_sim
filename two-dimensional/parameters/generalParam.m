@@ -14,6 +14,9 @@ gParam.divTime   = .001;
 gParam.breakTimeDuration = 1;
 
 %% Animation Time Setting
+gParam.visualizeAnimation = true;
+gParam.makeAnimation = true;
+gParam.makeGraph = true;
 gParam.anime_frameRate = 100;    % fps
 gParam.snapShot_frameRate = 1; % fps
 
