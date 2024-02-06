@@ -9,7 +9,9 @@ param = set_Param();
 
 %% modify unlooped param
 param.general.endTime = 45;
-param.general.anime_frameRate = 5;
+param.general.visualizeAnimation = false;
+param.general.makeAnimation = false;
+param.general.makeGraph = false;
 param.control.controlMode = 'MULTIPLE';
 param.robot.initial_jointsAngle(1:4,  1) =   [ pi/3 -pi/3 -pi/2 0 ]';
 param.robot.initial_jointsAngle(5:8, 1)  = - [ pi/3 -pi/3 -pi/2 0 ]';
@@ -29,10 +31,10 @@ table_path = [path_parametric, '/tables/'];
 mkdir(table_path)
 
 %% parameters to be looped
-w_s = [1,3,2];
-mi_s = [0.01, 0.05, 1.0, 2.0];
-ki_s = 0:2.0:14;
-di_s = 0:2.0:14;
+w_s = [1,3];
+mi_s = [0.01, 0.05, 0.5];
+di_s = 0:2:30;
+ki_s = 0:5:50;
 
 raw = length(ki_s);
 col = length(di_s);
