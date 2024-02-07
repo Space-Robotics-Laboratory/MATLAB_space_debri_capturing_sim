@@ -103,6 +103,8 @@ for time = minusTime : d_time : endTime
         if state.isCapture % ケージング成功 -> 緑 ✓
             if(state.hasAccidentalContact)
                 sim_res = '\cellcolor{yellow}{$\checkmark    $}';
+            elseif state.hasBeyondMaxContactForce
+                sim_res = '\cellcolor{green}{$\bigtriangleup$}';
             else
                 sim_res = '\cellcolor{green}{$\checkmark    $}';
             end

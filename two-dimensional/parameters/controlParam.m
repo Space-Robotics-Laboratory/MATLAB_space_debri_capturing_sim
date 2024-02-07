@@ -47,6 +47,7 @@ controlParam.minMiddleJointsAngle = pi/6;
 controlParam.stoppingTargetAngVel = 0.5;                   % ターゲットの回転が停止したとみなせる，ロボットへの相対角速度
 controlParam.stoppingTargetVel = 0.1;                      % ターゲットの回転が停止したとみなせる，ロボットへの相対速度 
 controlParam.reachable = 0.6;                               % 捕獲不可能と判断する境界値
+controlParam.maxContactForce = 5;   % 判定に使用する最大の接触力　制御には影響せず結果の判定に使用
 
 
 end

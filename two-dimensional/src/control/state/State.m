@@ -13,6 +13,7 @@ classdef State
         wasContact          % bool 1*4各手先の前時刻接触状況
         newContact          % bool 1*4 新たに接触したかどうか
         endContact          % bool 1*4 新たに非接触になったか
+        hasBeyondMaxContactForce % bool 設定した接触力を超えたか
         hasAccidentalContact   % bool 1*4 予期せぬ接触かどうか
         targetSlow          % bool 現時刻でターゲットの角速度がしきい値より小さいか
         targetStop          % bool ターゲットがロボットに対して停止(しきい値以下)
@@ -32,6 +33,7 @@ classdef State
             obj.newContact = false;
             obj.endContact = false;
             obj.hasAccidentalContact = false;
+            obj.hasBeyondMaxContactForce = false;
             obj.targetSlow = false;
             obj.targetStop = false;
             obj.comeTargetSlow = false;
@@ -46,6 +48,7 @@ classdef State
             obj.wasContact = obj.isContact;
             obj.isContact = isContact;
             obj.isBaseContact = judge_baseContact(robo, target, param);
+            obj.hasBeyondMaxContactForce = obj.hasBeyondMaxContactForce || any(vecnorm(robo.SV.Fe(1:2, :)) >= param.control.maxContactForce);
 
             % ここだけ不自然．要改善
             [obj.isPinch, obj.force_holder_] = judge_isPinched(obj.force_holder_, robo, param);
