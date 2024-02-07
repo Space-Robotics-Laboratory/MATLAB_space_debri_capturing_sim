@@ -88,7 +88,8 @@ classdef Controller
                         % 少し時間をおいてから直接捕獲のフラグを立てる
                         % 不測の接触後，もう一度トライ
                         obj.flagPathUpdate = equal_time(time, state.time.comeTargetSlow+obj.switchingDelay, param.general.divTime) || ...
-                            equal_time(time, state.time.lastContact + obj.impDuration, param.general.divTime);
+                            (equal_time(time, state.time.lastContact + obj.impDuration, param.general.divTime) && ...
+                             ~state.isCapture);
                         obj.f_exp_drt = obj.f_exp_drt || obj.flagPathUpdate;
                         if ~obj.f_exp_drt
                             obj = obj.stopEndEffector(robo, roboFTsensor);
