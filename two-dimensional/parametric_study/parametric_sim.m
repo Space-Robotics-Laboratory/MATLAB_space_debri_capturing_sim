@@ -15,6 +15,7 @@ param.general.makeGraph = false;
 param.control.controlMode = 'MULTIPLE';
 param.robot.initial_jointsAngle(1:4,  1) =   [ pi/3 -pi/3 -pi/2 0 ]';
 param.robot.initial_jointsAngle(5:8, 1)  = - [ pi/3 -pi/3 -pi/2 0 ]';
+param.control.maxContactForce = 1.12969; % max force in direct case
     % - 1.047   # joint La :PI/3                    ___    ___        
     % - -1.047  # joint Lb :-PI/3                  |          |                             
     % - -1.571  # joint Lc :-PI/2                  \ ________ /                        
@@ -31,10 +32,10 @@ table_path = [path_parametric, '/tables/'];
 mkdir(table_path)
 
 %% parameters to be looped
-w_s = [1,3];
-mi_s = [0.01, 0.05, 0.5];
-di_s = 0:2:30;
-ki_s = 0:5:50;
+w_s = [1];
+mi_s = [0.01, 0.05, 0.1, 0.5];
+di_s = 0:1.5:18;
+ki_s = 0:10:100;
 
 raw = length(ki_s);
 col = length(di_s);
