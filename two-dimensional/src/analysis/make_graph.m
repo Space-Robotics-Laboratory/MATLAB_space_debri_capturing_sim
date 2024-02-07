@@ -61,7 +61,7 @@ plot(time, endTipR2T, "LineWidth", lineWidth)
 if(showTitle)
     title("End Effector Torque")
 end
-legend('Left Tip 1', 'Left Tip 2', 'Right Tip 1', 'Right Tip 1')
+legend('Left tip 1', 'Left tip 2', 'Right tip 1', 'Right tip 1')
 ylabel("Torque [Nm]")
 xlabel("Time [s]")
 xlim([time(1), time(time_length)])
@@ -126,7 +126,7 @@ set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 if(showTitle)
     title("Target Angular Velocity")
 end
-ylabel("Angular Velocity [rad/s]")
+ylabel("Angular velocity [rad/s]")
 xlabel("Time [s]")
 xlim([time(1), time(time_length)])
 
@@ -150,7 +150,7 @@ hold off
 if(showTitle)
     title("End Effector Velocity");
 end
-legend("Left Arm", "Right Arm")
+legend("Left arm", "Right arm")
 xlabel("Time [s]");
 ylabel("Velocity [m/s]");
 
