@@ -23,8 +23,10 @@ robotParam.initial_position = [0, 0, 0]';
 robotParam.initial_orientation = [0, 0, 0]';
 robotParam.initial_velocity = [0, 0, 0]';
 robotParam.initial_angularVelocity = [0, 0, 0]';
-robotParam.initial_jointsAngle(1:4,  1) =   [ pi/3 -pi*4/9 -pi*7/18 0 ]';
-robotParam.initial_jointsAngle(5:8, 1)  = - [ pi/3 -pi*4/9 -pi*7/18 0 ]';
+% robotParam.initial_jointsAngle(1:4,  1) =   [ pi/3 -pi*4/9 -pi*7/18 0 ]';
+% robotParam.initial_jointsAngle(5:8, 1)  = - [ pi/3 -pi*4/9 -pi*7/18 0 ]';
+robotParam.initial_jointsAngle(1:4,  1) =   [ pi/3 -pi/3 -pi/2 0 ]';
+robotParam.initial_jointsAngle(5:8, 1)  = - [ pi/3 -pi/3 -pi/2 0 ]';
 
 
 %% Phisics of Robot
