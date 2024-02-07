@@ -14,7 +14,7 @@ function make_2dAnime(datSaver, paths, param)
     % 図定義
     FigureNumber = 101;     % 図番号設定
     fig = figure(FigureNumber);   % 図定義
-    if ~visualizeAnimation
+    if ~param.general.visualizeAnimation
         fig.Visible = 'off';
     end
     fontSize = 22;  % 目盛りのフォントサイズ
