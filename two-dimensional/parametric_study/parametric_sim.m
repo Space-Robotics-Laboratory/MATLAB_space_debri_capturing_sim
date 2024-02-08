@@ -10,6 +10,7 @@ param = set_Param();
 %% modify unlooped param
 param.general.endTime = 45;
 param.general.visualizeAnimation = false;
+param.general.saveData = false;
 param.general.makeAnimation = false;
 param.general.makeGraph = false;
 param.control.controlMode = 'MULTIPLE';

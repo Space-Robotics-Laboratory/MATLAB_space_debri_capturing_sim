@@ -137,7 +137,9 @@ show_calc_time(startT, startCPUT)
 disp(sim_res)
 
 %%% データ保存
-datSaver = datSaver.write(param);
+if param.general.saveData
+    datSaver = datSaver.write(param);
+end
 
 %% 結果表示
 % アニメーション作成
