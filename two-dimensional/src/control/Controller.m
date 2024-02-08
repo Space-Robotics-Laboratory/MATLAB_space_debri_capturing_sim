@@ -81,6 +81,14 @@ classdef Controller
                     obj = obj.directCapture(robo, targ, roboFTsensor, time, param);
                     return
 
+                % 直接捕獲 & impedance 
+                case 'DIRECT_IMP'
+                    % 初期時刻にフラグをたてる
+                    obj.flagPathUpdate = time == 0 ;
+                    obj = obj.directCapture(robo, targ, roboFTsensor, time, param);
+                    obj = obj.impedance(time, robo, roboFTsensor, state, param);
+                    return
+
                 % 複数回接触によって減衰させてから捕獲するケース
                 case 'MULTIPLE'
                     % 角速度がしきい値より小さくなったら直接捕獲に移行
@@ -185,13 +193,16 @@ classdef Controller
                 obj.pathway = obj.pathway.directCapture(robo, targ, time, param);     % 目標位置時刻計算
             end
 
-            if obj.phase == -1 % 目標手先位置を持たない
-                % 目標時間の後，手先を相対停止
-                obj = obj.stopEndEffector(robo, roboFTsensor);
-            else
-                % 両手でpathway(目標位置)を追従
-                obj.controlPart = [false, true, true];  % base leftArm rightArm
-                obj = obj.followPathway_2hands(time, robo, roboFTsensor);
+            if ~strcmp(obj.controlState, 'imp')
+                if obj.phase == -1  % 目標手先位置を持たない
+                    % 目標時間の後，手先を相対停止
+                    obj = obj.stopEndEffector(robo, roboFTsensor);
+                    obj.controlState = 'follow';
+                else
+                    % 両手でpathway(目標位置)を追従
+                    obj.controlPart = [false, true, true];  % base leftArm rightArm
+                    obj = obj.followPathway_2hands(time, robo, roboFTsensor);
+                end
             end
             % 目標手先位置追従のどのフェーズにいるか計算
             obj.phase = obj.pathway.phase(time, param, 1);
