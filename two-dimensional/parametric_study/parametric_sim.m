@@ -16,7 +16,8 @@ param.general.makeGraph = false;
 param.control.controlMode = 'MULTIPLE';
 param.robot.initial_jointsAngle(1:4,  1) =   [ pi/3 -pi/3 -pi/2 0 ]';
 param.robot.initial_jointsAngle(5:8, 1)  = - [ pi/3 -pi/3 -pi/2 0 ]';
-param.control.maxContactForce = 1.12969; % max force in direct case
+% param.control.maxContactForce = 1.12969; % max force in w1 direct case
+param.control.maxContactForce = 4.09178; % max force in w3 direct case
     % - 1.047   # joint La :PI/3                    ___    ___        
     % - -1.047  # joint Lb :-PI/3                  |          |                             
     % - -1.571  # joint Lc :-PI/2                  \ ________ /                        
