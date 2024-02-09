@@ -11,7 +11,7 @@ gParam.endTime   = 30;
 gParam.divTime   = .001;
 
 % Simulation Break Setting
-gParam.breakTimeDuration = 1;
+gParam.breakTimeDuration = 4;
 
 %% Animation Time Setting
 gParam.visualizeAnimation = true;
