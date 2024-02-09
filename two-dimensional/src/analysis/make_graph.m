@@ -36,6 +36,7 @@ plot(time, endTipR2F, "LineWidth", lineWidth)
 if(showTitle)
     title("End Effector Force")
 end
+box off
 legend('Left tip 1', 'Left tip 2', 'Right tip 1', 'Right tip 2')
 ylabel("Force [N]")
 xlabel("Time [s]")
@@ -61,6 +62,7 @@ plot(time, endTipR2T, "LineWidth", lineWidth)
 if(showTitle)
     title("End Effector Torque")
 end
+box off
 legend('Left tip 1', 'Left tip 2', 'Right tip 1', 'Right tip 2')
 ylabel("Torque [Nm]")
 xlabel("Time [s]")
@@ -85,6 +87,7 @@ hold off
 if(showTitle)
     title("Active Joint Torque")
 end
+box off
 legend('Motor 1', 'Motor 2', 'Motor 3', 'Motor 4', 'Motor 5', 'Motor 6')
 ylabel("Torque [Nm]")
 xlabel("Time [s]")
@@ -105,6 +108,7 @@ hold off
 if(showTitle)
     title("Passive Joint Torque")
 end
+box off
 legend('Left wrist', 'Right wrist')
 ylabel("Torque [Nm]")
 xlabel("Time [s]")
@@ -126,6 +130,7 @@ set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 if(showTitle)
     title("Target Angular Velocity")
 end
+box off
 ylabel("Angular velocity [rad/s]")
 xlabel("Time [s]")
 xlim([time(1), time(time_length)])
@@ -150,6 +155,7 @@ hold off
 if(showTitle)
     title("End Effector Velocity");
 end
+box off
 legend("Left arm", "Right arm")
 xlabel("Time [s]");
 ylabel("Velocity [m/s]");
