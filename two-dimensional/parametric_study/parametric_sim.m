@@ -35,9 +35,9 @@ mkdir(table_path)
 
 %% parameters to be looped
 w_s = [3];
-mi_s = [0.01, 0.05,0.1, 0.2];
-di_s = 0:1.5:15;
-ki_s = 0:10:100 ;
+mi_s = [0.01, 0.05,0.1];
+di_s = 0:0.75:7.5;
+ki_s = 0:4:40 ;
 
 raw = length(ki_s);
 col = length(di_s);
