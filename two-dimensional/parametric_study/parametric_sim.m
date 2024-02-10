@@ -34,10 +34,10 @@ table_path = [path_parametric, '/tables/'];
 mkdir(table_path)
 
 %% parameters to be looped
-w_s = [1];
-mi_s = [0.01, 0.05, 0.1, 5.0];
-di_s = 0:5:50;
-ki_s = [0, 10, 50, 100, 200, 300, 400, 500] ;
+w_s = [3];
+mi_s = [0.01, 0.05,0.1, 0.2];
+di_s = 0:1.5:15;
+ki_s = 0:10:100 ;
 
 raw = length(ki_s);
 col = length(di_s);
