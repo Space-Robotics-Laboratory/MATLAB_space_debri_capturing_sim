@@ -65,6 +65,7 @@ function make_2dAnime(datSaver, paths, param)
             %%% 描画
             % ロボ描画
             vis_DualArmRobot(roboR0, roboQ0, jointPos, endEffecPos, endEffecOri, param)
+            grid off
             set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
             xlabel('$$ \it{x} \space \rm{[m]} $$', 'Interpreter','latex');
             ylabel('$$ \it{y} \space \rm{[m]} $$', 'Interpreter','latex');
