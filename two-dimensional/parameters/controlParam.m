@@ -6,7 +6,7 @@
 
 function controlParam = controlParam()
 %% Controller Setting
-controlParam.controlMode = 'MULTIPLE';          % コントローラーモード
+controlParam.controlMode = 'DIRECT_IMP';          % コントローラーモード
 controlParam.velocityMode = 'str_poly3';          % pathwayから速度を計算する方法
 controlParam.impedanceMode = 'addmitance';      % インピーダンス制御モード
 
@@ -15,10 +15,10 @@ controlParam.kp = [5, 5, .0]';             % フィードバックによる位�
 controlParam.dp = [0, 0, .0]';                % フィードバックによる位置制御：減衰係数
 
 %% Used in Direct Capture
-controlParam.captureDistantMargin = 1.05;        % 捕獲した後の手先とターゲットの余裕
+controlParam.captureDistantMargin = 1.01;        % 捕獲した後の手先とターゲットの余裕
 controlParam.approachDistantMargin = 1.03;      % 捕獲前接近する段階での余裕．1以上にする
 controlParam.approachTime = 1;                  % 捕獲準備位置まで手先を接近させる最小時間
-controlParam.captureTime = .6;                 % 接近後，捕獲に要する時間
+controlParam.captureTime = .3;                 % 接近後，捕獲に要する時間
 
 %% Used in One Hand Contact
 % timing parameters
@@ -31,9 +31,9 @@ controlParam.nonContactArm2targetMinDistanceRatio =1.2;      % 非接触アー�
 
 % impedance parameters
 controlParam.contactTipSelection = 2; % 1: contact with farther tip, 2: contact with closer tip
-controlParam.mi = [1, 1, 1]'*0.2;                   % アドミタンス制御仮想質量   [.5, .5, .5]';
-controlParam.di = [1, 1, 1]'*0.1;                   % アドミタンス制御ダンパ特性  [10, 10, 10]';
-controlParam.ki = [1, 1, 1]'*0.1;                   % アドミタンス制御バネ特性   [.5, .5, .5]';
+controlParam.mi = [1, 1, 1]'*0.8;                   % アドミタンス制御仮想質量   [.5, .5, .5]';
+controlParam.di = [1, 1, 1]'*15;                   % アドミタンス制御ダンパ特性  [10, 10, 10]';
+controlParam.ki = [1, 1, 1]'*10;                   % アドミタンス制御バネ特性   [.5, .5, .5]';
 
 % contact parameters
 controlParam.contactPositionRatio = .75;             % 接触位置がターゲット辺のどの割合にあるかを表す.0で中心1で頂点
