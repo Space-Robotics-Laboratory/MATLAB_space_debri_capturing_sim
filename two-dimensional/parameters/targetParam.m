@@ -20,7 +20,7 @@ targetParam.inertia = [1e9,   0, 0  ;
 targetParam.initial_position = [0, .35, 0]';
 targetParam.initial_orientation = [0, 0, 0]';
 targetParam.initial_velocity = [0, 0, 0]';
-targetParam.initial_angular_velocity = [0, 0, 3]';
+targetParam.initial_angular_velocity = [0, 0, 1]';
 
 
 end
