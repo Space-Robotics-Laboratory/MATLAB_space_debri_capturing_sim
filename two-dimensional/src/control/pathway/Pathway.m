@@ -190,7 +190,7 @@ classdef Pathway
 
             % ターゲット速度方向より接触時点のターゲット角度を計算
             targetVang = subspace([1,0]', targV);
-            contAng = pi/10;%min(targetVang, param.control.contactTargetAngLim);
+            contAng = pi/20;%min(targetVang, param.control.contactTargetAngLim);
             evadeAng = contAng + evadeAng0;
 
             % 回転行列作成
