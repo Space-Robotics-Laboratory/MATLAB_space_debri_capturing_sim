@@ -9,7 +9,7 @@ function make_2dAnime(datSaver, paths, param)
     snapShotRate = fix( 1/ (param.general.snapShot_frameRate * dt_sim) );
     
     % force vector scale
-    scale = .01;
+    scale = 1;
 
     % 図定義
     FigureNumber = 101;     % 図番号設定
