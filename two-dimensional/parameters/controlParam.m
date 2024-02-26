@@ -31,12 +31,12 @@ function controlParam = controlParam()
     
     % impedance parameters
     controlParam.contactTipSelection = 2; % 1: contact with farther tip, 2: contact with closer tip
-    controlParam.mi = [1, 1, 1]'*0.3;                   % アドミタンス制御仮想質量   [.5, .5, .5]';
-    controlParam.di = [1, 1, 1]'*0.9;                   % アドミタンス制御ダンパ特性  [10, 10, 10]';
-    controlParam.ki = [1, 1, 1]'*0.9;                   % アドミタンス制御バネ特性   [.5, .5, .5]';
+    controlParam.mi = [1, 1, 1]'*0.2;                   % アドミタンス制御仮想質量   [.5, .5, .5]';
+    controlParam.di = [1, 1, 1]'*0.1;                   % アドミタンス制御ダンパ特性  [10, 10, 10]';
+    controlParam.ki = [1, 1, 1]'*0.1;                   % アドミタンス制御バネ特性   [.5, .5, .5]';
     
     % contact parameters
-    controlParam.contactPositionRatio = .9;             % 接触位置がターゲット辺のどの割合にあるかを表す.0で中心1で頂点
+    controlParam.contactPositionRatio = .75;             % 接触位置がターゲット辺のどの割合にあるかを表す.0で中心1で頂点
     controlParam.endEffecAngleDeviation = deg2rad(5);  % 接触時点のエンドエフェクターの角度
     controlParam.contactTargetAngLim = deg2rad(0);     % 接触時のターゲット角度をターゲットの速度方向によって定める時の上限.大きいと手先の姿勢が達成しづらくなる
     
