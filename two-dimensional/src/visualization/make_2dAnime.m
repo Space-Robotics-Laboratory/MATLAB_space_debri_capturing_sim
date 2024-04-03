@@ -6,13 +6,17 @@ function make_2dAnime(datSaver, paths, param)
     dataStruct = datSaver.datStruct;
     dt_sim = param.general.divTime;
     frameRate = param.general.anime_frameRate; 
+    snapShotRate = fix( 1/ (param.general.snapShot_frameRate * dt_sim) );
     
     % force vector scale
-    scale = .01;
+    scale = 1;
 
     % 図定義
     FigureNumber = 101;     % 図番号設定
     fig = figure(FigureNumber);   % 図定義
+    if ~param.general.visualizeAnimation
+        fig.Visible = 'off';
+    end
     fontSize = 22;  % 目盛りのフォントサイズ
     picNum = 1;             % 画像保存インデックス
     
@@ -61,6 +65,7 @@ function make_2dAnime(datSaver, paths, param)
             %%% 描画
             % ロボ描画
             vis_DualArmRobot(roboR0, roboQ0, jointPos, endEffecPos, endEffecOri, param)
+            grid off
             set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
             xlabel('$$ \it{x} \space \rm{[m]} $$', 'Interpreter','latex');
             ylabel('$$ \it{y} \space \rm{[m]} $$', 'Interpreter','latex');
@@ -83,7 +88,7 @@ function make_2dAnime(datSaver, paths, param)
             
             %%% 結果保存
             % 図をVideoWriteに保存
-            frame = getframe(figure(FigureNumber));
+            frame = getframe(fig);
             if anime_counter == 1
                 frameSize0 = size(frame.cdata);
             end
@@ -96,7 +101,7 @@ function make_2dAnime(datSaver, paths, param)
             end
 
             % 図をpng形式で保存
-            if rem(count, 50) == 1
+            if rem(count, snapShotRate) == 1
                 pictureName = sprintf('%s%d.png', pngfilename, picNum);              % png名定義
                 % set(fig,'Units','Inches');
                 % pos = get(fig,'Position');

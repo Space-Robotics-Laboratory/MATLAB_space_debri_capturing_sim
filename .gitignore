@@ -3,6 +3,7 @@
 *.png
 *.fig
 *.asv
+*.mat
 !*.m
 !/docs/**/*
 
@@ -15,6 +16,7 @@ dat/
 
 # Ignore files inside RSJ simres
 RSJ2023/
+iSpaRo2024
 
 
 

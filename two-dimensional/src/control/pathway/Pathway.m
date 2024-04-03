@@ -176,27 +176,32 @@ classdef Pathway
             gamma = param.robot.endEffector_gamma;
             r = param.robot.diameter_endTip * .5;
 
-            % ターゲット速度方向より接触時点のターゲット角度を計算
-            targetVang = subspace([1,0]', targV);
-            contAng = pi/10;%min(targetVang, param.control.contactTargetAngLim);
-            evadeAng = contAng + evadeAng0;
-
             % 接触パターン設定
             % 回転の向き，並進方向から判別
+            if(param.control.contactTipSelection == 1)
+                tipSign = 1;      % 遠い方の球   
+            else
+                tipSign = -1;      % 遠い方の球 
+            end
             armSign = sign2( targV(1) );        % 左手接触なら負，右手接触なら正
             rotSign = sign2(targW);
             contSign = -armSign * rotSign;      % 回転を抑制するための接触位置は，接触速度の方向と回転方向によって決まる
             contArm = [targV(1)<0, targV(1)>=0];% sign2に合わせる
 
+            % ターゲット速度方向より接触時点のターゲット角度を計算
+            targetVang = subspace([1,0]', targV);
+            contAng = pi/20;%min(targetVang, param.control.contactTargetAngLim);
+            evadeAng = contAng + evadeAng0;
+
             % 回転行列作成
             contAngMat = vec2dc([0;0;contAng*rotSign]);             % 3*3
-            evadeAngMat = vec2dc([0; 0; rotSign*evadeAng]);        % 3*3
+            evadeAngMat = vec2dc([0; 0; rotSign*evadeAng*tipSign]);        % 3*3
 
             % 接触時点のエンドエフェクターのターゲット重心への相対位置ベクトル計算
             targ2ContPos0 = targWidth * .5 * [armSign; contSign * contPosRate];         % 2*1
             targ2ContPos = contAngMat(1:2, 1:2) * targ2ContPos0;                        % 2*1
             contPos2tip = contAngMat(1:2, 1:2) * [armSign*r; 0];                        % 2*1
-            tip2EE = evadeAngMat(1:2, 1:2) * [0;  LdH * sin(gamma) * contSign];   % 2*1
+            tip2EE = evadeAngMat(1:2, 1:2) * [0;  LdH * sin(gamma) * contSign * tipSign];   % 2*1
             targ2Tip = targ2ContPos + contPos2tip;                                      % 2*1
             targ2EECont  = targ2Tip + tip2EE;                                           % 2*1
             
@@ -231,8 +236,8 @@ classdef Pathway
 
             % 計算結果をpwathwayに代入．接触しないアームは現状の位置を保持
             effAngInit = pi * .5 * armSign;
-            desEffAngGoal = evadeAng * rotSign + effAngInit;                   % 左手か右手かによって初期状態の手先角度が異なる
-            desEffAngGoalOpp = evadeAng * rotSign - effAngInit;
+            desEffAngGoal = evadeAng * tipSign * rotSign + effAngInit;                   % 左手か右手かによって初期状態の手先角度が異なる
+            desEffAngGoalOpp = evadeAng * tipSign * rotSign - effAngInit;
             
             gpathway = zeros(4, 2, 2);
             gpathway(1:3, 1, contArm) = [targWaitPos + targ2EEWait; desEffAngGoal];     % 非接触待機位置代入

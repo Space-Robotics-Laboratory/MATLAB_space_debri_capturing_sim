@@ -83,7 +83,7 @@ for time = minusTime : d_time : endTime
     targetSquare = targetSquare.update(targetExtWrench);  
 
     % 状態判定更新
-    state = state.update(dualArmRobo, isContact, targetSquare, time, param);
+    state = state.update(controller, dualArmRobo, isContact, targetSquare, time, param);
 
     % 以降simulation中断処理
     if time > break_time
@@ -93,16 +93,22 @@ for time = minusTime : d_time : endTime
         continue
     end
 
-    % ターゲット回転減衰 -> 白∆
+    % ターゲット回転減衰 -> 黄∆
     if state.targetSlow
-        sim_res = '\cellcolor{white}{$\bigtriangleup$}';
+        sim_res = '\cellcolor{yellow}{$\bigtriangleup$}';
     end
 
     % 捕獲
     if state.targetStop
-        if state.isCapture % ケージング成功 -> 緑◎
-            % sim_res = '\cellcolor{green}{$\doublecirc   $}';
-            % break_time = time + param.general.breakTimeDuration;
+        if state.isCapture % ケージング成功 -> 緑 ✓
+            if(state.hasAccidentalContact)
+                sim_res = '\cellcolor{yellow}{$\checkmark    $}';
+            elseif state.hasBeyondMaxContactForce
+                sim_res = '\cellcolor{green}{$\bigtriangleup$}';
+            else
+                sim_res = '\cellcolor{green}{$\checkmark    $}';
+            end
+            break_time = time + param.general.breakTimeDuration;
         elseif state.isPinch % 力による挟み込み -> 緑o
             sim_res = '\cellcolor{green}{$\circ$         }';
             break_time = time;
@@ -128,18 +134,25 @@ end
 %% ループ終了
 %%% シミュレーション時間の計測と表示 
 show_calc_time(startT, startCPUT)
+disp(sim_res)
 
 %%% データ保存
-datSaver = datSaver.write(param);
+if param.general.saveData
+    datSaver = datSaver.write(param);
+end
 
 %% 結果表示
 % アニメーション作成
 % movfileにaviファイル保存
 % pngfileにpngファイル保存
-make_2dAnime(datSaver, paths, param)
+if param.general.makeAnimation
+    make_2dAnime(datSaver, paths, param)
+end
 
 % グラフ作成
-make_graph(datSaver.datStruct, datSaver.timer_length, paths)
+if param.general.makeGraph
+    make_graph(datSaver.datStruct, datSaver.timer_length, paths)
+end
 
 %clear
 fclose('all');

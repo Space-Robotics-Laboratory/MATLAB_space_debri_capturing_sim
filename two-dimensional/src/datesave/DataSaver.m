@@ -77,8 +77,9 @@ classdef DataSaver
             % ターゲット角速度
             obj.datStruct.targetW = zeros(row, 3);
 
-            % ロボット手先速度(変更点）
-            obj.datStruct.robo_tipVEL_L = zeros(row, 3);
+            % ロボット手先速度(エンドエフェクター代表点速度)
+            obj.datStruct.roboEndEffecLVel = zeros(row, 3);
+            obj.datStruct.roboEndEffecRVel = zeros(row, 3);
 
             %%% error log
 %             obj.datStruct.error = zeros(row, 1);
@@ -139,8 +140,9 @@ classdef DataSaver
             % ターゲット角速度
             obj.datStruct.targetW(obj.index, :) = target.SV.w0';
 
-            % ロボット手先速度(変更点）
-            obj.datStruct.robo_tipVEL_L(obj.index, :) = robo.VEL_e_L;
+            % ロボット手先速度
+            obj.datStruct.roboEndEffecLVel(obj.index, :) = robo.VEL_e_L;
+            obj.datStruct.roboEndEffecRVel(obj.index, :) = robo.VEL_e_R;
         end
         
         % ファイルに書き出し

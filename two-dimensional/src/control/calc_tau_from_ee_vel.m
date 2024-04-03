@@ -61,7 +61,7 @@ global d_time
     % 目標関節角速度計算
     qd_des = pinv(J) * (endEffecVel - VelbyPL);                                     % 関節角速度．運動量変化について考える.
     qdd_des = (qd_des - SV.qd) / d_time;                                    % 関節角加速度
-    JointTau = H_asuta * qdd_des + C_asuta - Jg' * F_c;                     % 8関節トルク（set wrist active joint）
+    JointTau = H_asuta * qdd_des + C_asuta;% - Jg' * F_c;                     % 8関節トルク（set wrist active joint）
     %JointTau = Ck .* (qd_des - SV.qd) + Cd .* (qdd_des - SV.qdd)
     
 end

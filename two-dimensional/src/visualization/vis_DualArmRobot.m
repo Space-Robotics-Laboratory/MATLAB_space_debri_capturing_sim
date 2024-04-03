@@ -8,7 +8,7 @@
 function vis_DualArmRobot(roboR0, roboQ0, jointPos, endEffecPos, endEffecOri, param)
     baseWidth = param.robot.baseWidth;
     baseDepth = param.robot.baseDepth;
-    basePos = roboR0;
+    basePos = roboR0 - rpy2dc(roboQ0)' * param.robot.comOffset_base;
     LdD = param.robot.diameter_endTip;
     gamma = param.robot.endEffector_gamma;
     LdH = param.robot.endEffector_h;
@@ -37,10 +37,16 @@ function vis_DualArmRobot(roboR0, roboQ0, jointPos, endEffecPos, endEffecOri, pa
     % ロボアーム描画
     % ジョイント
     jointPos = reshape(jointPos, [3,8]);
-    plot(jointPos(1,:),   jointPos(2,:),  'o','MarkerSize',10,'Color','r', 'MarkerFaceColor','r')
+    if(param.robot.compliantWrist)
+        plot(jointPos(1,:),   jointPos(2,:),  'o','MarkerSize',10,'Color','r', 'MarkerFaceColor','r')
+    else
+        plot(jointPos(1,[1,2,3,5,6,7]), jointPos(2,[1,2,3,5,6,7]), 'o','MarkerSize',10,'Color','r', 'MarkerFaceColor','r')
+    end
+    
     % リンク
     plot(jointPos(1,1:4), jointPos(2,1:4),'-','LineWidth',  4,'Color','b') % 左手リンク線描画
     plot(jointPos(1,5:8), jointPos(2,5:8),'-','LineWidth',  4,'Color','b') % 右手リンク線描画
+
     % エンドエフェクター 
     endEffecCornerL = [endEffecPos(:, 1), endEffecPos(:, 1:2) + cornerVecL, endEffecPos(:, 2)]; % 区の字座標 3*4
     endEffecCornerR = [endEffecPos(:, 3), endEffecPos(:, 3:4) + cornerVecR, endEffecPos(:, 4)]; % 区の字座標 3*4
