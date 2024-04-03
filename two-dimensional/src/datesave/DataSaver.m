@@ -58,6 +58,9 @@ classdef DataSaver
             obj.datStruct.endTipR1Torque = zeros(row, 3);
             obj.datStruct.endTipR2Torque = zeros(row, 3);
             
+            % ロボ関節速度
+            obj.datStruct.jointVelocity = zeros(row, 8);
+
             % ロボ関節トルク
             obj.datStruct.jointTorque = zeros(row, 8);
 
@@ -117,6 +120,9 @@ classdef DataSaver
             obj.datStruct.endTipL2Torque(obj.index, :) = robo.SV.Tes(:, 2)';
             obj.datStruct.endTipR1Torque(obj.index, :) = robo.SV.Tes(:, 3)';
             obj.datStruct.endTipR2Torque(obj.index, :) = robo.SV.Tes(:, 4)';
+
+            % ロボ関節速度
+            obj.datStruct.jointVelocity(obj.index, :) = robo.SV.qd';
             
             % ロボ関節トルク
             obj.datStruct.jointTorque(obj.index, :) = robo.SV.tau';

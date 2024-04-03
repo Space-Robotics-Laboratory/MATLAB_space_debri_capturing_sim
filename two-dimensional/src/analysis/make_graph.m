@@ -74,6 +74,52 @@ pngName = 'endEffecTorque.png';                                  % png名定義
 saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
 saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 
+%%% make joint velocity graph
+% active joints
+jointsVelocity = datStruct.jointVelocity';
+
+figureNumber = figureNumber+1;     % 図番号設定
+figure(figureNumber);   % 図定義
+
+plot(time, jointsVelocity([1:3,5:7], :), "LineWidth", lineWidth)
+set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
+hold off
+if(showTitle)
+    title("Active Joint Vecloity")
+end
+legend('Motor 1', 'Motor 2', 'Motor 3', 'Motor 4', 'Motor 5', 'Motor 6')
+ylabel("Velocity [rad/sec]")
+xlabel("Time [s]")
+xlim([time(1), time(time_length)])
+box off
+
+figName = 'motorVelocity.fig';                                  % fig名定義
+pngName = 'motorVelocity.png';                                  % png名定義
+saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
+saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
+
+% passive joints
+figureNumber = figureNumber+1;     % 図番号設定
+figure(figureNumber);   % 図定義
+
+plot(time, jointsVelocity([4,8], :), "LineWidth", lineWidth)
+set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
+hold off
+if(showTitle)
+    title("Passive Joint Velocity")
+end
+legend('Left wrist', 'Right wrist')
+ylabel("Velocity [rad/sec]")
+xlabel("Time [s]")
+xlim([time(1), time(time_length)])
+box off
+
+figName = 'wristVelocity.fig';                                  % fig名定義
+pngName = 'wristVelocity.png';                                  % png名定義
+saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
+saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
+
+
 %%% make joint torque graph
 % active joints
 jointsTorque = datStruct.jointTorque';
