@@ -186,6 +186,27 @@ pngName = 'targetAngVel.png';                                  % png名定義
 saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
 saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 
+%%% make robot base attitude graph
+baseQ = datStruct.roboQ0(:, 3);
+
+figureNumber = figureNumber+1;     % 図番号設定
+figure(figureNumber);   % 図定義
+
+plot(time, baseQ, "LineWidth", lineWidth)
+set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
+if(showTitle)
+    title("Robot Base Attitude")
+end
+ylabel("Attitude [rad]")
+xlabel("Time [s]")
+xlim([time(1), time(time_length)])
+box off
+
+figName = 'baseOri.fig';                                  % fig名定義
+pngName = 'baseOri.png';                                  % png名定義
+saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
+saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
+
 %%% make robot base angular velocity graph
 baseW = datStruct.baseW(:, 3);
 
