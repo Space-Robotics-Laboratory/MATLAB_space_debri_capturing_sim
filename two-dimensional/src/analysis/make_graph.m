@@ -186,6 +186,27 @@ pngName = 'targetAngVel.png';                                  % png名定義
 saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
 saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 
+%%% make robot base angular velocity graph
+baseW = datStruct.baseW(:, 3);
+
+figureNumber = figureNumber+1;     % 図番号設定
+figure(figureNumber);   % 図定義
+
+plot(time, baseW, "LineWidth", lineWidth)
+set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
+if(showTitle)
+    title("Robot Base Angular Velocity")
+end
+ylabel("Angular velocity [rad/s]")
+xlabel("Time [s]")
+xlim([time(1), time(time_length)])
+box off
+
+figName = 'baseAngVel.fig';                                  % fig名定義
+pngName = 'baseAngVel.png';                                  % png名定義
+saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
+saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
+
 %ロボット手先速度グラフ化
 velL = vecnorm(datStruct.roboEndEffecLVel,2,2);
 velR = vecnorm(datStruct.roboEndEffecRVel,2,2);

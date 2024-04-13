@@ -74,6 +74,9 @@ classdef DataSaver
             obj.datStruct.desHandPos = zeros(row, 6);
 
             %%% velocity information
+            % ロボベース回転速度
+            obj.datStruct.baseW = zeros(row, 3);
+
             % ターゲット並進速度
             obj.datStruct.targetV = zeros(row, 3);
 
@@ -140,6 +143,9 @@ classdef DataSaver
             obj.datStruct.desHandPos(obj.index, :) = reshape(desPathway(1:3, :), [1 ,6]);
 
             %%% Velocity information
+            % ロボベース回転速度
+            obj.datStruct.baseW(obj.index, :) = robo.SV.w0';
+
             % ターゲット並進速度
             obj.datStruct.targetV(obj.index, :) = target.SV.v0';
 
