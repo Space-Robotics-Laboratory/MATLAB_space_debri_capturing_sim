@@ -14,4 +14,5 @@ targetOriZ      = targQ0(3);                                                    
 targetTips = calc_SquareTips(targetCenterPos + targetMCenter2GCenter(1:2), targetWidth, targetDepth, targetOriZ);    % ベース頂点計算
 PolyTarget = polyshape(targetTips(1,:), targetTips(2,:));                                                       % 四角描画
 plot(PolyTarget)
+plot_axes(ori_mat, targR0)
 end

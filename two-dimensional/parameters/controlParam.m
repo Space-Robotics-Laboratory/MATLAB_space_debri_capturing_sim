@@ -6,7 +6,7 @@
 
 function controlParam = controlParam()
     %% Controller Setting
-    controlParam.controlMode = 'MULTIPLE';          % コントローラーモード
+    controlParam.controlMode = 'DIRECT';          % コントローラーモード
     controlParam.velocityMode = 'str_poly3';          % pathwayから速度を計算する方法
     controlParam.impedanceMode = 'addmitance';      % インピーダンス制御モード
     
@@ -18,7 +18,7 @@ function controlParam = controlParam()
     controlParam.captureDistantMargin = 1.05;        % 捕獲した後の手先とターゲットの余裕
     controlParam.approachDistantMargin = 1.03;      % 捕獲前接近する段階での余裕．1以上にする
     controlParam.approachTime = 1;                  % 捕獲準備位置まで手先を接近させる最小時間
-    controlParam.captureTime = .6;                 % 接近後，捕獲に要する時間
+    controlParam.captureTime = .5;                 % 接近後，捕獲に要する時間
     
     %% Used in One Hand Contact
     % timing parameters
