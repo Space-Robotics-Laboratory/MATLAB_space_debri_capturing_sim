@@ -6,7 +6,7 @@
 function make_graph(datStruct, time_length, paths)
 time = datStruct.time;
 startFigNum = 102;
-fontSize = 22;
+fontSize = 32;
 lineWidth = 2;
 showTitle = false;
 
