@@ -89,6 +89,9 @@ classdef DataSaver
 
             %%% error log
 %             obj.datStruct.error = zeros(row, 1);
+            
+            %%% stability
+            obj.datStruct.velocityManipulability = zeros(row, 2);
         end
         % 保存するデータを更新
         function obj = update(obj, robo, target, controller, param)
@@ -155,6 +158,10 @@ classdef DataSaver
             % ロボット手先速度
             obj.datStruct.roboEndEffecLVel(obj.index, :) = robo.VEL_e_L;
             obj.datStruct.roboEndEffecRVel(obj.index, :) = robo.VEL_e_R;
+
+            %%% stability
+            obj.datStruct.velocityManipulability(obj.index, 1) = measure_velocity_manipulability(1, 'n', 'volume', robo.LP, robo.SV);
+            obj.datStruct.velocityManipulability(obj.index, 2) = measure_velocity_manipulability(2, 'n', 'volume', robo.LP, robo.SV);
         end
         
         % ファイルに書き出し

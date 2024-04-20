@@ -187,12 +187,18 @@ saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
 saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 
 %%% make robot base attitude graph
+%%% make velocity-based manipulability ellipsoid are size graph
 baseQ = datStruct.roboQ0(:, 3);
+velManip = datStruct.velocityManipulability;
 
 figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, baseQ, "LineWidth", lineWidth)
+hold on
+plot(time, velManip(:,1), "LineWidth", lineWidth)
+plot(time, velManip(:,2), "LineWidth", lineWidth)
+legend('Base attitude', 'Left-arm manipulability', 'Right-arm manipulability')
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 if(showTitle)
     title("Robot Base Attitude")
