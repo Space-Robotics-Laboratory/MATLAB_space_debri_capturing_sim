@@ -9,6 +9,7 @@ startFigNum = 102;
 fontSize = 32;
 lineWidth = 2;
 showTitle = false;
+plotBaseAngVel = true;
 
 %%% make endEffector FT graph
 % ベクトルの大きさで評価
@@ -27,6 +28,7 @@ figureNumber = startFigNum;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, endTipL1F, "LineWidth", lineWidth)
+box on
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 hold on
 plot(time, endTipL2F, "LineWidth", lineWidth)
@@ -53,6 +55,7 @@ figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, endTipL1T, "LineWidth", lineWidth)
+box on
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 hold on
 plot(time, endTipL2T, "LineWidth", lineWidth)
@@ -82,6 +85,7 @@ figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, jointsVelocity([1:3,5:7], :), "LineWidth", lineWidth)
+box on
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 hold off
 if(showTitle)
@@ -103,6 +107,7 @@ figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, jointsVelocity([4,8], :), "LineWidth", lineWidth)
+box on
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 hold off
 if(showTitle)
@@ -128,6 +133,7 @@ figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, jointsTorque([1:3,5:7], :), "LineWidth", lineWidth)
+box on
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 hold off
 if(showTitle)
@@ -149,6 +155,7 @@ figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, jointsTorque([4,8], :), "LineWidth", lineWidth)
+box on
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 hold off
 if(showTitle)
@@ -167,11 +174,18 @@ saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 
 %%% make target angular velocity graph
 targW = datStruct.targetW(:, 3);
+baseW = datStruct.baseW(:, 3);
 
 figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, targW, "LineWidth", lineWidth)
+box on
+if plotBaseAngVel
+  hold on
+  plot(time, baseW, "LineWidth", lineWidth)
+  legend("Target", "Base")
+end
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 if(showTitle)
     title("Target Angular Velocity")
@@ -181,8 +195,8 @@ xlabel("Time [s]")
 xlim([time(1), time(time_length)])
 box off
 
-figName = 'targetAngVel.fig';                                  % fig名定義
-pngName = 'targetAngVel.png';                                  % png名定義
+figName = 'angVel.fig';                                  % fig名定義
+pngName = 'angVel.png';                                  % png名定義
 saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
 saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 
@@ -194,43 +208,28 @@ velManip = datStruct.velocityManipulability;
 figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
+yyaxis left
 plot(time, baseQ, "LineWidth", lineWidth)
+box on
 hold on
+yyaxis right
 plot(time, velManip(:,1), "LineWidth", lineWidth)
 plot(time, velManip(:,2), "LineWidth", lineWidth)
-legend('Base attitude', 'Left-arm manipulability', 'Right-arm manipulability')
+legend('Base attitude', 'Left-arm', 'Right-arm')
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
+yyaxis left
 if(showTitle)
     title("Robot Base Attitude")
 end
 ylabel("Attitude [rad]")
 xlabel("Time [s]")
+yyaxis right
+ylabel("Measure of manipulability [-]")
 xlim([time(1), time(time_length)])
 box off
 
 figName = 'baseOri.fig';                                  % fig名定義
 pngName = 'baseOri.png';                                  % png名定義
-saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
-saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
-
-%%% make robot base angular velocity graph
-baseW = datStruct.baseW(:, 3);
-
-figureNumber = figureNumber+1;     % 図番号設定
-figure(figureNumber);   % 図定義
-
-plot(time, baseW, "LineWidth", lineWidth)
-set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
-if(showTitle)
-    title("Robot Base Angular Velocity")
-end
-ylabel("Angular velocity [rad/s]")
-xlabel("Time [s]")
-xlim([time(1), time(time_length)])
-box off
-
-figName = 'baseAngVel.fig';                                  % fig名定義
-pngName = 'baseAngVel.png';                                  % png名定義
 saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
 saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 
@@ -242,6 +241,7 @@ figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, velL, "LineWidth", lineWidth)
+box on
 hold on
 plot(time, velR, "LineWidth", lineWidth)
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
