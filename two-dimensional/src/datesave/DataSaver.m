@@ -94,7 +94,7 @@ classdef DataSaver
             obj.datStruct.velocityManipulability = zeros(row, 2);
         end
         % 保存するデータを更新
-        function obj = update(obj, robo, target, controller, param)
+        function obj = update(obj, robo, target, controller, state, param)
             %%%%%%%%%%%%%%%%%%%%%%%%
             % インデックス更新
             obj.index = obj.index +1;

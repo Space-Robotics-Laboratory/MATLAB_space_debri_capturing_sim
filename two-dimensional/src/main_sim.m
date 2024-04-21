@@ -61,7 +61,7 @@ for time = minusTime : d_time : endTime
     end
  
     %%% データ更新
-    datSaver = datSaver.update(dualArmRobo, targetSquare, controller, param);
+    datSaver = datSaver.update(dualArmRobo, targetSquare, controller, state, param);
 
     %%% 推定フェーズ
     % 接触判定及び接触力計算
