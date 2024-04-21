@@ -31,6 +31,7 @@ classdef Controller
 
         % 制御状態パラメータ
         controlState    % string 制御状態．目標位置追従や反力低減を区別する. sub機能内での判別には用いない（追うのが大変）
+        sequenceMode   % string　'detumbling' 'capturing' 現在の捕獲戦略．
         phase           % int  pathwayのどの段階にいるかの指標．現在向かっている目標が保存された目標位置の何番目の経由地かを示す．目標地点がない場合-1を持つ
         phaseStarting   % bool pathwayのphaseの切り替えを示す．経由地点を初めて達成した時刻でtrue．
         flagPathUpdate  % bool pathwayをupdateするためのフラグ
@@ -58,6 +59,7 @@ classdef Controller
             obj.impedanceMode = param.control.impedanceMode;    % インピーダンス制御のモード
             obj.controlPart = [false, false, false];            % 積極的に制御する対象となる物体
             obj.f_exp_drt = false;
+            obj.sequenceMode = 'uninit'; 
 
             % パラメータ設定
             obj.mi = repmat(param.control.mi, [2,1]);
@@ -185,6 +187,7 @@ classdef Controller
         %%% 状況ごとの細かい制御
         %% 並進するターゲットを直接捕獲する制御
         function obj = directCapture(obj, robo, targ, roboFTsensor, time, param)
+            obj.sequenceMode = 'capturing';
             % フラグがたった時刻のみでpathwayを更新
             % 直接捕獲のための目標位置を設定する
             if obj.flagPathUpdate
@@ -211,6 +214,7 @@ classdef Controller
         %% 並進するターゲットに移動している方向の手を当てる制御
         % obj.tauを更新する
         function obj = contactDampen(obj, robo, targ, roboFTsensor, state, time, param)
+            obj.sequenceMode = 'detumbling';
             % フラグがたった時刻のみでpathwayを更新
             if obj.flagPathUpdate
                 obj.flagPathUpdate = false;

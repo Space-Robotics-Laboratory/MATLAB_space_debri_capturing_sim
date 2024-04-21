@@ -23,12 +23,12 @@ classdef DataSaver
             row = length(times);
             obj.datNum = row;
             obj.index = 0;
-
-            % パラメータ保存
-%             obj.paramStruct.linkLength = 
             
             % 時刻
             obj.datStruct.time = times';
+
+            %%% Seuqence State
+            obj.datStruct.sequenceState = zeros(row, 1);  % 0: unknown, 1: detumbling, 2: try capturing, 3: capture completed
 
             %%% Anime information
             % robot
@@ -98,6 +98,15 @@ classdef DataSaver
             %%%%%%%%%%%%%%%%%%%%%%%%
             % インデックス更新
             obj.index = obj.index +1;
+
+            %%% Seuqence State
+            if state.isDetumbling
+              obj.datStruct.sequenceState(obj.index, :) = 1;
+            elseif state.tryCapturing
+              obj.datStruct.sequenceState(obj.index, :) = 2;
+            elseif state.hasCautured
+              obj.datStruct.sequenceState(obj.index, :) = 3;
+            end
             
             %%% Anime information
             % robot

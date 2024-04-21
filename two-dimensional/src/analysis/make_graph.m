@@ -216,6 +216,7 @@ yyaxis right
 plot(time, velManip(:,1), "LineWidth", lineWidth)
 plot(time, velManip(:,2), "LineWidth", lineWidth)
 legend('Base attitude', 'Left-arm', 'Right-arm')
+plotSequenceStateArea(datStruct)
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 yyaxis left
 if(showTitle)
