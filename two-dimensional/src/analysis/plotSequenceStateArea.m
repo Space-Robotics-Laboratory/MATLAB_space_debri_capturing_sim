@@ -21,11 +21,11 @@ end
 X = [area_detumbling([1, end]), area_tryCapturing([1, end]), area_captureCompleted([1, end])];
 
 xr = xregion(X);
-xr(1).FaceColor = "r";
+xr(1).FaceColor = [0.5 0.5 0.5];
 xr(1).DisplayName = "Detumbling";
-xr(2).FaceColor = "c";
+xr(2).FaceColor = [1 0.5 0.5];
 xr(2).DisplayName = "Capturing";
-xr(3).FaceColor = "g";
+xr(3).FaceColor = [0.5 1 0.5];
 xr(3).DisplayName = "Captured";
 end
 
