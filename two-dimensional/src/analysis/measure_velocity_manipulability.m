@@ -22,6 +22,9 @@ if joint_pos == 'n'
   joint_pos = SV.q';
 end
 
+% constant value 
+active_joints = (1:3) + (num_e-1)*4;
+
 joints = j_num(LP, num_e);
 joint_pos_size = size(joint_pos);
 time_step_lengh = joint_pos_size(1);
@@ -38,7 +41,7 @@ switch manipulability_type
       
         Jacobian = calc_je(LP, SV, joints);
         
-        J = Jacobian(dimension, :);
+        J = Jacobian(dimension, active_joints);
         
         A = J * J';
       
