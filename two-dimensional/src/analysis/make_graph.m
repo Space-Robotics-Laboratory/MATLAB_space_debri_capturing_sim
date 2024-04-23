@@ -231,7 +231,7 @@ end
 ylabel("Attitude [rad]")
 xlabel("Time [s]")
 yyaxis right
-ylabel("Measure of manipulability [-]")
+ylabel("Manipulability [-]")
 xlim([time(1), time(time_length)])
 box off
 
