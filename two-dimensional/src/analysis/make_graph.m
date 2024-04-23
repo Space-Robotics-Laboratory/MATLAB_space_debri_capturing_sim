@@ -214,13 +214,14 @@ yyaxis left
 plot(time, baseQ, "LineWidth", lineWidth)
 box on
 hold on
-plot(time, jointsPosition([1:3,5:7], :), "LineWidth", lineWidth)
+% plot(time, jointsPosition([1:3,5:7], :), "LineWidth", lineWidth)
 yyaxis right
 plot(time, velManip(:,1), "LineWidth", lineWidth)
 plot(time, velManip(:,2), "LineWidth", lineWidth)
-legend('Base attitude', ...
-  'Joint 1', 'Joint 2', 'Joint 3', 'Joint 4', 'Joint 5', 'Joint 6', ...
-  'Left-arm', 'Right-arm')
+legend('Base attitude', 'Left-arm', 'Right-arm')
+% legend('Base attitude', ...
+%   'Joint 1', 'Joint 2', 'Joint 3', 'Joint 4', 'Joint 5', 'Joint 6', ...
+%   'Left-arm', 'Right-arm')
 plotSequenceStateArea(datStruct)
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 yyaxis left
