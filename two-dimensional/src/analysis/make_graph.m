@@ -28,12 +28,12 @@ figureNumber = startFigNum;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, endTipL1F, "LineWidth", lineWidth)
-box on
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 hold on
 plot(time, endTipL2F, "LineWidth", lineWidth)
 plot(time, endTipR1F, "LineWidth", lineWidth)
 plot(time, endTipR2F, "LineWidth", lineWidth)
+plotSequenceStateArea(datStruct.time, datStruct.sequenceState)
 
 if(showTitle)
     title("End Effector Force")
@@ -42,6 +42,7 @@ legend('Left tip 1', 'Left tip 2', 'Right tip 1', 'Right tip 2')
 ylabel("Force [N]")
 xlabel("Time [s]")
 xlim([time(1), time(time_length)])
+box on
 box off
 hold off
 
@@ -55,7 +56,7 @@ figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, endTipL1T, "LineWidth", lineWidth)
-box on
+plotSequenceStateArea(datStruct.time, datStruct.sequenceState)
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 hold on
 plot(time, endTipL2T, "LineWidth", lineWidth)
@@ -69,6 +70,7 @@ legend('Left tip 1', 'Left tip 2', 'Right tip 1', 'Right tip 2')
 ylabel("Torque [Nm]")
 xlabel("Time [s]")
 xlim([time(1), time(time_length)])
+box on
 box off
 hold off
 
@@ -85,7 +87,7 @@ figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, jointsVelocity([1:3,5:7], :), "LineWidth", lineWidth)
-box on
+plotSequenceStateArea(datStruct.time, datStruct.sequenceState)
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 hold off
 if(showTitle)
@@ -95,6 +97,7 @@ legend('Motor 1', 'Motor 2', 'Motor 3', 'Motor 4', 'Motor 5', 'Motor 6')
 ylabel("Velocity [rad/sec]")
 xlabel("Time [s]")
 xlim([time(1), time(time_length)])
+box on
 box off
 
 figName = 'motorVelocity.fig';                                  % fig名定義
@@ -107,7 +110,7 @@ figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, jointsVelocity([4,8], :), "LineWidth", lineWidth)
-box on
+plotSequenceStateArea(datStruct.time, datStruct.sequenceState)
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 hold off
 if(showTitle)
@@ -117,6 +120,7 @@ legend('Left wrist', 'Right wrist')
 ylabel("Velocity [rad/sec]")
 xlabel("Time [s]")
 xlim([time(1), time(time_length)])
+box on
 box off
 
 figName = 'wristVelocity.fig';                                  % fig名定義
@@ -133,7 +137,7 @@ figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, jointsTorque([1:3,5:7], :), "LineWidth", lineWidth)
-box on
+plotSequenceStateArea(datStruct.time, datStruct.sequenceState)
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 hold off
 if(showTitle)
@@ -143,6 +147,7 @@ legend('Motor 1', 'Motor 2', 'Motor 3', 'Motor 4', 'Motor 5', 'Motor 6')
 ylabel("Torque [Nm]")
 xlabel("Time [s]")
 xlim([time(1), time(time_length)])
+box on
 box off
 
 figName = 'motorTorque.fig';                                  % fig名定義
@@ -155,7 +160,7 @@ figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, jointsTorque([4,8], :), "LineWidth", lineWidth)
-box on
+plotSequenceStateArea(datStruct.time, datStruct.sequenceState)
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 hold off
 if(showTitle)
@@ -165,6 +170,7 @@ legend('Left wrist', 'Right wrist')
 ylabel("Torque [Nm]")
 xlabel("Time [s]")
 xlim([time(1), time(time_length)])
+box on
 box off
 
 figName = 'wristTorque.fig';                                  % fig名定義
@@ -180,12 +186,12 @@ figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, targW, "LineWidth", lineWidth)
-box on
 if plotBaseAngVel
   hold on
   plot(time, baseW, "LineWidth", lineWidth)
   legend("Target", "Base")
 end
+plotSequenceStateArea(datStruct.time, datStruct.sequenceState)
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 if(showTitle)
     title("Target Angular Velocity")
@@ -193,6 +199,7 @@ end
 ylabel("Angular velocity [rad/s]")
 xlabel("Time [s]")
 xlim([time(1), time(time_length)])
+box on
 box off
 
 figName = 'angVel.fig';                                  % fig名定義
@@ -212,7 +219,6 @@ figure(figureNumber);   % 図定義
 
 yyaxis left
 plot(time, baseQ, "LineWidth", lineWidth)
-box on
 hold on
 % plot(time, jointsPosition([1:3,5:7], :), "LineWidth", lineWidth)
 yyaxis right
@@ -222,7 +228,7 @@ legend('Base attitude', 'Left-arm', 'Right-arm')
 % legend('Base attitude', ...
 %   'Joint 1', 'Joint 2', 'Joint 3', 'Joint 4', 'Joint 5', 'Joint 6', ...
 %   'Left-arm', 'Right-arm')
-plotSequenceStateArea(datStruct)
+plotSequenceStateArea(datStruct.time, datStruct.sequenceState)
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 yyaxis left
 if(showTitle)
@@ -233,6 +239,7 @@ xlabel("Time [s]")
 yyaxis right
 ylabel("Manipulability [-]")
 xlim([time(1), time(time_length)])
+box on
 box off
 
 figName = 'stability.fig';                                  % fig名定義
@@ -248,9 +255,9 @@ figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
 plot(time, velL, "LineWidth", lineWidth)
-box on
 hold on
 plot(time, velR, "LineWidth", lineWidth)
+plotSequenceStateArea(datStruct.time, datStruct.sequenceState)
 set(gca, 'FontSize', fontSize);  % 軸目盛りのフォントサイズを設定
 hold off
 if(showTitle)
@@ -259,6 +266,7 @@ end
 legend("Left arm", "Right arm")
 xlabel("Time [s]");
 ylabel("Velocity [m/s]");
+box on
 box off
 
 figName = 'endEffecVel.fig';                                  % fig名定義

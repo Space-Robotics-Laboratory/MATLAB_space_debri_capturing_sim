@@ -1,8 +1,8 @@
-function plotSequenceStateArea(datStruct)
+function plotSequenceStateArea(time, state)
 %PLOTSEQUENCESTATEAREA この関数の概要をここに記述
 %   詳細説明をここに記述
-time = datStruct.time;
-state = datStruct.sequenceState;
+% time = datStruct.time;
+% state = datStruct.sequenceState;
 
 area_detumbling = [-1.3; -1.2];
 area_tryCapturing = [-1.2; -1.1];
