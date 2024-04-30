@@ -23,12 +23,12 @@ classdef DataSaver
             row = length(times);
             obj.datNum = row;
             obj.index = 0;
-
-            % パラメータ保存
-%             obj.paramStruct.linkLength = 
             
             % 時刻
             obj.datStruct.time = times';
+
+            %%% Seuqence State
+            obj.datStruct.sequenceState = zeros(row, 1);  % 0: unknown, 1: detumbling, 2: try capturing, 3: capture completed
 
             %%% Anime information
             % robot
@@ -89,12 +89,24 @@ classdef DataSaver
 
             %%% error log
 %             obj.datStruct.error = zeros(row, 1);
+            
+            %%% stability
+            obj.datStruct.velocityManipulability = zeros(row, 2);
         end
         % 保存するデータを更新
-        function obj = update(obj, robo, target, controller, param)
+        function obj = update(obj, robo, target, controller, state, param)
             %%%%%%%%%%%%%%%%%%%%%%%%
             % インデックス更新
             obj.index = obj.index +1;
+
+            %%% Seuqence State
+            if state.isDetumbling
+              obj.datStruct.sequenceState(obj.index, :) = 1;
+            elseif state.tryCapturing
+              obj.datStruct.sequenceState(obj.index, :) = 2;
+            elseif state.hasCautured
+              obj.datStruct.sequenceState(obj.index, :) = 3;
+            end
             
             %%% Anime information
             % robot
@@ -155,6 +167,10 @@ classdef DataSaver
             % ロボット手先速度
             obj.datStruct.roboEndEffecLVel(obj.index, :) = robo.VEL_e_L;
             obj.datStruct.roboEndEffecRVel(obj.index, :) = robo.VEL_e_R;
+
+            %%% stability
+            obj.datStruct.velocityManipulability(obj.index, 1) = measure_velocity_manipulability(1, 'n', 'volume', robo.LP, robo.SV);
+            obj.datStruct.velocityManipulability(obj.index, 2) = measure_velocity_manipulability(2, 'n', 'volume', robo.LP, robo.SV);
         end
         
         % ファイルに書き出し

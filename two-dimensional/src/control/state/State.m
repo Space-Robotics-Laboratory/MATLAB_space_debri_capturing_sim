@@ -5,7 +5,10 @@
 
 classdef State
     properties
+        isDetumbling        % bool ディタンブリングシーケンスかどうか
+        tryCapturing           % bool ケージングシーケンスかどうか
         isCapture           % bool ターゲット捕獲状況
+        hasCautured         % bool 捕獲成功体験
         isContact            % bool 1*4 各手先の現時刻接触状況
         isBaseContact       % bool ベースとターゲットの接触
         isPinch             % bool 挟み込み
@@ -24,7 +27,10 @@ classdef State
     methods
         % コンストラクター
         function obj = State()
+            obj.isDetumbling = false;
+            obj.tryCapturing = false;
             obj.isCapture = false;
+            obj.hasCautured = false;
             obj.isContact = false;
             obj.isBaseContact = false;
             obj.force_holder_ = zeros(1, 4);
@@ -45,6 +51,9 @@ classdef State
         % 状態更新
         function obj = update(obj, controller, robo, isContact, target, time, param)
             obj.isCapture = judge_isCaptured(robo, target, param);
+            obj.hasCautured = obj.hasCautured || obj.isCapture;
+            obj.isDetumbling = controller.sequenceMode == "detumbling" && ~obj.hasCautured;
+            obj.tryCapturing = controller.sequenceMode == "capturing" && ~obj.hasCautured;
             obj.wasContact = obj.isContact;
             obj.isContact = isContact;
             obj.isBaseContact = judge_baseContact(robo, target, param);
