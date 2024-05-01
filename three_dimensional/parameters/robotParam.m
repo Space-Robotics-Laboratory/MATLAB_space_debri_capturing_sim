@@ -17,7 +17,7 @@ robotParam.radius_endEffector   = 0.035; % 手先全体の半径であり，球�
 robotParam.diameter_endTip      = 0.02;
 
 %% Initial State of Robot
-robotParam.initial_position = [0, 0, 0]';
+robotParam.initial_position = [1000, 0, 0]';
 robotParam.initial_orientation = [0, 0, 0]';
 robotParam.initial_velocity = [0, 0, 0]';
 robotParam.initial_angularVelocity = [0, 0, 0]';

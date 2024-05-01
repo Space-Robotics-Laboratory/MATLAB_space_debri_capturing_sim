@@ -47,10 +47,10 @@ param.LdD      = 0.018;
 side = 0.16;
 param.TargetDepth  = side;
 param.TargetWidth  = side;%0.16;
-param.TargetHeight = side;
+param.TargetHeight = side*2;
 
 % ターゲット幾何中心に対する質量重心の相対位置
-param.TargetMCenter2GCenter = [0, 0, 0]';
+param.TargetMCenter2GCenter = [0, 0, .08]';
 
 % ターゲット質量[kg]
 % 変更時，慣性行列に注意
@@ -87,6 +87,7 @@ param.control = controlParam();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ファイル設定
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-param.DataSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/three_dimensional/uchida_program/dat';
-param.FileName     = [num2str(param.control.mi'),'_' ,num2str(param.control.di'),'_' ,num2str(param.control.ki')];
+param.DataSavePath = '\Users\akiyo\github\MATLAB_space_debri_capturing_sim\three_dimensional\dat';
+param.FileName     = ['testRk'];
+% param.FileName     = [num2str(param.control.mi'),'_' ,num2str(param.control.di'),'_' ,num2str(param.control.ki')];
 end
