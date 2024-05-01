@@ -97,12 +97,12 @@ saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
 saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 
 %%% make target angular velocity graph
-targW = datStruct.targetW(:, 3);
+targ = datStruct.targetW(:, :);
 
 figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
-plot(time, targW)
+plot(time, targ)
 title("Target Angular Velocity")
 ylabel("Angular Velocity [rad/sec]")
 xlabel("time [sec]")
