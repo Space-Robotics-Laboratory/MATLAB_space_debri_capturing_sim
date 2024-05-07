@@ -11,7 +11,7 @@ function param = set_Param()
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % シミュレーション条件
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-param.EndTime   = 3;%2;    %シミュレーション終了時間[s]
+param.EndTime   = 30;%2;    %シミュレーション終了時間[s]
 param.MinusTime = 0;      %シミュレーション開始からロボット制御開始までの時間[s]
 param.DivTime   = 0.001;  %シミュレーション刻み時間[s]
 param.general = generalParam();
@@ -50,7 +50,7 @@ param.TargetWidth  = side;%0.16;
 param.TargetHeight = side*2;
 
 % ターゲット幾何中心に対する質量重心の相対位置
-param.TargetMCenter2GCenter = [0, 0, .08]';
+param.TargetMCenter2GCenter = [0, 0, .0]';
 
 % ターゲット質量[kg]
 % 変更時，慣性行列に注意
@@ -67,9 +67,9 @@ param.TargetInertia = [ param.TargetMass*param.TargetDepth^2/6     0   0;
 
 % ターゲットの初期位置・姿勢・速度・角速度
 param.TargetPosition0     = [ 0 0.35 0]';             % 初期位置          ;SV.R0
-param.TargetOrientation0  = [ pi/4 pi/4 pi/4 ]';   % 初期姿勢  ラジアン ;SV.Q0
+param.TargetOrientation0  = [ 0 0 0 ]';   % 初期姿勢  ラジアン ;SV.Q0
 param.TargetVelocity0     = [ -.0 -.0 0 ]';              % 初期並進速度 ;SV.v0
-param.TargetAngVel0       = [ 3 0 0]';              % 初期角速度 ;SV.w0
+param.TargetAngVel0       = [ 1 0 5]';              % 初期角速度 ;SV.w0
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
