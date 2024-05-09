@@ -76,7 +76,8 @@ classdef DataSaver
             obj.datStruct.targetV = zeros(row, 3);
 
             % ターゲット角速度
-            obj.datStruct.targetW = zeros(row, 3);
+            obj.datStruct.targetWs = zeros(row, 3);
+            obj.datStruct.targetWb = zeros(row, 3);
 
             %%% error log
 %             obj.datStruct.error = zeros(row, 1);
@@ -138,7 +139,8 @@ classdef DataSaver
             obj.datStruct.targetV(obj.index, :) = target.SV.v0';
 
             % ターゲット角速度
-            obj.datStruct.targetW(obj.index, :) = target.SV.w0';
+            obj.datStruct.targetWs(obj.index, :) = target.SV.w0'; % in inertia frame
+            obj.datStruct.targetWb(obj.index, :) = bodyFrameBaseAngVel(target.SV)'; % in body frame
             
             %%%%%%%%%%%%%%%%%%%%%%%%
             % インデックス更新

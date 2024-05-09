@@ -6,6 +6,7 @@
 function make_graph(datStruct, paths)
 time = datStruct.time;
 startFigNum = 102;
+targetAngVelInBodyFrame = true;
 
 %%% make endEffector FT graph
 % ベクトルの大きさで評価
@@ -97,7 +98,11 @@ saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
 saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 
 %%% make target angular velocity graph
-targ = datStruct.targetW(:, :);
+if targetAngVelInBodyFrame
+  targ = datStruct.targetWb(:, :);
+else
+  targ = datStruct.targetWs(:, :);
+end
 
 figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義

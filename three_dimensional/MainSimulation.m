@@ -107,7 +107,9 @@ datSaver.write()
 % アニメーション作成
 % movfileにaviファイル保存
 % pngfileにpngファイル保存
-make_3dAnime(datSaver, paths, param)
+if param.general.makeAnimation
+  make_3dAnime(datSaver, paths, param)
+end
 
 % グラフ作成
 make_graph(datSaver.datStruct, paths)

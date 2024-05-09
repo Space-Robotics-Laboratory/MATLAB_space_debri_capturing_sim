@@ -12,7 +12,7 @@ function make_3dAnime(datSaver, paths, param)
 
     % 図定義
     FigureNumber = 101;     % 図番号設定
-    figure(FigureNumber);   % 図定義
+    fig = figure(FigureNumber);   % 図定義
     picNum = 1;             % 画像保存インデックス
     
     % ファイル名定義

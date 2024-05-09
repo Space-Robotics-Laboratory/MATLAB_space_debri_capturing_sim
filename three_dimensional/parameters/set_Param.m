@@ -57,9 +57,9 @@ param.TargetMCenter2GCenter = [0, 0, .0]';
 ro = 500; % kg/m^3
 param.TargetMass = ro * param.TargetDepth * param.TargetWidth * param.TargetHeight; %3.70;
 % ターゲット部分慣性行列[m^2kg]
-param.TargetInertia = [ param.TargetMass*param.TargetDepth^2/6     0   0;   
-                          0   param.TargetMass*param.TargetDepth^2/6   0;   
-                          0     0   param.TargetMass*param.TargetDepth^2/6];%0.0172];0.0164
+param.TargetInertia = [ param.TargetMass*(param.TargetDepth^2 + param.TargetHeight^2)/12     0   0;   
+                          0   param.TargetMass*(param.TargetWidth^2 + param.TargetHeight^2)/12   0;   
+                          0     0   param.TargetMass*(param.TargetDepth^2 + param.TargetWidth^2)/12];%0.0172];0.0164
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ターゲット初期状態設定
