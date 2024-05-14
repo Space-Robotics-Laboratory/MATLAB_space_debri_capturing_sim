@@ -1,4 +1,4 @@
-mat_csv = "\dat\2024-0509\2024-0509-225953\testRk-dat\savedDat.csv";
+mat_csv = "dat\2024-0514\2024-0514-231950\testRk-dat\savedDat.csv";
 mat_tabel = readtable(mat_csv);
 mat_ang_vel = [mat_tabel.targetWb_1, mat_tabel.targetWb_2, mat_tabel.targetWb_3];
 mat_time = mat_tabel.time;
@@ -12,5 +12,8 @@ mj_ang_vel = [ mj_table.Var2, mj_table.Var3, mj_table.Var4];
 diff_ang_vel = mat_ang_vel(2:end,:) - mj_ang_vel(1:end-1,:);
 
 plot(diff_ang_vel)
+% plot(mat_time, mat_ang_vel)
+% hold on 
+% plot(mj_time, mj_ang_vel)
 legend("x", "y", "z")
-title("Difference between mujoco and spacedyn (dt=0.001)")
+title("Difference between mujoco and spacedyn (dt=0.1)")
