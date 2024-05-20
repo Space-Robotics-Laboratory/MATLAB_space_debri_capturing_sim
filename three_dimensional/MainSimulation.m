@@ -57,7 +57,7 @@ figure(1);
 
 %% シミュレーションループスタート
 for time = minusTime : d_time : endTime 
-    clc
+    % clc
     time %#ok<NOPTS> 
     %%% データ更新
     datSaver = datSaver.update(dualArmRobo, targetCube, controller, time, param);

@@ -31,7 +31,7 @@ function qtn = dc2qtn_2( C0 )
 	end
 	check = det(C0);
 	if abs(check-1)>0.1
-		fprintf('Warning: mat2qtn: input is not a normal matrix.\n');
+		error('Warning: mat2qtn: input is not a normal matrix.\n');
 	end
 
 % start

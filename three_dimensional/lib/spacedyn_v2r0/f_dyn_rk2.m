@@ -34,16 +34,23 @@ global Ez Gravity d_time
 
 
 % 1st Step
+SV.Qt0 = dc2qtn_2(SV.A0');
+SV.dQt0 = w2dQtn(SV.w0, SV.Qt0);
 SVt = f_dyn(LP,SV);
+
 k1_R0 = d_time * SV.v0;
-k1_A0 = aw( SV ) * SV.A0 - SV.A0;
+% k1_A0 = aw( SV ) * SV.A0 - SV.A0;
+k1_Qt0 = d_time * SV.dQt0;
 k1_v0 = d_time * SVt.vd0;
 k1_w0 = d_time * SVt.wd0;
 k1_q  = d_time * SV.qd;
 k1_qd = d_time * SVt.qdd;
 
 SVt.R0 = SV.R0 + k1_R0/2;
-SVt.A0 = SV.A0 + k1_A0/2;
+% SVt.A0 = SV.A0 + k1_A0/2;
+SVt.Qt0 = SV.Qt0 + k1_Qt0/2;
+SVt.Qt0 = SVt.Qt0 / norm( SVt.Qt0 );
+SVt.A0 = qtn2dc(SVt.Qt0)';
 SVt.v0 = SV.v0 + k1_v0/2;
 SVt.w0 = SV.w0 + k1_w0/2;
 SVt.q  = SV.q +  k1_q/2;
@@ -51,44 +58,59 @@ SVt.qd = SV.qd + k1_qd/2;
 
 
 % 2nd Step
+SVt.Qt0 = dc2qtn_2(SVt.A0');
+SVt.dQt0 = w2dQtn(SVt.w0, SVt.Qt0);
 SVt = f_dyn(LP, SVt);
 
 k2_R0 = d_time * SVt.v0;
-k2_A0 = aw( SVt ) * SV.A0 - SV.A0;
+% k2_A0 = aw( SVt ) * SV.A0 - SV.A0;
+k2_Qt0 = d_time * SVt.dQt0;
 k2_v0 = d_time * SVt.vd0;
 k2_w0 = d_time * SVt.wd0;
 k2_q  = d_time * SVt.qd;
 k2_qd = d_time * SVt.qdd;
 
 SVt.R0 = SV.R0 + k2_R0/2;
-SVt.A0 = SV.A0 + k2_A0/2;
+% SVt.A0 = SV.A0 + k2_A0/2;
+SVt.Qt0 = SVt.Qt0 + k2_Qt0/2;
+SVt.Qt0 = SVt.Qt0 / norm( SVt.Qt0 );
+SVt.A0 = qtn2dc(SVt.Qt0)';
 SVt.v0 = SV.v0 + k2_v0/2;
 SVt.w0 = SV.w0 + k2_w0/2;
 SVt.q  = SV.q  + k2_q/2;
 SVt.qd = SV.qd + k2_qd/2;
 
 % 3rd Step
+SVt.Qt0 = dc2qtn_2(SVt.A0');
+SVt.dQt0 = w2dQtn(SVt.w0, SVt.Qt0);
 SVt = f_dyn(LP, SVt);
 
 k3_R0 = d_time * SVt.v0;
-k3_A0 = aw( SVt ) * SV.A0 - SV.A0;
+% k3_A0 = aw( SVt ) * SV.A0 - SV.A0;
+k3_Qt0 = d_time * SVt.dQt0;
 k3_v0 = d_time * SVt.vd0;
 k3_w0 = d_time * SVt.wd0;
 k3_q  = d_time * SVt.qd;
 k3_qd = d_time * SVt.qdd;
 
 SVt.R0 = SV.R0 + k3_R0;
-SVt.A0 = SV.A0 + k3_A0;
+% SVt.A0 = SV.A0 + k3_A0;
+SVt.Qt0 = SVt.Qt0 + k3_Qt0;
+SVt.Qt0 = SVt.Qt0 / norm( SVt.Qt0 );
+SVt.A0 = qtn2dc(SVt.Qt0)';
 SVt.v0 = SV.v0 + k3_v0;
 SVt.w0 = SV.w0 + k3_w0;
 SVt.q  = SV.q  + k3_q;
 SVt.qd = SV.qd + k3_qd;
 
 % 4th Step
+SVt.Qt0 = dc2qtn_2(SVt.A0');
+SVt.dQt0 = w2dQtn(SVt.w0, SVt.Qt0);
 SVt = f_dyn(LP, SVt);
 
 k4_R0 = d_time * SVt.v0;
-k4_A0 = aw( SVt ) * SV.A0 - SV.A0;
+% k4_A0 = aw( SVt ) * SV.A0 - SV.A0;
+k4_Qt0 = d_time * SVt.dQt0;
 k4_v0 = d_time * SVt.vd0;
 k4_w0 = d_time * SVt.wd0;
 k4_q  = d_time * SVt.qd;
@@ -96,7 +118,10 @@ k4_qd = d_time * SVt.qdd;
 
 % Solution
 SV.R0 = SV.R0 + ( k1_R0 + 2*k2_R0 + 2*k3_R0 + k4_R0 )/6;
-SV.A0 = SV.A0 + ( k1_A0 + 2*k2_A0 + 2*k3_A0 + k4_A0 )/6;
+% SV.A0 = SV.A0 + ( k1_A0 + 2*k2_A0 + 2*k3_A0 + k4_A0 )/6;
+SV.Qt0 = SV.Qt0 + ( k1_Qt0 + 2*k2_Qt0 + 2*k3_Qt0 + k4_Qt0 )/6;
+SV.Qt0 = SV.Qt0 / norm( SV.Qt0 );
+SV.A0 = qtn2dc(SV.Qt0)';
 SV.v0 = SV.v0 + ( k1_v0 + 2*k2_v0 + 2*k3_v0 + k4_v0 )/6;
 SV.w0 = SV.w0 + ( k1_w0 + 2*k2_w0 + 2*k3_w0 + k4_w0 )/6;
 SV.q  = SV.q  + ( k1_q  + 2*k2_q  + 2*k3_q  + k4_q  )/6;
