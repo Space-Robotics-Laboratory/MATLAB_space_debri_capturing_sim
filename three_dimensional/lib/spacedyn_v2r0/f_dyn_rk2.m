@@ -58,7 +58,7 @@ SVt.qd = SV.qd + k1_qd/2;
 
 
 % 2nd Step
-SVt.Qt0 = dc2qtn_2(SVt.A0');
+% SVt.Qt0 = dc2qtn_2(SVt.A0');
 SVt.dQt0 = w2dQtn(SVt.w0, SVt.Qt0);
 SVt = f_dyn(LP, SVt);
 
@@ -81,7 +81,7 @@ SVt.q  = SV.q  + k2_q/2;
 SVt.qd = SV.qd + k2_qd/2;
 
 % 3rd Step
-SVt.Qt0 = dc2qtn_2(SVt.A0');
+% SVt.Qt0 = dc2qtn_2(SVt.A0');
 SVt.dQt0 = w2dQtn(SVt.w0, SVt.Qt0);
 SVt = f_dyn(LP, SVt);
 
@@ -104,7 +104,7 @@ SVt.q  = SV.q  + k3_q;
 SVt.qd = SV.qd + k3_qd;
 
 % 4th Step
-SVt.Qt0 = dc2qtn_2(SVt.A0');
+% SVt.Qt0 = dc2qtn_2(SVt.A0');
 SVt.dQt0 = w2dQtn(SVt.w0, SVt.Qt0);
 SVt = f_dyn(LP, SVt);
 
