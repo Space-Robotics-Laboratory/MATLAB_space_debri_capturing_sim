@@ -117,6 +117,22 @@ pngName = 'targetAngVel.png';                                  % png名定義
 saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
 saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 
+%%% make target angle graph
+figureNumber = figureNumber+1;     % 図番号設定
+figure(figureNumber);   % 図定義
+
+targOri = datStruct.targQ0(:, :);
+
+plot(time, targOri)
+title("Target attitude")
+ylabel("attitude [rad]")
+xlabel("time [sec]")
+
+figName = 'targetAttitude.fig';                                  % fig名定義
+pngName = 'targetAttitude.png';                                  % png名定義
+saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
+saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
+
 %%% make translation momentum graph
 robo_moment = datStruct.robo_moment';
 target_moment = datStruct.target_moment';
