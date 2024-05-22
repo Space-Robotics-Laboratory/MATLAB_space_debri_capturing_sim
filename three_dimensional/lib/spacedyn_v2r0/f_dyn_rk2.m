@@ -72,7 +72,7 @@ k2_qd = d_time * SVt.qdd;
 
 SVt.R0 = SV.R0 + k2_R0/2;
 % SVt.A0 = SV.A0 + k2_A0/2;
-SVt.Qt0 = SVt.Qt0 + k2_Qt0/2;
+SVt.Qt0 = SV.Qt0 + k2_Qt0/2;
 SVt.Qt0 = SVt.Qt0 / norm( SVt.Qt0 );
 SVt.A0 = qtn2dc(SVt.Qt0)';
 SVt.v0 = SV.v0 + k2_v0/2;
@@ -95,7 +95,7 @@ k3_qd = d_time * SVt.qdd;
 
 SVt.R0 = SV.R0 + k3_R0;
 % SVt.A0 = SV.A0 + k3_A0;
-SVt.Qt0 = SVt.Qt0 + k3_Qt0;
+SVt.Qt0 = SV.Qt0 + k3_Qt0;
 SVt.Qt0 = SVt.Qt0 / norm( SVt.Qt0 );
 SVt.A0 = qtn2dc(SVt.Qt0)';
 SVt.v0 = SV.v0 + k3_v0;
