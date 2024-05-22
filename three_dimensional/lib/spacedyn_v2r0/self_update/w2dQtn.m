@@ -38,9 +38,13 @@ wx = w(1);
 wy = w(2);
 wz = w(3);
 
-dQtn = .5 * [ qw*wx - qz*wy + qy*wz; 
-              qz*wx + qw*wy - qx*wz;
-             -qy*wx + qx*wy + qw*wz;
+% dQtn = .5 * [ qw*wx - qz*wy + qy*wz;
+%               qz*wx + qw*wy - qx*wz;
+%              -qy*wx + qx*wy + qw*wz;
+%              -qx*wx - qy*wy - qz*wz];
+dQtn = .5 * [ qw*wx + qz*wy - qy*wz;
+             -qz*wx + qw*wy + qx*wz;
+              qy*wx - qx*wy + qw*wz;
              -qx*wx - qy*wy - qz*wz];
 end
 
