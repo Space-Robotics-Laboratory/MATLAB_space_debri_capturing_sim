@@ -85,6 +85,9 @@ Though this action is not necessary, it will help you to make realistic movie.
 Open dualArm.blender with blender and set target size in python file. Then, rewrite csv file path of which you want to use referring to the comments. After them, run the code on blender to apply the motion.
 Do not forget to save the blender file with new name to conserve the original one.
 
+## Backup branch
+Branches which have the name `backup` is not used. We just save it for internal usage.
+
 ## References
 ```
 @article{matsushitaexperimental,
