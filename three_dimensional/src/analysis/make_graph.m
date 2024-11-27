@@ -6,6 +6,7 @@
 function make_graph(datStruct, paths)
 time = datStruct.time;
 startFigNum = 102;
+targetAngVelInBodyFrame = true;
 
 %%% make endEffector FT graph
 % ベクトルの大きさで評価
@@ -97,12 +98,16 @@ saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
 saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 
 %%% make target angular velocity graph
-targW = datStruct.targetW(:, 3);
+if targetAngVelInBodyFrame
+  targ = datStruct.targetWb(:, :);
+else
+  targ = datStruct.targetWs(:, :);
+end
 
 figureNumber = figureNumber+1;     % 図番号設定
 figure(figureNumber);   % 図定義
 
-plot(time, targW)
+plot(time, targ)
 title("Target Angular Velocity")
 ylabel("Angular Velocity [rad/sec]")
 xlabel("time [sec]")
@@ -112,7 +117,23 @@ pngName = 'targetAngVel.png';                                  % png名定義
 saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
 saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
 
-%%% make momentum graph
+%%% make target angle graph
+figureNumber = figureNumber+1;     % 図番号設定
+figure(figureNumber);   % 図定義
+
+targOri = datStruct.targQ0(:, :);
+
+plot(time, targOri)
+title("Target attitude")
+ylabel("attitude [rad]")
+xlabel("time [sec]")
+
+figName = 'targetAttitude.fig';                                  % fig名定義
+pngName = 'targetAttitude.png';                                  % png名定義
+saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
+saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
+
+%%% make translation momentum graph
 robo_moment = datStruct.robo_moment';
 target_moment = datStruct.target_moment';
 
@@ -128,12 +149,35 @@ plot(time, robo_trans)
 hold on
 plot(time, target_trans)
 plot(time, sum_trans)
-title("Translation Momentum")
-ylabel("Translation Momentum [kg・m/sec]")
+title("Translational Momentum")
+ylabel("Translational Momentum [kg・m/sec]")
 xlabel("time [sec]")
 legend('robot', 'target', 'sum')
 
 figName = 'momentumTrans.fig';                                  % fig名定義
 pngName = 'momentumTrans.png';                                  % png名定義
+saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
+saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存
+
+%%% make rotation momentum graph
+robo_rot = vecnorm(robo_moment(4:6,:), 2, 1);
+target_rot = vecnorm(target_moment(4:6, :), 2, 1);
+sum_rot = robo_moment(4:6,:) + target_moment(4:6,:);
+sum_rot = vecnorm(sum_rot, 2, 1);
+
+figureNumber = figureNumber+1;     % 図番号設定
+figure(figureNumber);   % 図定義
+
+plot(time, robo_rot)
+hold on
+plot(time, target_rot)
+plot(time, sum_rot)
+title("Rotational Momentum")
+ylabel("Rotational Momentum [kg・rad/sec]")
+xlabel("time [sec]")
+legend('robot', 'target', 'sum')
+
+figName = 'momentumRot.fig';                                  % fig名定義
+pngName = 'momentumRot.png';                                  % png名定義
 saveas(figure(figureNumber), [paths.figfile, '/', figName]);    % fig保存
 saveas(figure(figureNumber), [paths.figfile, '/', pngName]);    % png保存

@@ -22,7 +22,7 @@ function C0 = qtn2dc( qtn )
 
 % input check-out
 
-	if [4,1]~=size( qtn ) 
+	if [4,1]~=size( qtn )
         if [1,4]~=size( qtn )
             error('Cannot compute the rotation matrix\n');
         end
@@ -30,16 +30,22 @@ function C0 = qtn2dc( qtn )
 
 
 % start
-	
-   
-    q0 = qtn(4); 
+
+
+    q0 = qtn(4);
     q1 = qtn(1); q2 = qtn(2); q3 = qtn(3);
-    
-    C0 = [ 1 - 2*(q2^2 + q3^2)         2*(q1*q2 - q0*q3)        2*(q0*q2 + q1*q3);
-           2*(q1*q2 + q0*q3)          1 - 2*(q1^2 + q3^2)       2*(q2*q3 - q0*q1);
-           2*(q1*q3 - q0*q2)           2*(q0*q1 + q2*q3)       1 - 2*(q1^2 + q2^2)];
-       
-       C0 = C0';
+
+    % C0 = [ 1 - 2*(q2^2 + q3^2)         2*(q1*q2 - q0*q3)        2*(q0*q2 + q1*q3);
+    %        2*(q1*q2 + q0*q3)          1 - 2*(q1^2 + q3^2)       2*(q2*q3 - q0*q1);
+    %        2*(q1*q3 - q0*q2)           2*(q0*q1 + q2*q3)       1 - 2*(q1^2 + q2^2)];
+    % 
+    % C0 = C0';
+
+
+    C0 = [ q1^2 - q2^2 - q3^2 + q0^2        2 * (q1 * q2 + q3 * q0)       2 * (q1 * q3 - q2 * q0);
+             2 * (q1 * q2 - q3 * q0)     -q1^2 + q2^2 - q3^2 + q0^2       2 * (q2 * q3 + q1 * q0);
+             2 * (q1 * q3 + q2 * q0)        2 * (q2 * q3 - q1 * q0)    -q1^2 - q2^2 + q3^2 + q0^2];
+
 
 %%% EOF
 

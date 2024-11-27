@@ -13,7 +13,7 @@ function param = set_Param()
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 param.EndTime   = 3;%2;    %シミュレーション終了時間[s]
 param.MinusTime = 0;      %シミュレーション開始からロボット制御開始までの時間[s]
-param.DivTime   = 0.001;  %シミュレーション刻み時間[s]
+param.DivTime   = 0.01;  %シミュレーション刻み時間[s]
 param.general = generalParam();
 
 
@@ -87,6 +87,7 @@ param.control = controlParam();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ファイル設定
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-param.DataSavePath = '/Users/akiyoshi/develop/srl/github/MATLAB_space_debri_capturing_sim/three_dimensional/uchida_program/dat';
-param.FileName     = [num2str(param.control.mi'),'_' ,num2str(param.control.di'),'_' ,num2str(param.control.ki')];
+param.DataSavePath = 'dat';
+param.FileName     = ['testRk'];
+% param.FileName     = [num2str(param.control.mi'),'_' ,num2str(param.control.di'),'_' ,num2str(param.control.ki')];
 end

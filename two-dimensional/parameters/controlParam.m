@@ -6,7 +6,7 @@
 
 function controlParam = controlParam()
     %% Controller Setting
-    controlParam.controlMode = 'DIRECT';          % コントローラーモード
+    controlParam.controlMode = 'MULTIPLE';          % コントローラーモード
     controlParam.velocityMode = 'str_poly3';          % pathwayから速度を計算する方法
     controlParam.impedanceMode = 'addmitance';      % インピーダンス制御モード
     
