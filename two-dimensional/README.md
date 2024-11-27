@@ -1,7 +1,11 @@
 # Space Debris Captureing Robot simulations
-## Two Dimensional
+## Overview of 2-D Capture Simulation
 
+In our laboratory, a dual-arm space robot test bed has been developed to experimentally verify the capture of a target that resembles space debris in a two-dimensional plane. The simulation was developed to validate the experimental results and to predict the behavior when the conditions are changed. By changing the parameters, the robot model can be changed and the shape of the target to be captured can be changed. 
+
+<center>
 <img src="./docs/media/simulationmodel.jpg" alt="Simulation Model" title="Simulation Model of Dual-arm Service Robot Testbet" width="400">
+</center>
 
 ## Initial Robot Shape
 Here you can fine the original robot model parameters, same as the ones of blender STL model.
