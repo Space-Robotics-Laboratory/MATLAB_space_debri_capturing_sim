@@ -34,18 +34,6 @@ If you wright a paper using codes in this repository, please cite the following 
   doi={10.1109/iSpaRo60631.2024.10687710}}
 ```
 
-## Overview of 2-D Capture Simulation
-
-In our laboratory, a dual-arm space robot test bed has been developed to experimentally verify the capture of a target that resembles space debris in a two-dimensional plane. The simulation was developed to validate the experimental results and to predict the behavior when the conditions are changed. By changing the parameters, the robot model can be changed and the shape of the target to be captured can be changed. 
-
-<center>
-<img src="./docs/media/simulationmodel.jpg" alt="Simulation Model" title="Simulation Model of Dual-arm Service Robot Testbet" width="400">
-</center>
-
-## Overview of 3-D Capture Simulation [Under developing]
-
-Three-dimensional simulation is now under developing.
-
 ## Software
 
 Dynamics calculation and simple animation code is written in :
@@ -67,7 +55,7 @@ All code is confirmed to work in
 * MATLAB R2022b
 * MATLAB R2023a
 
-## Operation procedure
+## Usage
 
 Make sure your environment satisfy the requirement above. Then you can run the code as follows.
 
@@ -89,7 +77,7 @@ gParam.fileName     = 'myFile';
 ```
 
 #### 4. Run the code
-Open [main_sim.m](two-two-dimensional/src/main_sim.m) code under two-dimensional/src or [MainSimulation.m](three_dimensional/MainSimulation.m) in three-dimensional/src and click the "Run" button to run the simulation. For more information, please see README.md under 'two-dimensional' or 'three-dimensional'.
+Open [main_sim.m](two-two-dimensional/src/main_sim.m) code under two-dimensional/src or [MainSimulation.m](three_dimensional/MainSimulation.m) in three-dimensional/src and click the "Run" button to run the simulation. Note that 3d simulation is under developing. For more information, please see README.md under 'two-dimensional' or 'three-dimensional'.
 
 #### 5. View in Blender
 Though this action is not necessary, it will help you to make realistic movie.
