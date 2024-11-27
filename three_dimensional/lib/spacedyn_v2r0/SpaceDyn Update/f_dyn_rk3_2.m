@@ -36,8 +36,6 @@ global Ez Gravity d_time
 % Quaternion
 SV.Qt0 = dc2qtn_2(SV.A0');
 
-% err = test_qtn(SV.A0')
-
 % 1st Step
 SVt = f_dyn(LP,SV);
 
@@ -45,7 +43,6 @@ k1_R0 = d_time * SVt.v0;
 
 SV.Qt0 = dc2qtn_2(SVt.A0');
 SVt.dQt0 = 0.5*[(SVt.Qt0(4)*SVt.w0 + cross(SVt.w0,SVt.Qt0(1:3))) ; -SVt.Qt0(1:3)'*SVt.w0 ];
-% SVt.dQt0 = w2dQtn(SVt.w0, SV.Qt0);
 k1_Qt0 = d_time * SVt.dQt0;
 
 k1_v0 = d_time * SVt.vd0;
@@ -70,7 +67,6 @@ k2_R0 = d_time * SVt.v0;
 
 SVt.Qt0 = dc2qtn_2(SVt.A0');
 SVt.dQt0 = 0.5*[(SVt.Qt0(4)*SVt.w0 + cross(SVt.w0,SVt.Qt0(1:3))) ; -SVt.Qt0(1:3)'*SVt.w0 ];
-% SVt.dQt0 = w2dQtn(SVt.w0, SVt.Qt0);
 k2_Qt0 = d_time * SVt.dQt0;
 
 k2_v0 = d_time * SVt.vd0;
@@ -94,7 +90,6 @@ k3_R0 = d_time * SVt.v0;
 
 SVt.Qt0 = dc2qtn_2(SVt.A0');
 SVt.dQt0 = 0.5*[(SVt.Qt0(4)*SVt.w0 + cross(SVt.w0,SVt.Qt0(1:3))) ; -SVt.Qt0(1:3)'*SVt.w0 ];
-% SVt.dQt0 = w2dQtn(SVt.w0, SVt.Qt0);
 k3_Qt0 = d_time * SVt.dQt0;
 
 k3_v0 = d_time * SVt.vd0;
@@ -118,7 +113,6 @@ k4_R0 = d_time * SVt.v0;
 
 SVt.Qt0 = dc2qtn_2(SVt.A0');
 SVt.dQt0 = 0.5*[(SVt.Qt0(4)*SVt.w0 + cross(SVt.w0,SVt.Qt0(1:3))) ; -SVt.Qt0(1:3)'*SVt.w0 ];
-% SVt.dQt0 = w2dQtn(SVt.w0, SVt.Qt0);
 k4_Qt0 = d_time * SVt.dQt0;
 
 k4_v0 = d_time * SVt.vd0;

@@ -57,7 +57,7 @@ figure(1);
 
 %% シミュレーションループスタート
 for time = minusTime : d_time : endTime 
-    % clc
+    clc
     time %#ok<NOPTS> 
     %%% データ更新
     datSaver = datSaver.update(dualArmRobo, targetCube, controller, time, param);
@@ -79,7 +79,7 @@ for time = minusTime : d_time : endTime
 
     %%% 運動計算フェーズ
     % 運動状態更新
-    % dualArmRobo  = dualArmRobo.update(controller.tau, roboExtWrench, param);    % methodを呼び出した後自身に代入することを忘れない！
+    dualArmRobo  = dualArmRobo.update(controller.tau, roboExtWrench, param);    % methodを呼び出した後自身に代入することを忘れない！
     targetCube = targetCube.update(targetExtWrench);  
 
     % 状態判定更新

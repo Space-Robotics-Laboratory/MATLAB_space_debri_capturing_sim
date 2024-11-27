@@ -47,19 +47,19 @@ param.LdD      = 0.018;
 side = 0.16;
 param.TargetDepth  = side;
 param.TargetWidth  = side;%0.16;
-param.TargetHeight = side*2;
+param.TargetHeight = side;
 
 % ターゲット幾何中心に対する質量重心の相対位置
-param.TargetMCenter2GCenter = [0, 0, .0]';
+param.TargetMCenter2GCenter = [0, 0, 0]';
 
 % ターゲット質量[kg]
 % 変更時，慣性行列に注意
 ro = 500; % kg/m^3
 param.TargetMass = ro * param.TargetDepth * param.TargetWidth * param.TargetHeight; %3.70;
 % ターゲット部分慣性行列[m^2kg]
-param.TargetInertia = [ param.TargetMass*(param.TargetDepth^2 + param.TargetHeight^2)/12     0   0;   
-                          0   param.TargetMass*(param.TargetWidth^2 + param.TargetHeight^2)/12   0;   
-                          0     0   param.TargetMass*(param.TargetDepth^2 + param.TargetWidth^2)/12];%0.0172];0.0164
+param.TargetInertia = [ param.TargetMass*param.TargetDepth^2/6     0   0;   
+                          0   param.TargetMass*param.TargetDepth^2/6   0;   
+                          0     0   param.TargetMass*param.TargetDepth^2/6];%0.0172];0.0164
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ターゲット初期状態設定
@@ -67,9 +67,9 @@ param.TargetInertia = [ param.TargetMass*(param.TargetDepth^2 + param.TargetHeig
 
 % ターゲットの初期位置・姿勢・速度・角速度
 param.TargetPosition0     = [ 0 0.35 0]';             % 初期位置          ;SV.R0
-param.TargetOrientation0  = [ 0 0 0 ]';   % 初期姿勢  ラジアン ;SV.Q0
+param.TargetOrientation0  = [ pi/4 pi/4 pi/4 ]';   % 初期姿勢  ラジアン ;SV.Q0
 param.TargetVelocity0     = [ -.0 -.0 0 ]';              % 初期並進速度 ;SV.v0
-param.TargetAngVel0       = [ 1 0 5]';              % 初期角速度 ;SV.w0
+param.TargetAngVel0       = [ 3 0 0]';              % 初期角速度 ;SV.w0
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -87,7 +87,7 @@ param.control = controlParam();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ファイル設定
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-param.DataSavePath = '\Users\akiyo\github\MATLAB_space_debri_capturing_sim\three_dimensional\dat';
+param.DataSavePath = 'dat';
 param.FileName     = ['testRk'];
 % param.FileName     = [num2str(param.control.mi'),'_' ,num2str(param.control.di'),'_' ,num2str(param.control.ki')];
 end

@@ -6,7 +6,7 @@ paleRed = [1, .5, .5];
 paleBlue = [.5, .5, 1];
 
 %% Animation Setting
-generalParam.makeAnimation = false;
+generalParam.makeAnimation = true;
 
 %% Graphic Setting
 generalParam.viewPoint = [.2, 1, .5]';      % シミュレーションアニメ表示のカメラ視点
