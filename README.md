@@ -25,7 +25,7 @@ In addition, you can use blender-python script to make more realistic movies of 
 
 ## Citation
 
-If you write an academic paper using the codes in this repository, please cite the following article.
+If you write an academic paper using the codes in this repository, please cite the following article. You can also check our [movie](https://www.youtube.com/watch?v=SRTtrgRimoA&ab_channel=SpaceRoboticsLab) on youtube!
 
 ```
 @article{uchida2024,
@@ -116,15 +116,6 @@ Branches which have the name `backup` is not used. We just save it for internal 
   author={Naoki, Hase and Kenji, Nagaoka and Yoshida, Kazuya},
   booktitle={Proc. i-SAIRAS},
   year={2018}
-}
-```
-
-```
-@article{uchidamultiplesimulation,
-  title={インピーダンス制御を用いた双腕ロボットによる宇宙デブリ捕獲手法},
-  author={Akiyoshi, Uchida and Kentaro, Uno and Yoshida, Kazuya},
-  booktitle={Proc. RSJ},
-  year={2023}
 }
 ```
 
