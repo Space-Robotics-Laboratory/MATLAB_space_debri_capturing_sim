@@ -1,45 +1,143 @@
-**Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
+# Space Debri Capturing Robot Simulations
 
-When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.
+|<img src="./docs/media/2dBlenderMov.gif" alt="2D blender gif" title="2D direct capturing blender gif">|<img src="./docs/media/2dDirect.gif" alt="Capturing simulation" title="Capturing simulation with Dual-arm service robot">|
+|----|----|
+|2D blender|2D Matlab|
+|<img src="./docs/media/blenderMov.gif" alt="wait for 3D blender" title="Space debris">|<img src="./docs/media/3dFollowing.gif" alt="3D direct capturing blender gif" title="arm control by DAR in 3D space">|
+|3D blender|3D Matlab|
+|||
 
-*We recommend that you open this README in another tab as you perform the tasks below. You can [watch our video](https://youtu.be/0ocf7u76WSo) for a full demo of all the steps in this tutorial. Open the video in a new tab to avoid leaving Bitbucket.*
+-- Space debris capturing by the dual-arm service robot testbed
 
----
+Author(s) and maintainer(s): Space Robotics Lab. Orbital Team
 
-## Edit a file
+<img src="./docs/media/srl-logo.jpg" alt="SRL Logo" width="400">
 
-You’ll start by editing this README file to learn how to edit a file in Bitbucket.
+* **Repository admin**: Akiyoshi Uchida (uchida.akiyoshi.s3 at dc.tohoku.ac.jp)
 
-1. Click **Source** on the left side.
-2. Click the README.md link from the list of files.
-3. Click the **Edit** button.
-4. Delete the following text: *Delete this line to make a change to the README from Bitbucket.*
-5. After making your change, click **Commit** and then **Commit** again in the dialog. The commit page will open and you’ll see the change you just made.
-6. Go back to the **Source** page.
+* **Team admin**: Kentaro Uno (unoken at tohoku.ac.jp)
 
----
+## Repository Summary
 
-## Create a file
+This repository contains the necessary codes for two-dimensional and three-dimensional capture simulation written mainly using MATLAB. These codes include inverse kinematics calculations, contact force calculations, and contact determination.
+A MATLAB tool called SpaceDyn, developed by the Tohoku University Space Robotics Laboratory is used for this capture simulation. See [SpaceDyn](https://github.com/Space-Robotics-Laboratory/SpaceDyn) for more information.
+In addition, you can use blender-python script to make more realistic movies of calculated motion.
 
-Next, you’ll add a new file to this repository.
+## Citation
 
-1. Click the **New file** button at the top of the **Source** page.
-2. Give the file a filename of **contributors.txt**.
-3. Enter your name in the empty file space.
-4. Click **Commit** and then **Commit** again in the dialog.
-5. Go back to the **Source** page.
+If you write an academic paper using the codes in this repository, please cite the following article.
 
-Before you move on, go ahead and explore the repository. You've already seen the **Source** page, but check out the **Commits**, **Branches**, and **Settings** pages.
+```
+@article{uchida2024,
+  author={Uchida, Akiyoshi and Uno, Kentaro and Yoshida, Kazuya},
+  booktitle={2024 International Conference on Space Robotics (iSpaRo)}, 
+  title={Space Debris Reliable Capturing by a Dual-Arm Orbital Robot: Detumbling and Caging}, 
+  year={2024},
+  pages={194-201},
+  keywords={Solid modeling;Attitude control;Space debris;Force;End effectors;Angular velocity;Impedance},
+  doi={10.1109/iSpaRo60631.2024.10687710}}
+```
 
----
+## Software
 
-## Clone a repository
+Dynamics calculation and simple animation code is written in :
 
-Use these steps to clone from SourceTree, our client for using the repository command-line free. Cloning allows you to work on your files locally. If you don't yet have SourceTree, [download and install first](https://www.sourcetreeapp.com/). If you prefer to clone from the command line, see [Clone a repository](https://confluence.atlassian.com/x/4whODQ).
+* MATLAB code
 
-1. You’ll see the clone button under the **Source** heading. Click that button.
-2. Now click **Check out in SourceTree**. You may need to create a SourceTree account or log in.
-3. When you see the **Clone New** dialog in SourceTree, update the destination path and name if you’d like to and then click **Clone**.
-4. Open the directory you just created to see your repository’s files.
+Realistic animation code is written in :
 
-Now that you're more familiar with your Bitbucket repository, go ahead and add a new file locally. You can [push your change back to Bitbucket with SourceTree](https://confluence.atlassian.com/x/iqyBMg), or you can [add, commit,](https://confluence.atlassian.com/x/8QhODQ) and [push from the command line](https://confluence.atlassian.com/x/NQ0zDQ).
+* Python ( bpy library)
+
+detailed information to run simulations, refer to next section this README.
+
+## Requirements
+
+All code is confirmed to work in
+
+* MATLAB R2020a
+* MATLAB R2022b
+* MATLAB R2023a
+
+## Usage
+
+Make sure your environment satisfy the requirement above. Then you can run the code as follows.
+
+#### 1. Clone the repository
+
+You can simply clone this repository to access to whole software stack. To clone the repository, to avoid messing up, we recommend you to make the independent directory in your home directory (e.g. named "git-hub") and clone the repository there.
+
+```commandline
+mkdir ~/git-hub && cd ~/git-hub
+git clone git@github.com:Space-Robotics-Laboratory/MATLAB_space_debri_capturing_sim.git
+```
+
+#### 2. Path Settings
+
+In Matlab UI, go to "Home", "Path Settings", and select "two-dimensional" or "three-dimensional" . Then select "Add subfolders too" and save. After that, you can use functions in the directory. **DO NOT** add both folders at the same time.
+
+#### 3. Change the Dat Path
+
+In two-dimensional/parameters/generalParam.m or three-dimensional/parameters/generalParam.m, you can change the path to the directory where you want to save the output results.
+
+```commandline
+gParam.dataSavePath = '/dat';
+gParam.fileName     = 'myFile';
+```
+
+#### 4. Run the code
+
+Open [main_sim.m](two-two-dimensional/src/main_sim.m) code under two-dimensional/src or [MainSimulation.m](three_dimensional/MainSimulation.m) in three-dimensional/src and click the "Run" button to run the simulation. Note that 3d simulation is under developing. For more information, please see README.md under 'two-dimensional' or 'three-dimensional'.
+
+#### 5. View in Blender
+
+Though this action is not necessary, it will help you to make realistic movie.
+
+Open dualArm.blender with blender and set target size in python file. Then, rewrite csv file path of which you want to use referring to the comments. After them, run the code on blender to apply the motion.
+Do not forget to save the blender file with new name to conserve the original one.
+
+## Backup branch
+
+Branches which have the name `backup` is not used. We just save it for internal usage.
+
+## References
+
+```
+@article{matsushitaexperimental,
+  title={EXPERIMENTAL VERIFICATION ON CAGING-CAPTURE OF A FREE-FLOATING OBJECT BY A DUAL-ARM SPACE ROBOT},
+  author={Matsushita, Tomoya and Yoshida, Kazuya},
+  booktitle={Proc. i-SAIRAS},
+  year={2020}
+}
+```
+
+```
+@article{haseparametric,
+  title={Parametric Analysis on Repeated Impact-Based Capture of a Free-Floating Cylindrical Object by a Dual-Arm Space Robot},
+  author={Naoki, Hase and Kenji, Nagaoka and Yoshida, Kazuya},
+  booktitle={Proc. i-SAIRAS},
+  year={2018}
+}
+```
+
+```
+@article{uchidamultiplesimulation,
+  title={インピーダンス制御を用いた双腕ロボットによる宇宙デブリ捕獲手法},
+  author={Akiyoshi, Uchida and Kentaro, Uno and Yoshida, Kazuya},
+  booktitle={Proc. RSJ},
+  year={2023}
+}
+```
+
+## FAQ
+
+Q. _From which frame, LP.cc is defined?_
+
+A. In each link frame. So, position vector like LP.cc(:, n, n-1) and LP.cc(:, n, n) are expressed in link n frame.
+
+Q. _Which is the direction of joint axis?_
+
+A. Z axis direction in link frame. For example, joint n axis is the same as the link n Z axis.
+
+Q. _I multiplied rpy2dc to vector from left, but the result was not what I expected._
+
+A. In SpaceDyn, rpy2dc calculate frame rotation of {b} -> {s}, which is endogenous. This is because roll pitch yaw is defined as endogenous x->y->z. Thanks to this difinition, you can calculate link yaw after joint's rotation as just yaw + phi. As a conclusion, if you want to achieve {s} -> {b} rotation, you can do it by multipling rpy2dc^T to vector from left. For more detail, please see calc_aa.m file.
