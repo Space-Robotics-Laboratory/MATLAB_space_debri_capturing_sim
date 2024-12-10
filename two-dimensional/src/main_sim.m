@@ -1,7 +1,26 @@
+% Copyright (c) 2024, Akiyoshi Uchida
+
+% Permission is hereby granted, free of charge, to any person obtaining a copy
+% of this software and associated documentation files (the "Software"), to deal
+% in the Software without restriction, including without limitation the rights
+% to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+% copies of the Software, and to permit persons to whom the Software is
+% furnished to do so, subject to the following conditions:
+
+% The above copyright notice and this permission notice shall be included in all
+% copies or substantial portions of the Software.
+
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+% IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+% AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+% OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+% SOFTWARE.
+
 %%%%%%%%%%DualArmTestBed Simulation%%%%%%%%%%
-% 2023/01/01 Akiyoshi Uchida
 % SpaceDyn_v2r0
-% 
+%
 % main simulation
 %
 % RSJ2023用に，parametric解析を行うように改良．main_simの返り値は，捕獲結果のtex形式表現
@@ -10,13 +29,13 @@ function sim_res = main_sim(param, paths)
 arguments
     %%% パラメータ設定
     % main_sim 実行時にパラメータを与えることも可能
-    param = set_Param(); 
+    param = set_Param();
     % パス設定
     paths = make_DataFolder(param);              % 保存先フォルダ作成．パスはParamSettingで設定
 end
 
-%%%%% シミュレーション準備             
-%%% global 変数の定義 
+%%%%% シミュレーション準備
+%%% global 変数の定義
 % 全ての関数及びメインルーチン内で共通で使用される変数
 global d_time
 global Gravity
@@ -39,34 +58,34 @@ minusTime = param.general.minusTime;                % マイナス時間設定�
 
 % ロボット・ターゲット力初期化
 roboExtWrench  = zeros(6,5);                   % ロボ外力[ BaseForce    LeftTip1Force   LeftTip2Force   RightTip1Force  RightTip2Force]
-                                               % 　　　　[ BaseTorque   LeftTip1Torque  LeftTip2Torque  RightTip1Torque RightTip2Torque]
-targetExtWrench= zeros(6,1);                   % タゲ外力[ BaseForce  ] 
-                                               % 　　　　[ BaseTorque ] 
+% 　　　　[ BaseTorque   LeftTip1Torque  LeftTip2Torque  RightTip1Torque RightTip2Torque]
+targetExtWrench= zeros(6,1);                   % タゲ外力[ BaseForce  ]
+% 　　　　[ BaseTorque ]
 % 状態判定用インスタンス初期化
 state = State();
 
 % データ保存用インスタンス作成
 datSaver = DataSaver(paths, param);
 
-% タイマースタート                                               
+% タイマースタート
 startCPUT = cputime;
 startT = clock();
 break_time = inf;
 
 %% シミュレーションループスタート
-for time = minusTime : d_time : endTime 
+for time = minusTime : d_time : endTime
     if rem(time, 0.1) == 0
         timer_count = sprintf("time : %2.2f [s]\n", time);
         fprintf(timer_count)
     end
- 
+
     %%% データ更新
     datSaver = datSaver.update(dualArmRobo, targetSquare, controller, state, param);
 
     %%% 推定フェーズ
     % 接触判定及び接触力計算
     [roboExtWrench(:, 2:5), targetExtWrench, isContact] = calc_contactForce(dualArmRobo, targetSquare, param);
-    
+
     % 手先外力センサー値計算
     roboFTsensor = roboExtWrench(:,[2,4])+roboExtWrench(:,[3,5]); % 手先の球にかかる力を足して左右のエンドエフェクタにかかる力にする 6*4->6*2
 
@@ -80,7 +99,7 @@ for time = minusTime : d_time : endTime
 
     %%% 運動計算フェーズ
     dualArmRobo  = dualArmRobo.update(controller.tau, roboExtWrench, param);    % methodを呼び出した後自身に代入することを忘れない！
-    targetSquare = targetSquare.update(targetExtWrench);  
+    targetSquare = targetSquare.update(targetExtWrench);
 
     % 状態判定更新
     state = state.update(controller, dualArmRobo, isContact, targetSquare, time, param);
@@ -120,19 +139,19 @@ for time = minusTime : d_time : endTime
         break_time = time;
     end
     % 突き飛ばし -> 黄x
-    if state.goneAway 
+    if state.goneAway
         sim_res = '\cellcolor{yellow}{$\times       $}';
         break_time = time;
     end
 
     % simulation error
-    if any(isnan(dualArmRobo.SV.R0), "all") 
+    if any(isnan(dualArmRobo.SV.R0), "all")
         sim_res = '          !                        ';
         break_time = time;
     end
 end
 %% ループ終了
-%%% シミュレーション時間の計測と表示 
+%%% シミュレーション時間の計測と表示
 show_calc_time(startT, startCPUT)
 disp(sim_res)
 
